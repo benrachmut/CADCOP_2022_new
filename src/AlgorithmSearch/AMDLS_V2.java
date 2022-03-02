@@ -78,10 +78,12 @@ public class AMDLS_V2 extends AMDLS_V1 {
 			currentColor = currentColor + 1;
 		}
 		this.myColor = currentColor;
-		
+		/*
 		if (MainSimulator.is2OptDebug|| MainSimulator.isAMDLSDistributedDebug) {
 			System.out.println("A_"+this.id+" color: "+this.myColor);
 		}
+		*/
+
 	}
 
 	private boolean isColorValid(Integer currentColor) {
@@ -391,7 +393,7 @@ public class AMDLS_V2 extends AMDLS_V1 {
 	
 	
 	public void sendMsgs() {
-		boolean sendAllTheTime = AMDLS_V1.sendWhenMsgReceive && this.gotMsgFlag;
+		//boolean sendAllTheTime = AMDLS_V1.sendWhenMsgReceive && this.gotMsgFlag;
 		boolean flag = false;
 		if ( this.canSetColorFlag) {
 			sendAMDLSColorMsgs();

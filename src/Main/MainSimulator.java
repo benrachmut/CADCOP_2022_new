@@ -47,7 +47,7 @@ public class MainSimulator {
 	// public static int dividAtomicTime = 1;
 
 	public static int multiplicationTime = 1;// 2;
-	public static int howManyIterationForCalculation = 1000;// 10000;//100000; // sparse = 100,dense=100
+	public static int howManyIterationForCalculation = 100;// 10000;//100000; // sparse = 100,dense=100
 	private static Double[] convergeEximne = { };
 
 	// ------------------------------**any time**
@@ -63,9 +63,9 @@ public class MainSimulator {
 	public static int div = 1;
 
 	public static int start = 0;
-	public static int end = 10;
+	public static int end = 100;
 	public static int end_temp = start; // DO NOT CHANGE
-	public static long termination = 6000
+	public static long termination = 10000
 			;//30000007;
 	private static int everyHowManyExcel = 100;
 
@@ -132,7 +132,7 @@ public class MainSimulator {
 	// public static boolean isAMDLSdebug = true;
 	public static boolean isAMDLSDistributedDebug = false;
 	public static boolean isAnytimeThreadDebug = false;
-	public static boolean isAnytimeDebug = true;
+	public static boolean isAnytimeDebug = false;
 	public static boolean isMaxSumMailerDebug = false;
 	public static boolean isFactorGraphDebug = false;
 	public static boolean isMGM2Debug = false;

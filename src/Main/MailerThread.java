@@ -15,6 +15,7 @@ import AgentsAbstract.NodeId;
 import AlgorithmSearch.AMDLS_V1;
 import Delays.ProtocolDelayMatrix;
 import Delays.ProtocolDelayUniform;
+import Delays.ProtocolDelayWithK;
 import Messages.Msg;
 import Messages.MsgAlgorithm;
 import Messages.MsgsAgentTimeComparator;
@@ -103,7 +104,7 @@ public class MailerThread extends Mailer implements Runnable {
 		}
 		
 		
-		if (this.protocol.getDelay().getGamma()>0) {
+		if (this.protocol.getDelay().getGamma()>0 && !(this.protocol.getDelay() instanceof ProtocolDelayWithK)) {
 			if (msgToSend.isEmpty() && areAllIdle()) {
 				this.time = this.terminationTime-1;
 				createData(this.time);

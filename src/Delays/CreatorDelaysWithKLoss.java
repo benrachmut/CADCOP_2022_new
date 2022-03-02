@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 public class CreatorDelaysWithKLoss extends CreatorDelays{
-    private int[] ks= {10,20};
+    private int[] ks= {10};
 
 
     @Override

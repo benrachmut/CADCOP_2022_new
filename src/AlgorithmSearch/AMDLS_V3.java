@@ -43,6 +43,8 @@ public class AMDLS_V3 extends AMDLS_V2 {
 		this.isWithTimeStamp = false;
 		if (canSetColorInitilize()) {
 			chooseColor();
+
+
 			sendAMDLSColorMsgs();
 			this.myCounter = 1;
 			//firstFlag = true;

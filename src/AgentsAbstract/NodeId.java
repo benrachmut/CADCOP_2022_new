@@ -50,7 +50,7 @@ public class NodeId implements Comparable<NodeId> {
 		if (toCheck.id1 - this.id1 == 0 ) {
 			return toCheck.id2- this.id2;
 		}
-		return toCheck.id1 - this.id1;
+		return  this.id1 - toCheck.id1 ;
 		
 		/*
 		if(this.id1 < toCheck.id1) { //Variable node this is in before variable node toCheck

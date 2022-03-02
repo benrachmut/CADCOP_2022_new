@@ -13,7 +13,7 @@ import java.util.Random;
 import static Delays.ProtocolDelayWithK.k_public;
 
 public class CAMDLS_NAIVE extends  AMDLS_V3{
-    private Random r;
+    protected Random r;
 
     public CAMDLS_NAIVE(int dcopId, int D, int agentId) {
         super(dcopId, D, agentId);
