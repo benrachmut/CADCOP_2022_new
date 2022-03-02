@@ -36,18 +36,7 @@ import AlgorithmInference.MaxSumStandardVariableDelay_SY;
 import AlgorithmInference.MaxSumStandardVarible;
 //import AlgorithmInference.MaxSumStandardVaribleSync;
 
-import AlgorithmSearch.AMDLS_V1;
-import AlgorithmSearch.AMDLS_V2;
-import AlgorithmSearch.AMDLS_V3;
-import AlgorithmSearch.AMDLS_V4;
-import AlgorithmSearch.DSA_B_ASY;
-import AlgorithmSearch.DSA_B_SY;
-import AlgorithmSearch.DSA_SDP_ASY;
-import AlgorithmSearch.DSA_SDP_SY;
-import AlgorithmSearch.MGM2_ASY;
-import AlgorithmSearch.MGM2_SY;
-import AlgorithmSearch.MGM_ASY;
-import AlgorithmSearch.MGM_SY;
+import AlgorithmSearch.*;
 
 import Comparators.CompAgentVariableByNeighborSize;
 import Formation.ColorFormation;
@@ -205,7 +194,7 @@ public abstract class Dcop {
 			ans = new MGM2_SY(dcopId, D, agentId);
 		}
 		if (agentType == 12) {
-			ans = new AMDLS_V4(dcopId, D, agentId);
+			ans = new CAMDLS_NAIVE(dcopId, D, agentId);
 		}
 		/*
 		 * if (agentType == 100) {

@@ -133,16 +133,19 @@ public class MailerThread extends Mailer implements Runnable {
 	 * @param msgsFromInbox
 	 */
 	protected void placeMsgsFromInboxInMessageBox(List<Msg> msgsFromInbox) {
+		this.algorithmMsgsCounterDeliver = this.algorithmMsgsCounterDeliver+ msgsFromInbox.size();
 		for (Msg m : msgsFromInbox) {
 			boolean flag = false;
 			updateMailerClockUponMsgRecieved(m);
+			boolean isMsgAlgorithm = m instanceof MsgAlgorithm;
+			boolean isLoss = m.getIsLoss();
 			if (m.isWithDelay()) {
 				int d=-1;
 				if (this.protocol.getDelay() instanceof ProtocolDelayMatrix) {
 					int[] indexes = getSenderAndRecieverId1(m);
-					d =	createDelay(m instanceof MsgAlgorithm,indexes[0],indexes[1]);
+					d =	createDelay(isMsgAlgorithm,indexes[0],indexes[1],isLoss);
 				}else {
-				 d = createDelay(m instanceof MsgAlgorithm);
+				 d = createDelay(isMsgAlgorithm,isLoss);
 				}
 				if (d == -1) {
 					flag = true;

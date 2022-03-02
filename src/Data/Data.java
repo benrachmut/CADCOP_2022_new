@@ -25,7 +25,8 @@ public class Data {
 	private Double globalAnytimeCost;
 	private Double changeValueAssignmentCounter;
 	// ------**measures from mailer**-----
-	private Double algorithmMsgsCounter;
+	private Double algorithmMsgsCounterArrive;
+	private Double algorithmMsgsCounterDeliver;
 	// ------**measures from mailer: any time**-----
 	private Double anytimeMsgsCounter;
 	private Double monotonicy;
@@ -56,21 +57,24 @@ public class Data {
 		this.povCost = Statistics.mean(colletionPerFields.get(2));
 		this.globalAnytimeCost = Statistics.mean(colletionPerFields.get(3));
 		this.changeValueAssignmentCounter = Statistics.mean(colletionPerFields.get(4));
-		this.algorithmMsgsCounter = Statistics.mean(colletionPerFields.get(5));
-		this.agentZeroGlobalCost = Statistics.mean(colletionPerFields.get(6));
-		this.agentZeroPOVCost = Statistics.mean(colletionPerFields.get(7));
-		this.globalPovABSDelta = Statistics.mean(colletionPerFields.get(8));
-		this.agentPercentCanStart = Statistics.mean(colletionPerFields.get(9));
-		this.numberOfColors = Statistics.mean(colletionPerFields.get(10));
-		this.avgIdleTime = Statistics.mean(colletionPerFields.get(11));
-		this.maxIdleTime = Statistics.mean(colletionPerFields.get(12));
+		this.algorithmMsgsCounterArrive = Statistics.mean(colletionPerFields.get(5));
+
+		this.algorithmMsgsCounterDeliver = Statistics.mean(colletionPerFields.get(6));
+		this.agentZeroGlobalCost = Statistics.mean(colletionPerFields.get(7));
+
+		this.agentZeroPOVCost = Statistics.mean(colletionPerFields.get(8));
+		this.globalPovABSDelta = Statistics.mean(colletionPerFields.get(9));
+		this.agentPercentCanStart = Statistics.mean(colletionPerFields.get(10));
+		this.numberOfColors = Statistics.mean(colletionPerFields.get(11));
+		this.avgIdleTime = Statistics.mean(colletionPerFields.get(12));
+		this.maxIdleTime = Statistics.mean(colletionPerFields.get(13));
 
 		if (MainSimulator.isAnytime) {
-			this.topAgentsAnytimeContextCost = Statistics.mean(colletionPerFields.get(13));
-			this.anytimeCost = Statistics.mean(colletionPerFields.get(14));
-			this.topContextCounters = Statistics.mean(colletionPerFields.get(15));
-			this.numberOfRepsMeanAtTop = Statistics.mean(colletionPerFields.get(16));
-			this.numberOfRepsMeanAtAll = Statistics.mean(colletionPerFields.get(17));
+			this.topAgentsAnytimeContextCost = Statistics.mean(colletionPerFields.get(14));
+			this.anytimeCost = Statistics.mean(colletionPerFields.get(15));
+			this.topContextCounters = Statistics.mean(colletionPerFields.get(16));
+			this.numberOfRepsMeanAtTop = Statistics.mean(colletionPerFields.get(17));
+			this.numberOfRepsMeanAtAll = Statistics.mean(colletionPerFields.get(18));
 
 		}
 	}
@@ -78,11 +82,11 @@ public class Data {
 	private List<List<Double>> createColletionsPerField(List<Data> datas) {
 		List<List<Double>> ans = new ArrayList<List<Double>>();
 		if (MainSimulator.isAnytime) {
-			for (int i = 0; i < 13 + 5; i++) {
+			for (int i = 0; i < 14 + 5; i++) {
 				ans.add(new ArrayList<Double>());
 			}
 		} else {
-			for (int i = 0; i < 13; i++) {
+			for (int i = 0; i < 14; i++) {
 				ans.add(new ArrayList<Double>());
 			}
 		}
@@ -92,30 +96,32 @@ public class Data {
 			ans.get(2).add(d.povCost);
 			ans.get(3).add(d.globalAnytimeCost);
 			ans.get(4).add(d.changeValueAssignmentCounter);
-			ans.get(5).add(d.algorithmMsgsCounter);
-			ans.get(6).add(d.agentZeroGlobalCost);
-			ans.get(7).add(d.agentZeroPOVCost);
-			ans.get(8).add(d.globalPovABSDelta);
-			ans.get(9).add(d.agentPercentCanStart);
-			ans.get(10).add(d.numberOfColors);
-			ans.get(11).add(d.avgIdleTime);
-			ans.get(12).add(d.maxIdleTime);
+			ans.get(5).add(d.algorithmMsgsCounterArrive);
+			ans.get(6).add(d.algorithmMsgsCounterDeliver);
+
+			ans.get(7).add(d.agentZeroGlobalCost);
+			ans.get(8).add(d.agentZeroPOVCost);
+			ans.get(9).add(d.globalPovABSDelta);
+			ans.get(10).add(d.agentPercentCanStart);
+			ans.get(11).add(d.numberOfColors);
+			ans.get(12).add(d.avgIdleTime);
+			ans.get(13).add(d.maxIdleTime);
 
 			if (MainSimulator.isAnytime) {
-				ans.get(13).add(d.topAgentsAnytimeContextCost);
-				ans.get(14).add(d.anytimeCost);
-				ans.get(15).add(d.topContextCounters);
+				ans.get(14).add(d.topAgentsAnytimeContextCost);
+				ans.get(15).add(d.anytimeCost);
+				ans.get(16).add(d.topContextCounters);
 
 				if (d.topAgentsAnytimeContextCost == null) {
-					ans.get(16).add(0.0);
-				} else {
-					ans.get(16).add(1.0);
-				}
-
-				if (d.anytimeCost == null) {
 					ans.get(17).add(0.0);
 				} else {
 					ans.get(17).add(1.0);
+				}
+
+				if (d.anytimeCost == null) {
+					ans.get(18).add(0.0);
+				} else {
+					ans.get(18).add(1.0);
 				}
 			}
 
@@ -127,7 +133,8 @@ public class Data {
 		this.time = time;
 		this.globalCost = calcGlobalCost(dcop.getNeighbors());
 		this.changeValueAssignmentCounter = calcChangeValueAssignmentCounter(dcop.getVariableAgents());
-		this.algorithmMsgsCounter = mailer.getAlgorithmMsgsCounter();
+		this.algorithmMsgsCounterArrive = mailer.getAlgorithmMsgsCounterArrive();
+		this.algorithmMsgsCounterDeliver = mailer.getAlgorithmMsgsCounterDeliver();
 
 		if (MainSimulator.isAnytime) {
 			this.anytimeMsgsCounter = mailer.getAnytimeMsgsCounter();
@@ -162,7 +169,7 @@ public class Data {
 	private Double calcMaxIdleTime(AgentVariable[] variableAgents) {
 		Collection<Double> c = new ArrayList<Double>();
 		for (AgentVariable av: variableAgents) {
-			  c.add((double) av.getIdleTime());
+			c.add((double) av.getIdleTime());
 		}
 		return Collections.max(c);
 	}
@@ -174,8 +181,8 @@ public class Data {
 		}
 		return sum/MainSimulator.A;
 	}
-	
-	
+
+
 
 	private static Double calcGlobalPovABSDelta(Double povCost2, Double globalCost2) {
 		try {
@@ -327,8 +334,8 @@ public class Data {
 			return this.globalCost;
 		}
 		Double lastAnytimeGlobal = mailer.getLastGlobalAnytimeCost();
-		
-		if (MainSimulator.agentType==7 || MainSimulator.agentType==12) {
+
+		if (MainSimulator.agentType==7 || MainSimulator.agentType==12|| MainSimulator.agentType==13|| MainSimulator.agentType==14) {
 			return  0.0 ;
 		}
 		if (lastAnytimeGlobal == 0 || this.globalCost < lastAnytimeGlobal) {
@@ -362,7 +369,7 @@ public class Data {
 		String ans = "";
 
 		ans = ans + "Iteration" + "," + "Global View Cost" + "," + "Monotonicy" + "," + "Agent View Cost" + ","
-				+ "Global Anytime Cost" + "," + "Value Assignmnet Counter" + "," + "Algorithm Msgs Counter" + ","
+				+ "Global Anytime Cost" + "," + "Value Assignmnet Counter" + "," + "Msgs Counter Arrive" + ","+ "Msgs Counter Deliver" + ","
 				+ "Global View Cost Agent Zero" + "," + "Agent View Cost Agent Zero" + "," + "Abs Delta Global and POV"
 				+ "," + "Percent Agents With Colors" + "," + "Number of Colors" + ","+ "Average Idle Time" + ","+"Max Idle Time";
 		if (MainSimulator.isAnytime) {
@@ -377,7 +384,7 @@ public class Data {
 	public String toString() {
 
 		String ans = this.time + "," + this.globalCost + "," + this.monotonicy + "," + this.povCost + ","
-				+ this.globalAnytimeCost + "," + this.changeValueAssignmentCounter + "," + this.algorithmMsgsCounter
+				+ this.globalAnytimeCost + "," + this.changeValueAssignmentCounter + "," + this.algorithmMsgsCounterArrive+ "," +this.algorithmMsgsCounterDeliver
 				+ "," + this.agentZeroGlobalCost + "," + this.agentZeroPOVCost + "," + this.globalPovABSDelta + ","
 				+ agentPercentCanStart + "," + numberOfColors+ "," +this.avgIdleTime + ","+this.maxIdleTime;
 
@@ -399,7 +406,7 @@ public class Data {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param datasOfMailer
 	 * @param convergeLimit
 	 * @param isGlobalCost true = globalCost, false = anytimeCost
@@ -415,7 +422,7 @@ public class Data {
 		return ans;
 	}
 
-	
+
 
 	private static Long getKeyOfMaxCounter(Integer maxCounter, Map<Long, Integer> ncloAndCounters) {
 		List<Long> maxes = new ArrayList<Long>();
@@ -430,12 +437,12 @@ public class Data {
 	private static Map<Long, Integer> getNcloAndCounters(SortedMap<Long,Data> datasOfMailer, boolean isGlobalCost,double convergeLimit ) {
 		Map<Long,Integer>ncloAndCounters = new HashMap<Long,Integer>();
 		List<Long> nclos = new ArrayList<Long>(datasOfMailer.keySet());
-		Collections.reverse(nclos); 
-		
+		Collections.reverse(nclos);
+
 		double previousResult = 0;
 		int counterReps = 0;
 		boolean flagFirst = false;
-		
+
 		for (Long nclo : nclos) {
 			Data data = datasOfMailer.get(nclo);
 			if (!flagFirst) {
@@ -456,10 +463,10 @@ public class Data {
 	}
 
 	private static boolean shouldCountForConverge(double previousResult, double currentResult,
-			Double convergeLimit) {
+												  Double convergeLimit) {
 		double ratio = Math.abs(previousResult-currentResult)/currentResult;
 		if (ratio<=convergeLimit) {
-			return true; 
+			return true;
 		}
 		return false;
 	}
@@ -472,7 +479,7 @@ public class Data {
 			ans = data.getGlobalAnytimeCost();
 		}
 		return ans;
-		
+
 	}
 
 }

@@ -19,7 +19,7 @@ abstract public class ProtocolDelayMatrix extends ProtocolDelay {
 
 	abstract protected Double createDelay(Random r, int i, int j);
 
-	public Double createDelay(boolean isAlgorithmicMsg, int id1, int id2) {
+	public Double createDelay(boolean isAlgorithmicMsg, int id1, int id2,boolean isLoss) {
 		Random whichRandom;
 		if (isAlgorithmicMsg) {
 			whichRandom = rndGammaAlgorthmic;
@@ -27,7 +27,7 @@ abstract public class ProtocolDelayMatrix extends ProtocolDelay {
 			whichRandom = rndGammaAnytime;
 		}
 		double rnd = whichRandom.nextDouble();
-		if (rnd < gamma) {
+		if (rnd < gamma && isLoss) {
 			return null;
 		} else {
 

@@ -19,7 +19,7 @@ public abstract class ProtocolDelay {
 	}
 	
 	
-	public Double createDelay(boolean isAlgorithmicMsg) {
+	public Double createDelay(boolean isAlgorithmicMsg, boolean isLoss) {
 		Random whichRandom;
 		if (isAlgorithmicMsg) {
 			whichRandom = rndGammaAlgorthmic;
@@ -27,7 +27,8 @@ public abstract class ProtocolDelay {
 			whichRandom = rndGammaAnytime;
 		}
 		double rnd = whichRandom.nextDouble();
-		if (rnd<gamma) {
+
+		if (rnd<gamma && isLoss) {
 			return null;
 		}
 		else {
@@ -42,6 +43,7 @@ public abstract class ProtocolDelay {
 			return createDelay(whichRandomDelay);
 		}
 	}
+
 	protected abstract Double createDelay(Random r);
 
 	public void setSeeds(int dcopId) {

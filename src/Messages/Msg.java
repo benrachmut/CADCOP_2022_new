@@ -12,6 +12,7 @@ public abstract class Msg<Identity> {
 	
 	boolean withDelay;
 	private int delayOfMsg;
+	private boolean isLoss;
 	
 	//private Integer delay;
 	
@@ -25,8 +26,15 @@ public abstract class Msg<Identity> {
 		this.timeOfMsg = agentTime;
 		this.withDelay = true;
 		this.delayOfMsg=0;
+		this.isLoss = true;
 	}
-	
+
+	public boolean getIsLoss(){
+		return this.isLoss;
+	}
+	public void changeToNoLoss(){
+		this.isLoss=false;
+	}
 	public void setWithDelayToFalse() {
 		this.withDelay = false;
 	}

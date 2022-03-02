@@ -19,16 +19,7 @@ import AgentsAbstract.AgentVariable;
 import AgentsAbstract.AgentVariableInference;
 import AgentsAbstract.Location;
 import Data.Data;
-import Delays.CreatorDelays;
-import Delays.CreatorDelaysDistancePoisson;
-import Delays.CreatorDelaysDistanceUniform;
-import Delays.CreatorDelaysExponential;
-import Delays.CreatorDelaysNone;
-import Delays.CreatorDelaysNormal;
-import Delays.CreatorDelaysPossion;
-import Delays.CreatorDelaysUniform;
-import Delays.CreatorMissingMsgDistance;
-import Delays.ProtocolDelay;
+import Delays.*;
 import Down.CreatorDown;
 import Down.CreatorDownNone;
 import Down.CreatorDownPoission;
@@ -72,9 +63,9 @@ public class MainSimulator {
 	public static int div = 1;
 
 	public static int start = 0;
-	public static int end = 100;
+	public static int end = 10;
 	public static int end_temp = start; // DO NOT CHANGE
-	public static long termination = 600000
+	public static long termination = 6000
 			;//30000007;
 	private static int everyHowManyExcel = 100;
 
@@ -90,19 +81,19 @@ public class MainSimulator {
 	/*
 	 * 1 = DSA-ASY; 2 = DSA-SY; 3 = MGM-ASY ; 4 = MGM-SY ; 5 = AMDLS_V1 ; 6 =
 	 * AMDLS_V2; 7 = AMDLS_V3; 8 = DSA_SDP-ASY ; 9 = DSA_SDP-SY ; 10 = MGM2-ASY ; 11
-	 * = MGM2-SY 12 = AMDLS_V4 send all ------- 100 = 101 = MaxSum-SY; 102 =
+	 * = MGM2-SY; 12 = CAMDLS_NAIVE; send all ------- 100 = 101 = MaxSum-SY; 102 =
 	 * MaxSum_split-SY; 103 = MaxSum-ASY; 104 = MaxSum_split-ASY;
 	 */
 
 	// 4,7,11
 	// 1,3,8
-	public static int agentType = 7;
+	public static int agentType = 12;
 
 	/*
 	 * delayTypes: 0 = non, 1 = normal, 2 = uniform, 3 = Exponential 4 = Possion, 5
-	 * = distancePois ,6 = distanceUniform ,7 = distanceMissingMsg ,
+	 * = distancePois ,6 = distanceUniform ,7 = distanceMissingMsg , 8 = DelayWithK
 	 */
-	public static int delayType = 2;
+	public static int delayType = 8;
 	/*
 	 * 1 = Random uniform; 2 = Graph Coloring; 3 = Scale Free Network
 	 */
@@ -549,6 +540,11 @@ public class MainSimulator {
 		if (delayType == 7) {
 			ans = new CreatorMissingMsgDistance();
 		}
+
+		if (delayType == 8){
+			ans = new CreatorDelaysWithKLoss();
+
+		}
 		return ans;
 	}
 
@@ -559,6 +555,11 @@ public class MainSimulator {
 			int protocolCounter = -1;
 			for (Protocol protocol : protocols) {
 				protocolCounter += 1;
+				ProtocolDelay pd = protocol.getDelay();
+
+				if (pd instanceof ProtocolDelayWithK){
+					((ProtocolDelayWithK)pd).updatePublicK();
+				}
 				Mailer mailer = getMailer(protocol, dcop);
 				dcop.dcopMeetsMailer(mailer);
 				mailer.mailerMeetsDcop(dcop.getId());

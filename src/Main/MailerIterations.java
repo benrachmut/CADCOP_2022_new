@@ -223,7 +223,7 @@ public class MailerIterations extends Mailer {
 		for (Msg m : msgsFromInbox) {
 			boolean flag = false;
 			if (m.isWithDelay()) {
-				int d = createDelay(m instanceof MsgAlgorithm);
+				int d = createDelay(m instanceof MsgAlgorithm,m.getIsLoss());
 				if (d == -1) {
 					flag = true;
 				}
