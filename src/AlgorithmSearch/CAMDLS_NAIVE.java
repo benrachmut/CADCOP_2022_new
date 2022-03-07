@@ -22,11 +22,11 @@ public class CAMDLS_NAIVE extends  AMDLS_V3{
 
     }
 
-    @Override
     public void resetAgentGivenParametersV3() {
         super.resetAgentGivenParametersV3();
         r = new Random(dcopId*1000+this.id*10);
     }
+
 
     @Override
     public void updateAlgorithmName() {

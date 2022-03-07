@@ -1,7 +1,6 @@
 package AlgorithmSearch;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
@@ -9,7 +8,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import AgentsAbstract.AgentVariable;
 import AgentsAbstract.NodeId;
-import Main.MailerIterations;
 import Main.MainSimulator;
 import Messages.Msg;
 import Messages.MsgAMDLS;
@@ -78,11 +76,11 @@ public class AMDLS_V2 extends AMDLS_V1 {
 			currentColor = currentColor + 1;
 		}
 		this.myColor = currentColor;
-		/*
+
 		if (MainSimulator.is2OptDebug|| MainSimulator.isAMDLSDistributedDebug) {
 			System.out.println("A_"+this.id+" color: "+this.myColor);
 		}
-		*/
+
 
 	}
 
@@ -194,9 +192,8 @@ public class AMDLS_V2 extends AMDLS_V1 {
 		AgentVariable.algorithmData = heuristic+","+freq+","+t; 
 	}
 
-	@Override
-	protected boolean updateMessageInContext(MsgAlgorithm msgAlgorithm) {
-	
+
+	protected void updateNColor(MsgAlgorithm msgAlgorithm){
 		if (msgAlgorithm instanceof MsgAMDLSColor) {
 			Integer colorN = ((MsgAMDLSColor) msgAlgorithm).getColor();
 			neighborColors.put(msgAlgorithm.getSenderId(), colorN);
@@ -208,27 +205,40 @@ public class AMDLS_V2 extends AMDLS_V1 {
 				}
 			}
 		}
+	}
 
-		
-		//!haveAllColors()&&
-		if ( (msgAlgorithm instanceof MsgAMDLSColor)==false && this.myCounter<=1 
+	private boolean addMsgToFuture(MsgAlgorithm msgAlgorithm) {
+		if ( (msgAlgorithm instanceof MsgAMDLSColor)==false && this.myCounter<=1
 				&& !((MsgAMDLS)msgAlgorithm).isFromFuture()) {
-			//MsgAMDLS m = new MsgAMDLS((MsgAMDLSColor) msgAlgorithm);
-			if (this.id == 6  && MainSimulator.isAMDLSDistributedDebug) {
-				System.out.println(this+" puts "+msgAlgorithm+" in future");
-			}
-				future.add((MsgAMDLS)msgAlgorithm);
-			}
+
+			future.add((MsgAMDLS)msgAlgorithm);
+			return true;
+		}
+		return false;
 		/*
 		if (!canSetColor() && this.isWaitingToSetColor && msgAlgorithm instanceof MsgAMDLSColor) {
-			
+
 		} */
-		else {
+	}
+	@Override
+	protected boolean updateMessageInContext(MsgAlgorithm msgAlgorithm) {
+		if (MainSimulator.isAMDLSDistributedDebug){
+			System.out.println("A_"+this.id+" recieve message from  A_"+msgAlgorithm.getSenderId().getId1());
+		}
+
+		updateNColor( msgAlgorithm);
+		boolean ans = addMsgToFuture(msgAlgorithm);
+		//!haveAllColors()&&
+
+		if (!ans){
 			super.updateMessageInContext(msgAlgorithm);
 		}
 		return true;
 
 	}
+
+
+
 
 	private boolean haveAllColors() {
 		for (Integer i : neighborColors.values()) {
@@ -367,10 +377,7 @@ public class AMDLS_V2 extends AMDLS_V1 {
 
 	public boolean getDidComputeInThisIteration() {
 
-		if (MainSimulator.isAMDLSDistributedDebug) {
-		//	printAMDLSstatus();
-		//	System.out.println(this+" compute in this iteration: "+ ( canSetColorFlag || consistentFlag));
-		}
+
 		return canSetColorFlag || consistentFlag;
 	}
 

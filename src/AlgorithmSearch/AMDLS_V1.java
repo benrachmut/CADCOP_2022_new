@@ -255,7 +255,10 @@ public class AMDLS_V1 extends AgentVariableSearch {
 
 	protected void decideAndChange() {
 		this.myCounter = this.myCounter + 1;
-		
+
+		if (MainSimulator.is2OptDebug|| MainSimulator.isAMDLSDistributedDebug) {
+			System.out.println("A_"+this.id+" counter: "+this.myCounter);
+		}
 		if (typeDecision == 'a'|| typeDecision == 'A') {
 			this.valueAssignment = getCandidateToChange_A();
 		}

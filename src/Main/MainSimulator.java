@@ -65,12 +65,12 @@ public class MainSimulator {
 	public static int start = 0;
 	public static int end = 100;
 	public static int end_temp = start; // DO NOT CHANGE
-	public static long termination = 10000
+	public static long termination = 1000
 			;//30000007;
 	private static int everyHowManyExcel = 100;
 
 	// ------------------------------**PROBLEM MANGNITUDE**
-	public static int A = 5; // amount of agents
+	public static int A = 4; // amount of agents
 	private static int D = 10;
 
 	// public static int D = -1; // if D or costParameter < 0 use default
