@@ -11,7 +11,6 @@ import java.util.Set;
 import AgentsAbstract.AgentVariable;
 import AgentsAbstract.AgentVariableSearch;
 import AgentsAbstract.NodeId;
-import Main.MailerIterations;
 import Main.MainSimulator;
 import Messages.Msg;
 import Messages.MsgAMDLS;
@@ -167,12 +166,17 @@ public class AMDLS_V1 extends AgentVariableSearch {
 
 		if (currentCounterInContext + 1 == msgCounter) {
 			updateMsgInContextValueAssignmnet(msgAlgorithm);
-			this.counters.put(sender, msgCounter);
+			updateCounterFromMsg(sender, msgCounter);
+
 		} else {
 			this.future.add((MsgAMDLS) msgAlgorithm);
 		}
 		return true;
 
+	}
+
+	protected void updateCounterFromMsg(NodeId sender, int msgCounter) {
+		this.counters.put(sender, msgCounter);
 	}
 
 	// 2
@@ -253,8 +257,14 @@ public class AMDLS_V1 extends AgentVariableSearch {
 		return true;
 	}
 
+	protected void changeMyCounterByOne() {
+		this.myCounter = this.myCounter+1;
+	}
+
 	protected void decideAndChange() {
-		this.myCounter = this.myCounter + 1;
+
+		changeMyCounterByOne();
+
 
 		if (MainSimulator.is2OptDebug|| MainSimulator.isAMDLSDistributedDebug) {
 			System.out.println("A_"+this.id+" counter: "+this.myCounter);

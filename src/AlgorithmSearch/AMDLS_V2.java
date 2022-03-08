@@ -207,7 +207,7 @@ public class AMDLS_V2 extends AMDLS_V1 {
 		}
 	}
 
-	private boolean addMsgToFuture(MsgAlgorithm msgAlgorithm) {
+	protected boolean addMsgToFuture(MsgAlgorithm msgAlgorithm) {
 		if ( (msgAlgorithm instanceof MsgAMDLSColor)==false && this.myCounter<=1
 				&& !((MsgAMDLS)msgAlgorithm).isFromFuture()) {
 

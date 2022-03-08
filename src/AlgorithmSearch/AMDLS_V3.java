@@ -3,9 +3,6 @@ package AlgorithmSearch;
 import java.util.Random;
 
 import AgentsAbstract.AgentVariable;
-import Main.MailerIterations;
-import Main.MainSimulator;
-import Messages.MsgAlgorithm;
 
 public class AMDLS_V3 extends AMDLS_V2 {
 
@@ -20,6 +17,8 @@ public class AMDLS_V3 extends AMDLS_V2 {
 		Random r = new Random(this.dcopId * 10 + this.id * 100);
 		//this.rndStochasticInitial = r.nextDouble();
 		this.stochasticDecisionRandom = new Random(this.dcopId * 12 + this.id * 143);
+		this.myCounter = 0;
+
 		//firstFlag = false;
 	}
 
@@ -29,6 +28,8 @@ public class AMDLS_V3 extends AMDLS_V2 {
 		Random r = new Random(this.dcopId * 10 + this.id * 100);
 		//this.rndStochasticInitial = r.nextDouble();
 		this.stochasticDecisionRandom = new Random(this.dcopId * 12 + this.id * 143);
+		this.myCounter = 0;
+
 		//firstFlag = false;
 	}
 
@@ -38,15 +39,18 @@ public class AMDLS_V3 extends AMDLS_V2 {
 		AgentVariable.AlgorithmName = "LAMDLS";
 	}
 
+
+
+
 	@Override
 	public void initialize() {
 		this.isWithTimeStamp = false;
 		if (canSetColorInitilize()) {
 			chooseColor();
 
-
 			sendAMDLSColorMsgs();
-			this.myCounter = 1;
+			changeMyCounterByOne();
+
 			//firstFlag = true;
 			isWaitingToSetColor = false;
 		} else {
@@ -54,6 +58,8 @@ public class AMDLS_V3 extends AMDLS_V2 {
 			this.myCounter = 0;
 		}
 	}
+
+
 
 	protected boolean compute() {
 			boolean flag = false;
