@@ -28,7 +28,7 @@ public class AMDLS_V1 extends AgentVariableSearch {
 	protected Map<NodeId, Integer> counters;
 	protected int myCounter;
 
-	protected List<MsgAMDLS> future;
+	protected List<MsgValueAssignmnet> future;
 	protected boolean consistentFlag;
 	protected boolean gotMsgFlag;
 
@@ -38,7 +38,7 @@ public class AMDLS_V1 extends AgentVariableSearch {
 		this.below = new HashSet<NodeId>();
 		this.above = new HashSet<NodeId>();
 		this.myCounter = 1;
-		future = new ArrayList<MsgAMDLS>();
+		future = new ArrayList<MsgValueAssignmnet>();
 		consistentFlag = false;
 		gotMsgFlag = false;
 		this.isWithTimeStamp = false;
@@ -94,7 +94,7 @@ public class AMDLS_V1 extends AgentVariableSearch {
 	protected void resetAgentGivenParametersV3() {
 		myCounter = 1;
 		consistentFlag = false;
-		future = new ArrayList<MsgAMDLS>();
+		future = new ArrayList<MsgValueAssignmnet>();
 		gotMsgFlag = false;
 		this.isWithTimeStamp = false;
 

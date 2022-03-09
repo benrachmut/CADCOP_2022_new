@@ -98,59 +98,135 @@ public class CAMDLS_TOTAL_K_v1 extends CAMDLS_NAIVE {
     @Override
     protected boolean updateMessageInContext(MsgAlgorithm msgAlgorithm) {
         this.updateTimestampMap(msgAlgorithm);
-        super.updateMessageInContext(msgAlgorithm);
+        if (MainSimulator.isAMDLSDistributedDebug){
+            System.out.println("A_"+this.id+" recieve message from  A_"+msgAlgorithm.getSenderId().getId1());
+        }
+
+        updateNColor( msgAlgorithm);
+        boolean ans = addMsgToFuture(msgAlgorithm);
+        //!haveAllColors()&&
+
+        if (!ans){
+            NodeId sender = msgAlgorithm.getSenderId();
+            int currentCounterInContext = this.counters.get(sender);
+            int msgCounter = ((MsgAMDLSKAware) msgAlgorithm).getCounter();
+
+            if (currentCounterInContext + 1 == msgCounter) {
+                updateMsgInContextValueAssignmnet(msgAlgorithm);
+                updateCounterFromMsg(sender, msgCounter);
+
+            } else {
+                this.future.add((MsgAMDLSKAware) msgAlgorithm);
+            }
+        }
         return true;
     }
 
     protected void updateCounterFromMsg(NodeId sender, int msgCounter) {
 
-        super.updateCounterFromMsg( sender,  msgCounter); // update the memory
-        this.updateMyViewOnTheWorld(sender,  msgCounter);
+        super.updateCounterFromMsg(sender, msgCounter); // update the memory
+        this.updateMyViewOnTheWorld(sender, msgCounter);
     }
 
     private void updateMyViewOnTheWorld(NodeId sender, int msgCounter) {
-    Map<NodeId,Integer> map = this.timestampMap.get(this.nodeId);
-    map.put(sender,msgCounter);
+        Map<NodeId, Integer> map = this.timestampMap.get(this.nodeId);
+        map.put(sender, msgCounter);
     }
 
 
-    @Override
-    protected void sendAMDLSmsgs() {
-        int k = k_public;
-        Map<NodeId, Integer> whatOtherThinkOfMe = getWhatOtherThinkOfMe();
+
+
+
+    private Map<NodeId, Integer> getWhatOtherThinkOfMeSmallerColor(Map<NodeId, Integer> whatOtherThinkOfMe) {
+        Map<NodeId, Integer> ans = new HashMap<NodeId, Integer>();
+        for (NodeId nodeId : whatOtherThinkOfMe.keySet()) {
+            int colorOfNodeId = this.neighborColors.get(nodeId);
+            if (colorOfNodeId < this.myColor) {
+                ans.put(nodeId, whatOtherThinkOfMe.get(nodeId));
+            }
+        }
+        return ans;
+    }
+
+    private List<NodeId> getSmallerColorNotAware(int k, Map<NodeId, Integer> whatOtherThinkOfMe) {
+        List<NodeId> ans = new ArrayList<NodeId>();
+        Map<NodeId, Integer> whatOtherThinkOfMeSmallerColor = getWhatOtherThinkOfMeSmallerColor(whatOtherThinkOfMe);
+        for (NodeId nodeId : whatOtherThinkOfMeSmallerColor.keySet()) {
+            ans.add(nodeId);
+            k = k - 1;
+            if (k == 0) {
+                return ans;
+            }
+        }
+        return ans;
+    }
+
+    private Map<NodeId, Integer> whatOtherThinkOfMeLargerColor(Map<NodeId, Integer> whatOtherThinkOfMe) {
+        Map<NodeId, Integer> ans = new HashMap<NodeId, Integer>();
+        for (NodeId nodeId : whatOtherThinkOfMe.keySet()) {
+            int colorOfNodeId = this.neighborColors.get(nodeId);
+            if (colorOfNodeId > this.myColor) {
+                ans.put(nodeId, whatOtherThinkOfMe.get(nodeId));
+            }
+        }
+        return ans;
+    }
+
+    private List<NodeId> getLargerColorNotAware(int k, Map<NodeId, Integer> whatOtherThinkOfMe) {
+        List<NodeId> ans = new ArrayList<NodeId>();
+        Map<NodeId, Integer> whatOtherThinkOfMeLargerColor = whatOtherThinkOfMeLargerColor(whatOtherThinkOfMe);
+        for (NodeId nodeId : whatOtherThinkOfMeLargerColor.keySet()) {
+            ans.add(nodeId);
+            k = k - 1;
+            if (k == 0) {
+                return ans;
+            }
+        }
+        return ans;
+    }
+
+
+    private List<NodeId> getNeighborsToSendAfterColorStage() {
         List<NodeId> neighborsToSend = new ArrayList<NodeId>();
 
+        int k = k_public;
+        Map<NodeId, Integer> whatOtherThinkOfMe = getWhatOtherThinkOfMe();
+
         while (k > 0) {
-            List<NodeId> temp = this.getSmallerColorNotAware(k,whatOtherThinkOfMe);
+            List<NodeId> temp = this.getSmallerColorNotAware(k, whatOtherThinkOfMe);
             neighborsToSend.addAll(temp);
             k = k - temp.size();
 
             if (k > 0) {
-                temp = this.getLargerColorNotAware(k,whatOtherThinkOfMe);
+                temp = this.getLargerColorNotAware(k, whatOtherThinkOfMe);
                 neighborsToSend.addAll(temp);
                 k = k - temp.size();
-
             }
         }
+        return neighborsToSend;
+    }
 
+    @Override
+    protected void sendAMDLSmsgs() {
+
+        List<NodeId> neighborsToSend = getNeighborsToSendAfterColorStage();
         List<Msg> msgsToOutbox = new ArrayList<Msg>();
+        int rndK = this.r.nextInt(k_public);
 
-
-        for (NodeId recieverNodeId : neighborsConstraint.keySet()) {
-            int rndK = this.r.nextInt(k);
-            for (int i = 0; i < k; i++) {
-                MsgAMDLSKAware mva = new MsgAMDLSKAware(this.nodeId, recieverNodeId, this.valueAssignment, this.timeStampCounter,
-                        this.time, this.myCounter, this.timestampMap);
-                if (rndK == i) {
-                    mva.changeToNoLoss();
-                    if (MainSimulator.isAMDLSDistributedDebug) {
-                        System.out.println("A_" + this.id + " sent message to A_" + recieverNodeId.getId1() + " amdls");
-                    }
+        for (int i = 0; i < neighborsToSend.size(); i++) {
+            NodeId recieverNodeId = neighborsToSend.get(i);
+            MsgAMDLSKAware mva = new MsgAMDLSKAware(this.nodeId, recieverNodeId, this.valueAssignment, this.timeStampCounter,
+                    this.time, this.myCounter, this.timestampMap);
+            if (rndK == i) {
+                if (MainSimulator.isAMDLSDistributedDebug) {
+                    System.out.println("A_" + this.id + " sent message to A_" + recieverNodeId.getId1() + " color");
                 }
-                msgsToOutbox.add(mva);
+                mva.changeToNoLoss();
             }
-
+            msgsToOutbox.add(mva);
         }
+
+
         this.outbox.insert(msgsToOutbox);
     }
 
@@ -159,10 +235,22 @@ public class CAMDLS_TOTAL_K_v1 extends CAMDLS_NAIVE {
 
     private Map<NodeId, Integer> getWhatOtherThinkOfMe() {
         Map<NodeId, Integer> ans = new HashMap<NodeId, Integer>();
-        for (NodeId nodeViewMaps:this.timestampMap.keySet()) {
-            Map<NodeId, Integer>  theMap = this.timestampMap.get(nodeViewMaps);
-            int theCounterItThinks = theMap.get(this.nodeId);
-            ans.put(nodeViewMaps,theCounterItThinks);
+        for (NodeId nodeViewMaps : this.timestampMap.keySet()) {
+            if (this.neighborsConstraint.keySet().contains(nodeViewMaps)) {
+                Map<NodeId, Integer> theMap = this.timestampMap.get(nodeViewMaps);
+                try {
+                    int theCounterItThinks = theMap.get(this.nodeId);
+                    ans.put(nodeViewMaps, theCounterItThinks);
+                }catch (NullPointerException e){
+                    System.out.println("say whaaat");
+                }
+            }
+        }
+
+        for (NodeId nodeId: this.neighborsConstraint.keySet()){
+            if (!ans.keySet().contains(nodeId)){
+                ans.put(nodeId,0);
+            }
         }
         return ans;
     }
@@ -171,16 +259,16 @@ public class CAMDLS_TOTAL_K_v1 extends CAMDLS_NAIVE {
         int k = k_public;
 
         List<NodeId> neighborsToSend = new ArrayList<NodeId>();
-        Map<NodeId,Integer> whatOtherThinkOfMe = getWhatOtherThinkOfMe();
+        Map<NodeId, Integer> whatOtherThinkOfMe = getWhatOtherThinkOfMe();
 
         while (k > 0) {
             //List<NodeId> temp = this.getAllNeighborsWithoutColorsSmallerIndex(k);
-            List<NodeId> temp = this.getSmallerIndexNotAware(k,whatOtherThinkOfMe);
+            List<NodeId> temp = this.getSmallerIndexNotAware(k, whatOtherThinkOfMe);
             neighborsToSend.addAll(temp);
             k = k - temp.size();
 
             if (k > 0) {
-                temp = this.getLargerIndexNotAware(k,whatOtherThinkOfMe);
+                temp = this.getLargerIndexNotAware(k, whatOtherThinkOfMe);
                 neighborsToSend.addAll(temp);
                 k = k - temp.size();
             }
@@ -191,6 +279,35 @@ public class CAMDLS_TOTAL_K_v1 extends CAMDLS_NAIVE {
         }
         return neighborsToSend;
     }
+
+    private List<NodeId> getLargerIndexNotAware(int k, Map<NodeId, Integer> whatOtherThinkOfMe) {
+        List<NodeId> ans = new ArrayList<NodeId>();
+        for (NodeId nodeId : whatOtherThinkOfMe.keySet()) {
+            if (nodeId.getId1() > this.id) {
+                ans.add(nodeId);
+                k = k - 1;
+                if (k == 0) {
+                    return ans;
+                }
+            }
+        }
+        return ans;
+    }
+
+    private List<NodeId> getSmallerIndexNotAware(int k, Map<NodeId, Integer> whatOtherThinkOfMe) {
+        List<NodeId> ans = new ArrayList<NodeId>();
+        for (NodeId nodeId : whatOtherThinkOfMe.keySet()) {
+            if (nodeId.getId1() < this.id) {
+                ans.add(nodeId);
+                k = k - 1;
+                if (k == 0) {
+                    return ans;
+                }
+            }
+        }
+        return ans;
+    }
+
     @Override
     protected void sendAMDLSColorMsgs() {
         this.counter_for_debug = 1 + this.counter_for_debug;
@@ -218,33 +335,7 @@ public class CAMDLS_TOTAL_K_v1 extends CAMDLS_NAIVE {
     }
 
 
-    private List<NodeId> getLargerIndexNotAware(int k, Map<NodeId, Integer> whatOtherThinkOfMe) {
-        List<NodeId> ans = new ArrayList<NodeId>();
-        for (NodeId nodeId:whatOtherThinkOfMe.keySet()) {
-            if (nodeId.getId1()>this.id){
-                ans.add(nodeId);
-                k = k-1;
-                if (k==0){
-                    return ans;
-                }
-            }
-        }
-        return ans;
-    }
 
-    private List<NodeId> getSmallerIndexNotAware(int k, Map<NodeId, Integer> whatOtherThinkOfMe) {
-        List<NodeId> ans = new ArrayList<NodeId>();
-        for (NodeId nodeId:whatOtherThinkOfMe.keySet()) {
-            if (nodeId.getId1()<this.id){
-                ans.add(nodeId);
-                k = k-1;
-                if (k==0){
-                    return ans;
-                }
-            }
-        }
-        return ans;
-    }
 
 
 
@@ -391,6 +482,21 @@ public class CAMDLS_TOTAL_K_v1 extends CAMDLS_NAIVE {
 
             }
         }
+    }
+
+
+    protected boolean addMsgToFuture(MsgAlgorithm msgAlgorithm) {
+        if ( (msgAlgorithm instanceof MsgAMDLSColorKAware)==false && this.myCounter<=1
+                && !((MsgAMDLSKAware)msgAlgorithm).isFromFuture()) {
+
+            future.add((MsgAMDLSKAware)msgAlgorithm);
+            return true;
+        }
+        return false;
+		/*
+		if (!canSetColor() && this.isWaitingToSetColor && msgAlgorithm instanceof MsgAMDLSColor) {
+
+		} */
     }
 
 }
