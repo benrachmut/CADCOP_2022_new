@@ -478,7 +478,7 @@ public class CAMDLS_TOTAL_K_v1 extends CAMDLS_NAIVE {
         if (msgAlgorithm instanceof MsgAMDLSColor) {
             Integer colorN = ((MsgAMDLSColor) msgAlgorithm).getColor();
             if (colorN != null) {
-                super.updateNColor(msgAlgorithm);
+                //super.updateNColor(msgAlgorithm);
 
             }
         }

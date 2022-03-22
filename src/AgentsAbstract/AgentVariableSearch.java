@@ -274,7 +274,7 @@ public abstract class AgentVariableSearch extends AgentVariable {
 	}
 
 	protected void updateMsgInContextValueAssignmnet(MsgAlgorithm msgAlgorithm) {
-		Integer context = (Integer) msgAlgorithm.getContext();
+		int context =  ((Integer) msgAlgorithm.getContext());
 		int timestamp = msgAlgorithm.getTimeStamp();
 		MsgReceive<Integer> msgReceive = new MsgReceive<Integer>(context, timestamp);
 		this.neighborsValueAssignmnet.put(msgAlgorithm.getSenderId(), msgReceive);

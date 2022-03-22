@@ -65,12 +65,12 @@ public class MainSimulator {
 	public static int start = 0;
 	public static int end = 100;
 	public static int end_temp = start; // DO NOT CHANGE
-	public static long termination = 100000
+	public static long termination = 10000
 			;//30000007;
 	private static int everyHowManyExcel = 100;
 
 	// ------------------------------**PROBLEM MANGNITUDE**
-	public static int A = 50; // amount of agents
+	public static int A = 4; // amount of agents
 	private static int D = 10;
 
 	// public static int D = -1; // if D or costParameter < 0 use default
@@ -81,25 +81,27 @@ public class MainSimulator {
 	/*
 	 * 1 = DSA-ASY; 2 = DSA-SY; 3 = MGM-ASY ; 4 = MGM-SY ; 5 = AMDLS_V1 ; 6 =
 	 * AMDLS_V2; 7 = AMDLS_V3; 8 = DSA_SDP-ASY ; 9 = DSA_SDP-SY ; 10 = MGM2-ASY ; 11
-	 * = MGM2-SY; 12 = CAMDLS_NAIVE; send all ------- 100 = 101 = MaxSum-SY; 102 =
+	 * = MGM2-SY; 12 = CAMDLS_NAIVE; 13 = CAMDLS V2
+	 *
+	 * send all ------- 100 = 101 = MaxSum-SY; 102 =
 	 * MaxSum_split-SY; 103 = MaxSum-ASY; 104 = MaxSum_split-ASY;
 	 */
 
 	// 4,7,11
 	// 1,3,8
-	public static int agentType = 7;
+	public static int agentType = 13;
 
 	/*
 	 * delayTypes: 0 = non, 1 = normal, 2 = uniform, 3 = Exponential 4 = Possion, 5
 	 * = distancePois ,6 = distanceUniform ,7 = distanceMissingMsg , 8 = DelayWithK
 	 */
-	public static int delayType = 2;
+	public static int delayType = 8;
 	/*
 	 * 1 = Random uniform; 2 = Graph Coloring; 3 = Scale Free Network
 	 */
 	public static int dcopBenchMark = 1;
 	// 1 = Random uniform
-	public static double dcopUniformP1 = 0.2;//0.1,0.6
+	public static double dcopUniformP1 = 1;//0.1,0.6
 	public static double dcopUniformP2 = 1;// Probability for two values in domain between neighbors to have constraints
 	public static int costLbUniform = 1;
 	public static int costUbUniform = 100;
@@ -124,6 +126,7 @@ public class MainSimulator {
 	// public static int neighborsOfNonMayers = 3;
 	public static double exponentForNeighborCitizens = 3;
 
+	public static boolean isCAMDLS_V2 = true;
 
 	public static boolean isMaxSumSyDebug = false;
 	public static boolean isThreadDebug = false;

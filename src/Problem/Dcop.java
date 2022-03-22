@@ -197,7 +197,7 @@ public abstract class Dcop {
 			ans = new CAMDLS_NAIVE(dcopId, D, agentId);
 		}
 		if (agentType == 13) {
-			ans = new CAMDLS_TOTAL_K_v1(dcopId, D, agentId);
+			ans = new CAMDLS_V2(dcopId, D, agentId);
 		}
 		/*
 		 * if (agentType == 100) {
