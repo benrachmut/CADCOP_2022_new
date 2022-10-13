@@ -81,7 +81,7 @@ public class MGM_SY extends MGM {
 	}
 
 	@Override
-	protected void changeRecieveFlagsToTrue(MsgAlgorithm msgAlgorithm) {
+	protected void changeReceiveFlagsToTrue(MsgAlgorithm msgAlgorithm) {
 		if (currentPhaseWaitForVA) {
 			for (MsgReceive<Integer> m : this.neighborsValueAssignmnet.values()) {
 				int msgTimestamp = 0;
@@ -126,7 +126,7 @@ public class MGM_SY extends MGM {
 	}
 
 	@Override
-	public void changeRecieveFlagsToFalse() {
+	public void changeReceiveFlagsToFalse() {
 		if (this.computeLr) {
 			this.computeLr = false;
 			currentPhaseWaitForVA = false;

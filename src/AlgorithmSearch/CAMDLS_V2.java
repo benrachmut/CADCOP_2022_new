@@ -338,7 +338,7 @@ public class CAMDLS_V2 extends AgentVariableSearch {
     }
 
     @Override
-    protected void changeRecieveFlagsToTrue(MsgAlgorithm msgAlgorithm) {
+    protected void changeReceiveFlagsToTrue(MsgAlgorithm msgAlgorithm) {
         if(this.myCounter == 0 && canSetColor()){
             canSetColor = true;
         }
@@ -376,7 +376,7 @@ public class CAMDLS_V2 extends AgentVariableSearch {
     }
 
     @Override
-    public void changeRecieveFlagsToFalse() {
+    public void changeReceiveFlagsToFalse() {
         canSelectValueAssignment=false;
         canSetColor=false;
     }

@@ -167,7 +167,7 @@ public class AOpt2_V1 extends AMDLS_V3 {
 
 //(2)------------------changeRecieveFlagsToTrue------------------
 	@Override
-	protected void changeRecieveFlagsToTrue(MsgAlgorithm msgAlgorithm) {
+	protected void changeReceiveFlagsToTrue(MsgAlgorithm msgAlgorithm) {
 
 		if (msgAlgorithm instanceof MsgAMDLSColor) {
 			checkToChangeColorFlagInThisIteration(msgAlgorithm);
@@ -330,7 +330,7 @@ public class AOpt2_V1 extends AMDLS_V3 {
 //(5)------------------changeRecieveFlagsToFalse------------------
 
 	@Override
-	public void changeRecieveFlagsToFalse() {
+	public void changeReceiveFlagsToFalse() {
 		flag_chooseColor = false;
 		flag_isConsistent = false;
 	}

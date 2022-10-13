@@ -1,7 +1,5 @@
 package AgentsAbstract;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
@@ -9,9 +7,7 @@ import java.util.TreeMap;
 
 import Main.MainSimulator;
 import Messages.Msg;
-import Messages.MsgAlgorithm;
 import Messages.MsgReceive;
-import Messages.MsgsMailerTimeComparator;
 
 public abstract class AgentVariableInference extends AgentVariable {
 
@@ -173,7 +169,7 @@ public abstract class AgentVariableInference extends AgentVariable {
 					System.out.println(this + " notify mailer");
 				}
 				this.sendMsgs();
-				this.changeRecieveFlagsToFalse();
+				this.changeReceiveFlagsToFalse();
 			}
 			return isUpdate;
 

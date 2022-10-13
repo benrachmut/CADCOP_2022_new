@@ -2,11 +2,8 @@ package AlgorithmInference;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Random;
 
-import AgentsAbstract.Agent;
-import AgentsAbstract.AgentFunction;
 import AgentsAbstract.AgentVariable;
 import AgentsAbstract.AgentVariableInference;
 import AgentsAbstract.NodeId;
@@ -32,7 +29,7 @@ public  class  MaxSumStandardVarible extends AgentVariableInference {
 
 	///// ******* Control Variables ******* ////
 
-	boolean damping =true;
+	boolean damping =false;
 	boolean storedMessageOn = false;
 	protected boolean print = false;
 	protected boolean printValueAssignment = false;
@@ -123,7 +120,7 @@ public  class  MaxSumStandardVarible extends AgentVariableInference {
 		}
 
 		messagesToBeSent.clear();
-		changeRecieveFlagsToFalse();
+		changeReceiveFlagsToFalse();
 		if (print) {
 			printFlag();
 		}
@@ -148,7 +145,7 @@ public  class  MaxSumStandardVarible extends AgentVariableInference {
 
 		functionMsgs.put(msgAlgorithmFactor.getSenderId(), newMessageReceveid);
 
-		changeRecieveFlagsToTrue(msgAlgorithm);
+		changeReceiveFlagsToTrue(msgAlgorithm);
 
 		if (print) {
 			printFlag();
@@ -543,14 +540,14 @@ public  class  MaxSumStandardVarible extends AgentVariableInference {
 	///// ******* Flags Methods ******* ////
 
 	@Override
-	protected void changeRecieveFlagsToTrue(MsgAlgorithm msgAlgorithm) {
+	protected void changeReceiveFlagsToTrue(MsgAlgorithm msgAlgorithm) {
 
 		this.receiveMessageFlag = true;
 
 	}
 
 	@Override
-	public void changeRecieveFlagsToFalse() {
+	public void changeReceiveFlagsToFalse() {
 
 		this.receiveMessageFlag = false;
 

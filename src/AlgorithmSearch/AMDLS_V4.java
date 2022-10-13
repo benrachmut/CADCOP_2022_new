@@ -1,10 +1,6 @@
 package AlgorithmSearch;
 
-import java.util.Random;
-
 import Main.MainSimulator;
-import Messages.MsgAMDLS;
-import Messages.MsgAMDLSColor;
 import Messages.MsgAlgorithm;
 
 public class AMDLS_V4 extends AMDLS_V3{
@@ -37,8 +33,8 @@ public class AMDLS_V4 extends AMDLS_V3{
 		}
 	}
 	@Override
-	protected void changeRecieveFlagsToTrue(MsgAlgorithm msgAlgorithm) {
-		super.changeRecieveFlagsToTrue(msgAlgorithm);	
+	protected void changeReceiveFlagsToTrue(MsgAlgorithm msgAlgorithm) {
+		super.changeReceiveFlagsToTrue(msgAlgorithm);
 		if (allWithColor()) {
 			flag_recieveMsg = true;
 		}
@@ -83,7 +79,7 @@ public class AMDLS_V4 extends AMDLS_V3{
 	}
 
 	@Override
-	public void changeRecieveFlagsToFalse() {
+	public void changeReceiveFlagsToFalse() {
 		flag_recieveMsg = false;
 		this.consistentFlag = false;
 		this.canSetColorFlag = false;

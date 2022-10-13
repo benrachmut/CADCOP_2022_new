@@ -49,7 +49,7 @@ public class DSA_SDP_SY extends DSA_SDP {
 	}
 
 	@Override
-	protected void changeRecieveFlagsToTrue(MsgAlgorithm msgAlgorithm) {
+	protected void changeReceiveFlagsToTrue(MsgAlgorithm msgAlgorithm) {
 		for (MsgReceive<Integer> m : this.neighborsValueAssignmnet.values()) {
 			int msgTimestamp = 0;
 			if (m == null) {
@@ -65,7 +65,7 @@ public class DSA_SDP_SY extends DSA_SDP {
 	}
 
 	@Override
-	public void changeRecieveFlagsToFalse() {
+	public void changeReceiveFlagsToFalse() {
 			canCompute = false;
 		
 	}

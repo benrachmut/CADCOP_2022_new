@@ -70,7 +70,7 @@ public class MaxSumStandardFunctionDelay_SY extends MaxSumStandardFunctionDelay{
 	///// ******* Handle Flags Methods ******* ////
 
 	@Override
-	protected void changeRecieveFlagsToTrue(MsgAlgorithm msgAlgorithm) {
+	protected void changeReceiveFlagsToTrue(MsgAlgorithm msgAlgorithm) {
 
 		for (MsgReceive<double[]> m : this.variableMsgs.values()) {
 			int msgTimestamp = 0;

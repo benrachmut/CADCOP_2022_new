@@ -1,30 +1,21 @@
 package Main;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
 import AgentsAbstract.Agent;
-import AgentsAbstract.AgentFunction;
 import AgentsAbstract.AgentVariable;
-import AgentsAbstract.AgentVariableInference;
 import AgentsAbstract.AgentVariableSearch;
 import AgentsAbstract.Context;
 import AgentsAbstract.NodeId;
 import AlgorithmSearch.AMDLS_V1;
-import AlgorithmSearch.AMDLS_V2;
 import AlgorithmSearch.DSA_B_SY;
 import AlgorithmSearch.MGM;
 import Comparators.CompMsgByDelay;
-import Data.Data;
-import Delays.ProtocolDelay;
-import Down.ProtocolDown;
 import Messages.Msg;
 import Messages.MsgAlgorithm;
-import Messages.MsgAnyTime;
 import Problem.Dcop;
 
 public class MailerIterations extends Mailer {
@@ -168,7 +159,7 @@ public class MailerIterations extends Mailer {
 	private void agentsCommunicateThierAction(Agent agent) {
 		if (agent.getDidComputeInThisIteration()) {
 			agent.sendMsgs();
-			agent.changeRecieveFlagsToFalse();
+			agent.changeReceiveFlagsToFalse();
 		}
 	}
 

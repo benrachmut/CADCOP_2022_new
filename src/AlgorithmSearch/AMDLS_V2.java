@@ -1,7 +1,6 @@
 package AlgorithmSearch;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
@@ -9,7 +8,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import AgentsAbstract.AgentVariable;
 import AgentsAbstract.NodeId;
-import Main.MailerIterations;
 import Main.MainSimulator;
 import Messages.Msg;
 import Messages.MsgAMDLS;
@@ -248,7 +246,7 @@ public class AMDLS_V2 extends AMDLS_V1 {
 		
 	}
 	
-	protected void changeRecieveFlagsToTrue(MsgAlgorithm msgAlgorithm) {
+	protected void changeReceiveFlagsToTrue(MsgAlgorithm msgAlgorithm) {
 
 		if (msgAlgorithm instanceof MsgAMDLSColor) {
 			changeRecieveFlagsToTrueMsgAMDLSColor();
@@ -256,7 +254,7 @@ public class AMDLS_V2 extends AMDLS_V1 {
 
 		boolean firstCondition = !this.isWaitingToSetColor && allNeighborsHaveColor();
 		if (firstCondition || canSetColorFlag) {
-			super.changeRecieveFlagsToTrue(msgAlgorithm);
+			super.changeReceiveFlagsToTrue(msgAlgorithm);
 		}
 		
 
@@ -421,7 +419,7 @@ public class AMDLS_V2 extends AMDLS_V1 {
 		
 	}
 	@Override
-	public void changeRecieveFlagsToFalse() {
+	public void changeReceiveFlagsToFalse() {
 		this.consistentFlag = false;
 		this.canSetColorFlag = false;
 		gotMsgFlag=false;

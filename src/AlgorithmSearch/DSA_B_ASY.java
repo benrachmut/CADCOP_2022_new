@@ -28,13 +28,13 @@ public class DSA_B_ASY extends DSA_B {
 	
 	
 	@Override
-	protected void changeRecieveFlagsToTrue(MsgAlgorithm msgAlgorithm) {
+	protected void changeReceiveFlagsToTrue(MsgAlgorithm msgAlgorithm) {
 		this.canCompute = true;
 	}
 	
 
 	@Override
-	public void changeRecieveFlagsToFalse() {
+	public void changeReceiveFlagsToFalse() {
 		canCompute = false;
 	}
 

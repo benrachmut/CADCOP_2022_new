@@ -426,7 +426,7 @@ public class MaxSumStandardFunctionDelay extends MaxSumStandardFunction {
 	}
 
 	@Override
-	public void changeRecieveFlagsToFalse() {
+	public void changeReceiveFlagsToFalse() {
 
 		this.canCompute = false;
 
@@ -434,7 +434,7 @@ public class MaxSumStandardFunctionDelay extends MaxSumStandardFunction {
 
 	// Decide if to raise the flag of the agent.
 	@Override
-	protected void changeRecieveFlagsToTrue(MsgAlgorithm msgAlgorithm) {
+	protected void changeReceiveFlagsToTrue(MsgAlgorithm msgAlgorithm) {
 
 		this.canCompute = true;
 

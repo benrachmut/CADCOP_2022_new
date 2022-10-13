@@ -2,7 +2,6 @@ package AgentsAbstract;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.SortedMap;
@@ -14,7 +13,6 @@ import Main.UnboundedBuffer;
 import Messages.Msg;
 import Messages.MsgAlgorithm;
 import Messages.MsgReceive;
-import Messages.MsgsAgentTimeComparator;
 import Messages.MsgsMailerTimeComparator;
 
 public abstract class Agent implements Runnable, Comparable<Agent> {
@@ -74,7 +72,7 @@ public abstract class Agent implements Runnable, Comparable<Agent> {
 		computationCounter = 0.0;
 		// stopThreadCondition = false;
 		resetAgentGivenParameters();
-		changeRecieveFlagsToFalse();
+		changeReceiveFlagsToFalse();
 		isIdle = true;
 		atomicActionCounter = 0;
 		timeObject.setTimeOfObject(1);
@@ -181,7 +179,7 @@ public abstract class Agent implements Runnable, Comparable<Agent> {
 	protected void updateMessageInContextAndTreatFlag(MsgAlgorithm msgAlgorithm) {
 		boolean isUpdate = updateMessageInContext(msgAlgorithm);
 		if (isUpdate) {
-			changeRecieveFlagsToTrue(msgAlgorithm);
+			changeReceiveFlagsToTrue(msgAlgorithm);
 
 		}
 	}
@@ -227,7 +225,7 @@ public abstract class Agent implements Runnable, Comparable<Agent> {
 					System.out.println(this + " notify mailer");
 				}
 				this.sendMsgs();
-				this.changeRecieveFlagsToFalse();
+				this.changeReceiveFlagsToFalse();
 			}
 			return isUpdate;
 
@@ -404,9 +402,9 @@ public abstract class Agent implements Runnable, Comparable<Agent> {
 
 	public abstract void sendMsgs();
 
-	protected abstract void changeRecieveFlagsToTrue(MsgAlgorithm msgAlgorithm);
+	protected abstract void changeReceiveFlagsToTrue(MsgAlgorithm msgAlgorithm);
 
-	public abstract void changeRecieveFlagsToFalse();
+	public abstract void changeReceiveFlagsToFalse();
 
 	public void extractFromInboxUsedByMailerIteration() {
 		if (!this.inbox.isEmpty()) {

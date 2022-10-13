@@ -319,6 +319,7 @@ public class Data {
 			if (lastGlobalCost == null) {
 				return 1.0;
 			}
+
 			if (lastGlobalCost >= globalCost2) {
 				return 1.0;
 			} else {

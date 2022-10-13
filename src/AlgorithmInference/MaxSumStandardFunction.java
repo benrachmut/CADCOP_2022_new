@@ -2,12 +2,9 @@ package AlgorithmInference;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Random;
 
-import AgentsAbstract.Agent;
 import AgentsAbstract.AgentFunction;
-import AgentsAbstract.AgentVariableInference;
 import AgentsAbstract.NodeId;
 import Messages.MsgAlgorithm;
 import Messages.MsgAlgorithmFactor;
@@ -185,7 +182,7 @@ public class MaxSumStandardFunction extends AgentFunction {
 				
 		}
 		
-		changeRecieveFlagsToFalse();
+		changeReceiveFlagsToFalse();
 		if(print) {printFlag();}
 		messagesToBeSent.clear();
 		
@@ -217,7 +214,7 @@ public class MaxSumStandardFunction extends AgentFunction {
 		
 		variableMsgs.put(msgAlgorithmFactor.getSenderId(), newMessageReceveid);
 		
-		changeRecieveFlagsToTrue(msgAlgorithm);
+		changeReceiveFlagsToTrue(msgAlgorithm);
 		
 		if(print) {printFlag();}
 		return true;
@@ -442,7 +439,7 @@ public class MaxSumStandardFunction extends AgentFunction {
 
 	//OmerP - Flag that should be down after the all the messages were sent. 
 	@Override
-	public void changeRecieveFlagsToFalse() {
+	public void changeReceiveFlagsToFalse() {
 		
 		this.receiveMessageFlag = false;
 		
@@ -450,7 +447,7 @@ public class MaxSumStandardFunction extends AgentFunction {
 
 	//OmerP - Flag that should be raised when a message was received. 
 	@Override
-	protected void changeRecieveFlagsToTrue(MsgAlgorithm msgAlgorithm) {
+	protected void changeReceiveFlagsToTrue(MsgAlgorithm msgAlgorithm) {
 
 		this.receiveMessageFlag = true;
 		

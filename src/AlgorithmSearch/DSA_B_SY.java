@@ -46,7 +46,7 @@ public class DSA_B_SY extends DSA_B {
 	}
 
 	@Override
-	protected void changeRecieveFlagsToTrue(MsgAlgorithm msgAlgorithm) {
+	protected void changeReceiveFlagsToTrue(MsgAlgorithm msgAlgorithm) {
 
 		for (MsgReceive<Integer> m : this.neighborsValueAssignmnet.values()) {
 			int msgTimestamp = 0;
@@ -64,7 +64,7 @@ public class DSA_B_SY extends DSA_B {
 	}
 
 	@Override
-	public void changeRecieveFlagsToFalse() {
+	public void changeReceiveFlagsToFalse() {
 		canCompute = false;
 
 	}

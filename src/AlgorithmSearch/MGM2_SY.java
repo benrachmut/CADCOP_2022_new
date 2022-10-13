@@ -2,10 +2,7 @@ package AlgorithmSearch;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.SortedMap;
 
 import AgentsAbstract.AgentVariable;
 import AgentsAbstract.NodeId;
@@ -147,7 +144,7 @@ public class MGM2_SY extends MGM2 {
 	}
 
 	@Override
-	protected void changeRecieveFlagsToTrue(MsgAlgorithm m) {
+	protected void changeReceiveFlagsToTrue(MsgAlgorithm m) {
 
 		if (this.waitingForValueMsgs  && (m instanceof MsgValueAssignmnet
 				&& allMapBooleanMapIsTrue(this.phase1RecieveBooleanValueAssignmnet))) {
@@ -453,7 +450,7 @@ public class MGM2_SY extends MGM2 {
 				toRemove.add(m);
 			}
 		}
-		changeRecieveFlagsToFalse();
+		changeReceiveFlagsToFalse();
 
 		for (MsgAlgorithm m : toRemove) {
 		
@@ -461,7 +458,7 @@ public class MGM2_SY extends MGM2 {
 			reactionToAlgorithmicMsgs();
 			sendMsgs();
 		}
-		changeRecieveFlagsToFalse();
+		changeReceiveFlagsToFalse();
 
 		this.future.removeAll(toRemove);
 		this.fromFuture = false;
@@ -598,7 +595,7 @@ public class MGM2_SY extends MGM2 {
 	}
 
 	@Override
-	public void changeRecieveFlagsToFalse() {
+	public void changeReceiveFlagsToFalse() {
 		flagComputeRecieveValueMsgsPhase1 = false;
 		flagComputeFriendshipInformationPhase2 = false;
 		flagComputeOfferAndNegativeReplayPhase3 = false;

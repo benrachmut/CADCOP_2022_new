@@ -181,7 +181,7 @@ public class AMDLS_V1 extends AgentVariableSearch {
 
 	// 2
 	@Override
-	protected void changeRecieveFlagsToTrue(MsgAlgorithm msgAlgorithm) {	
+	protected void changeReceiveFlagsToTrue(MsgAlgorithm msgAlgorithm) {
 		//boolean allNotZero = checkAllNotZero();
 		//if (allNotZero) {
 		//	releaseFutureMsgs();
@@ -337,7 +337,7 @@ public class AMDLS_V1 extends AgentVariableSearch {
 	}
 
 	@Override
-	public void changeRecieveFlagsToFalse() {
+	public void changeReceiveFlagsToFalse() {
 		consistentFlag = false;
 		gotMsgFlag = false;
 	}

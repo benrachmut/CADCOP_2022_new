@@ -35,7 +35,7 @@ public class MGM_ASY extends MGM {
 	}
 
 	@Override
-	protected void changeRecieveFlagsToTrue(MsgAlgorithm msgAlgorithm) {
+	protected void changeReceiveFlagsToTrue(MsgAlgorithm msgAlgorithm) {
 		if (msgAlgorithm instanceof MsgValueAssignmnet) {
 			computeLr = true;
 		}
@@ -46,7 +46,7 @@ public class MGM_ASY extends MGM {
 	}
 
 	@Override
-	public void changeRecieveFlagsToFalse() {
+	public void changeReceiveFlagsToFalse() {
 		computeLr = false;
 		computeVA = false;
 	}

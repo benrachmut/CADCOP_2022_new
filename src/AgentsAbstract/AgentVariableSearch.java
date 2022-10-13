@@ -44,12 +44,12 @@ public abstract class AgentVariableSearch extends AgentVariable {
 //	protected Set<Context> anytimeUpToSendPast;
 
 	// protected List<Context> anytimeDownToSend;
-	private Integer anytimeValueAssignmnet;
+	protected Integer anytimeValueAssignmnet;
 	private Context anytimeBestContext;
 	private Map<Integer, List<Context>> contextInMemory;
 	private Random randContext;
-	private Context bestContexFound;
-	private boolean hasAnytimeNews;
+	protected Context bestContexFound;
+	protected boolean hasAnytimeNews;
 
 	private int topAnytimeCounter;
 

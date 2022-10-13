@@ -17,13 +17,13 @@ public class DSA_SDP_ASY extends DSA_SDP {
 	
 	
 	@Override
-	protected void changeRecieveFlagsToTrue(MsgAlgorithm msgAlgorithm) {
+	protected void changeReceiveFlagsToTrue(MsgAlgorithm msgAlgorithm) {
 		this.canCompute = true;
 	}
 	
 
 	@Override
-	public void changeRecieveFlagsToFalse() {
+	public void changeReceiveFlagsToFalse() {
 		canCompute = false;
 	}
 
