@@ -14,8 +14,8 @@ import java.util.*;
 public class MonotonicStochasticOrderSearch extends AgentVariableSearch {
     public static  char typeDecision = 'c' ;
     private Map<NodeId,Integer> neighborCounters;
-    private Map<NodeId,Double> neighborDocsIds;
-    private Map<NodeId,MsgAlgorithm> msgsFromNeighbors;
+    private Map<NodeId,Map<Integer,Double>>neighborDocsIds;
+    private Map<NodeId,MsgMSOS> msgsFromNeighbors;
     private int selfCounter;
     private double selfDocId;
     private Random rndForDoc;
@@ -32,23 +32,31 @@ public class MonotonicStochasticOrderSearch extends AgentVariableSearch {
 
     @Override
     protected void resetAgentGivenParametersV3() {
-        rndForDoc = new Random(this.nodeId.getId1()*17);
+        rndForDoc = new Random(this.nodeId.getId1()*99999);
         this.selfDocId = rndForDoc.nextDouble();
         this.selfCounter = 1;
         this.neighborCounters = new HashMap<NodeId,Integer>();
-        this.neighborDocsIds = new HashMap<NodeId,Double>();
+        this.neighborDocsIds = new HashMap<NodeId,Map<Integer,Double>>();
+        this.msgsFromNeighbors= new HashMap<NodeId,MsgMSOS>();
         for (NodeId nodeId: this.neighborsConstraint.keySet()) {
             neighborCounters.put(nodeId,0);
-            neighborDocsIds.put(nodeId,(double)nodeId.getId1());
+            Map<Integer,Double>temp_=new HashMap<>();
+            int id_ = nodeId.getId1();
+            temp_.put(0,(double)id_ );
+            neighborDocsIds.put(nodeId,temp_);
             msgsFromNeighbors.put(nodeId,null);
         }
         isConsistent = false;
+        //System.out.println(this.nodeId+" "+this.selfCounter);
+
     }
 
 
     @Override
     public void initialize() {
         this.sendMsgs();
+
+
     }
     @Override
     public void updateAlgorithmHeader() {
@@ -70,6 +78,7 @@ public class MonotonicStochasticOrderSearch extends AgentVariableSearch {
 
     @Override
     public boolean getDidComputeInThisIteration() {
+
         return isConsistent;
     }
 
@@ -79,14 +88,21 @@ public class MonotonicStochasticOrderSearch extends AgentVariableSearch {
             NodeId sender = msgAlgorithm.getSenderId();
             MsgMSOS msg = (MsgMSOS)msgAlgorithm;
             this.msgsFromNeighbors.put(sender, msg);
-            this.neighborDocsIds.put(sender,msg.getDocId());
+            this.neighborDocsIds.get(sender).put(msg.getTimeStamp(),msg.getDocId());
             this.neighborCounters.put(sender,msg.getCounter());
 
 
         }else{
             throw new RuntimeException("can receive only MsgMSOS");
         }
-        return false;
+
+        if (MainSimulator.isMSOSDebug){
+            NodeId sender = msgAlgorithm.getSenderId();
+
+            System.out.println(this.nodeId+ " " +
+                    "recieve message  from: "+sender);
+        }
+        return true;
     }
 
     @Override
@@ -99,10 +115,17 @@ public class MonotonicStochasticOrderSearch extends AgentVariableSearch {
 
     @Override
     protected boolean compute() {
+
         changeValueAssignment();
         this.selfDocId = rndForDoc.nextDouble();
         this.selfCounter = this.selfCounter +1;
 
+        //if (this.countersEqualOrAboveMe()){
+          //  if (this.countersRelativeToDocsId()){
+            //    this.selfCounter = this.selfCounter +1;
+              //  this.timeStampCounter = this.timeStampCounter+1;
+            //}
+        //}
 
         return true;
     }
@@ -126,6 +149,17 @@ public class MonotonicStochasticOrderSearch extends AgentVariableSearch {
         for (NodeId recieverNodeId : neighborsConstraint.keySet()) {
             MsgMSOS mva = new MsgMSOS(this.nodeId, recieverNodeId, this.valueAssignment,
                     this.timeStampCounter, this.time,this.selfDocId,this.selfCounter);
+
+            if (MainSimulator.isMSOSDebug){
+                System.out.println("sent message "+this.nodeId+ ", valueAssignment: "+this.valueAssignment
+
+                        + ", selfCounter: "+this.selfCounter
+
+                        + ", selfDocId: "+this.selfDocId
+
+                        + ", recieverNodeId: "+recieverNodeId);
+            }
+
             msgsToInsertMsgBox.add(mva);
         }
 
@@ -134,9 +168,12 @@ public class MonotonicStochasticOrderSearch extends AgentVariableSearch {
 
     @Override
     protected void changeReceiveFlagsToTrue(MsgAlgorithm msgAlgorithm) {
+
+
         if (this.countersEqualOrAboveMe()){
             if (this.countersRelativeToDocsId()){
                 isConsistent = true;
+                return;
             }
         }
         isConsistent = false;
@@ -156,7 +193,7 @@ public class MonotonicStochasticOrderSearch extends AgentVariableSearch {
 
         for (NodeId nodeId: smallerDoc) {
             int counterN = this.neighborCounters.get(nodeId);
-            if (counterN+1!=selfCounter){
+            if (counterN!=selfCounter+1){
                 return false;
             }
         }
@@ -166,7 +203,7 @@ public class MonotonicStochasticOrderSearch extends AgentVariableSearch {
 
     private void createSmallerLargerSet(Set<NodeId> smallerDoc, Set<NodeId> largerDoc) {
         for (NodeId nodeId: this.neighborDocsIds.keySet()) {
-            double neighborDocId = this.neighborDocsIds.get(nodeId);
+            double neighborDocId = this.neighborDocsIds.get(nodeId).get(this.timeStampCounter);
             if (this.selfDocId<neighborDocId){
                 largerDoc.add(nodeId);
             }

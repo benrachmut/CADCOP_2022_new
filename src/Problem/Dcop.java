@@ -199,6 +199,10 @@ public abstract class Dcop {
 		if (agentType == 13) {
 			ans = new CAMDLS_V2(dcopId, D, agentId);
 		}
+
+		if (agentType == 14) {
+			ans = new MonotonicStochasticOrderSearch(dcopId, D, agentId);
+		}
 		/*
 		 * if (agentType == 100) {
 		 *
