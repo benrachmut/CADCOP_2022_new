@@ -51,22 +51,8 @@ public class AMDLS_V1 extends AgentVariableSearch {
 	// done
 	@Override
 	public void updateAlgorithmName() {
-		
-		String a = "AMDLS";
-		String b = "V1";
-		String c = "";
-		if (AMDLS_V1.typeDecision=='A' || AMDLS_V1.typeDecision=='a') {
-			c = "a";
-		}
-		
-		if (AMDLS_V1.typeDecision=='B' || AMDLS_V1.typeDecision=='b') {
-			c = "b";
-		}
-		
-		if (AMDLS_V1.typeDecision=='C' || AMDLS_V1.typeDecision=='c') {
-			c = "c";
-		}
-		AgentVariable.AlgorithmName = a+"_"+b+"_"+c;
+		AgentVariable.AlgorithmName = "LAMDLS";
+
 	}
 
 	// done

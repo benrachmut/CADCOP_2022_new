@@ -74,7 +74,7 @@ public class MailerThread extends Mailer implements Runnable {
 					shouldUpdateClockBecuaseNoMsgsRecieved();
 					msgToSend = this.handleDelay();
 					agentsRecieveMsgs(msgToSend);
-					//System.out.println("aaaaaa");
+
 				}
 			}
 		

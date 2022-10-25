@@ -20,6 +20,7 @@ public class MonotonicStochasticOrderSearch extends AgentVariableSearch {
     private double selfDocId;
     private Random rndForDoc;
     private boolean isConsistent;
+    private boolean toFixBug;
 
 
     public MonotonicStochasticOrderSearch(int dcopId, int D, int id1) {
@@ -27,6 +28,7 @@ public class MonotonicStochasticOrderSearch extends AgentVariableSearch {
         AMDLS_V1.typeDecision = 'c';
         updateAlgorithmHeader();
         updateAlgorithmData();
+        updateAlgorithmName();
         resetAgentGivenParametersV3();
     }
 
@@ -47,6 +49,8 @@ public class MonotonicStochasticOrderSearch extends AgentVariableSearch {
             msgsFromNeighbors.put(nodeId,null);
         }
         isConsistent = false;
+        toFixBug=false;
+        updateAlgorithmName();
         //System.out.println(this.nodeId+" "+this.selfCounter);
 
     }
@@ -87,11 +91,17 @@ public class MonotonicStochasticOrderSearch extends AgentVariableSearch {
         if (msgAlgorithm instanceof MsgMSOS) {
             NodeId sender = msgAlgorithm.getSenderId();
             MsgMSOS msg = (MsgMSOS)msgAlgorithm;
-            this.msgsFromNeighbors.put(sender, msg);
-            this.neighborDocsIds.get(sender).put(msg.getTimeStamp(),msg.getDocId());
-            this.neighborCounters.put(sender,msg.getCounter());
+            if ( this.neighborCounters.get(sender)<msg.getCounter()) {
+                this.neighborCounters.put(sender, msg.getCounter());
 
+                this.msgsFromNeighbors.put(sender, msg);
+                this.neighborDocsIds.get(sender).put(msg.getCounter(), msg.getDocId());
+                if (!this.neighborDocsIds.get(sender).containsKey(msg.getCounter() - 1)) {
+                    this.neighborDocsIds.get(sender).put(msg.getCounter() - 1, msg.getDocId());
+                }
 
+                updateMsgInContextValueAssignmnet(msg);
+            }
         }else{
             throw new RuntimeException("can receive only MsgMSOS");
         }
@@ -100,7 +110,7 @@ public class MonotonicStochasticOrderSearch extends AgentVariableSearch {
             NodeId sender = msgAlgorithm.getSenderId();
 
             System.out.println(this.nodeId+ " " +
-                    "recieve message  from: "+sender);
+                    "recieve message  from: "+sender+ " counter" +((MsgMSOS) msgAlgorithm).getCounter());
         }
         return true;
     }
@@ -115,18 +125,30 @@ public class MonotonicStochasticOrderSearch extends AgentVariableSearch {
 
     @Override
     protected boolean compute() {
-
+        if (allNeighborsSentCurrentCounter()){
+            this.selfCounter = this.selfCounter +1;
+        }
         changeValueAssignment();
         this.selfDocId = rndForDoc.nextDouble();
         this.selfCounter = this.selfCounter +1;
+    /*
+        if (this.countersEqualOrAboveMe()){
+            if (this.countersRelativeToDocsId()){
+               this.selfCounter = this.selfCounter +1;
+            }
+        }
 
-        //if (this.countersEqualOrAboveMe()){
-          //  if (this.countersRelativeToDocsId()){
-            //    this.selfCounter = this.selfCounter +1;
-              //  this.timeStampCounter = this.timeStampCounter+1;
-            //}
-        //}
+     */
+        if (MainSimulator.isMSOSDebug){
+            System.out.println("COMPUTE "+this.nodeId+ ", valueAssignment: "+this.valueAssignment
 
+                    + ", selfCounter: "+this.selfCounter
+
+                    + ", selfDocId: "+this.selfDocId
+
+
+                   );
+        }
         return true;
     }
 
@@ -145,27 +167,30 @@ public class MonotonicStochasticOrderSearch extends AgentVariableSearch {
 
     @Override
     public void sendMsgs() {
+        if (this.countersEqualOrAboveMe()){
+           if (this.countersRelativeToDocsId() ){
+               this.selfCounter = this.selfCounter +1;
+            }
+        }
         List<Msg> msgsToInsertMsgBox = new ArrayList<Msg>();
         for (NodeId recieverNodeId : neighborsConstraint.keySet()) {
             MsgMSOS mva = new MsgMSOS(this.nodeId, recieverNodeId, this.valueAssignment,
                     this.timeStampCounter, this.time,this.selfDocId,this.selfCounter);
-
-            if (MainSimulator.isMSOSDebug){
-                System.out.println("sent message "+this.nodeId+ ", valueAssignment: "+this.valueAssignment
-
-                        + ", selfCounter: "+this.selfCounter
-
-                        + ", selfDocId: "+this.selfDocId
-
-                        + ", recieverNodeId: "+recieverNodeId);
-            }
-
             msgsToInsertMsgBox.add(mva);
         }
-
         outbox.insert(msgsToInsertMsgBox);
+
     }
 
+
+    private boolean allNeighborsSentCurrentCounter() {
+        for (Integer nCounter:this.neighborCounters.values()) {
+            if (nCounter != this.selfCounter+1){
+                return false;
+            }
+        }
+        return true;
+    }
     @Override
     protected void changeReceiveFlagsToTrue(MsgAlgorithm msgAlgorithm) {
 
@@ -179,40 +204,53 @@ public class MonotonicStochasticOrderSearch extends AgentVariableSearch {
         isConsistent = false;
     }
 
+
+
     private boolean countersRelativeToDocsId() {
         Set<NodeId> smallerDoc = new HashSet<NodeId>();
         Set<NodeId> largerDoc = new HashSet<NodeId>();
         createSmallerLargerSet(smallerDoc,largerDoc);
-
-        for (NodeId nodeId:  largerDoc) {
-            int counterN = this.neighborCounters.get(nodeId);
-            if (counterN!=selfCounter){
-                return false;
+        //int sizeOfSets = smallerDoc.size()+largerDoc.size();
+        //if (sizeOfSets != neighborsConstraint.size()){
+        //   return false;
+        //}
+        //else {
+            for (NodeId nodeId : largerDoc) {
+                int counterN = this.neighborCounters.get(nodeId);
+                if (selfCounter > counterN) {
+                    return false;
+                }
             }
+
+            for (NodeId nodeId : smallerDoc) {
+                int counterN = this.neighborCounters.get(nodeId);
+                if (counterN != selfCounter + 1) {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
-        for (NodeId nodeId: smallerDoc) {
-            int counterN = this.neighborCounters.get(nodeId);
-            if (counterN!=selfCounter+1){
-                return false;
-            }
-        }
-
-        return true;
-    }
 
     private void createSmallerLargerSet(Set<NodeId> smallerDoc, Set<NodeId> largerDoc) {
         for (NodeId nodeId: this.neighborDocsIds.keySet()) {
-            double neighborDocId = this.neighborDocsIds.get(nodeId).get(this.timeStampCounter);
-            if (this.selfDocId<neighborDocId){
-                largerDoc.add(nodeId);
-            }
-            if (this.selfDocId>neighborDocId){
-                smallerDoc.add(nodeId);
-            }
-            if (this.selfDocId==neighborDocId){
-                throw new RuntimeException("cannot have the same id as neighbor, myId:"+this.selfDocId+", neighbor id:"+neighborDocId);
-            }
+                try {
+
+                double neighborDocId = this.neighborDocsIds.get(nodeId).get(this.selfCounter);
+                if (this.selfDocId<neighborDocId){
+                    largerDoc.add(nodeId);
+                }
+                if (this.selfDocId>neighborDocId){
+                    smallerDoc.add(nodeId);
+                }
+                if (this.selfDocId==neighborDocId){
+                    throw new RuntimeException("cannot have the same id as neighbor, myId:"+this.selfDocId+", neighbor id:"+neighborDocId);
+                }
+                }catch (NullPointerException e){
+                    return;
+                }
+
         }
     }
 
