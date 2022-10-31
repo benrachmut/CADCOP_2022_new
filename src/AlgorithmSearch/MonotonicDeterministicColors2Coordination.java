@@ -270,7 +270,8 @@ public class MonotonicDeterministicColors2Coordination extends AgentVariableSear
         if (partnerNodeId == null){
             throw new RuntimeException();
         }
-        MsgOpt2FriendRequest msg= new MsgOpt2FriendRequest(this.nodeId, partnerNodeId, this.myInfo,  this.timeStampCounter, this.time);
+
+        MsgMDC2CFriendRequest msg= new MsgMDC2CFriendRequest(this.nodeId, partnerNodeId, this.myInfo,  this.timeStampCounter, this.time,this.selfCounter,this.myColor);
         msgsToInsertMsgBox.add(msg);
         outbox.insert(msgsToInsertMsgBox);
     }
@@ -369,7 +370,6 @@ public class MonotonicDeterministicColors2Coordination extends AgentVariableSear
         myInfo = null;
         partnerNodeId = null;
     }
-
 
     @Override
     public void updateAlgorithmHeader() {
