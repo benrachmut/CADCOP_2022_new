@@ -11,7 +11,7 @@ import java.util.*;
 public class MonotonicDeterministicColors2Coordination extends AgentVariableSearch {
     public static  char typeDecision = 'c' ;
     private int selfCounter;
-    private Random rndForParnters;
+    private Random rndForPartners;
     private int myColor;
     private Map<NodeId,Integer> neighborColors;
     private boolean flagSelectColor;
@@ -38,7 +38,7 @@ public class MonotonicDeterministicColors2Coordination extends AgentVariableSear
 
     @Override
     protected void resetAgentGivenParametersV3() {
-        rndForParnters = new Random(this.nodeId.getId1()*99999);
+        rndForPartners = new Random(this.nodeId.getId1()*99999);
         this.selfCounter = 1;
         this.myColor = -1;
         this.flagSelectColor = false;
@@ -199,8 +199,8 @@ public class MonotonicDeterministicColors2Coordination extends AgentVariableSear
         if (nodeIdsWithMinCounter.size()==1){
             return nodeIdsWithMinCounter.get(0);
         }
-        Collections.shuffle(nodeIdsWithMinCounter,this.rndForParnters);
-        int selectedIndex = this.rndForParnters.nextInt(nodeIdsWithMinCounter.size());
+        Collections.shuffle(nodeIdsWithMinCounter,this.rndForPartners);
+        int selectedIndex = this.rndForPartners.nextInt(nodeIdsWithMinCounter.size());
         return nodeIdsWithMinCounter.get(selectedIndex);
     }
 
@@ -358,8 +358,6 @@ public class MonotonicDeterministicColors2Coordination extends AgentVariableSear
         }
         return true;
     }
-
-
 
     //*****************************************************************************
     //********----------------change Receive Flags To False----------------********
