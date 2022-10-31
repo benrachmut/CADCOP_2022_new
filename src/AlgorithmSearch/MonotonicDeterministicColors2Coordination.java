@@ -11,13 +11,17 @@ import java.util.*;
 public class MonotonicDeterministicColors2Coordination extends AgentVariableSearch {
     public static  char typeDecision = 'c' ;
     private int selfCounter;
-    private Random rndForDoc;
+    private Random rndForParnters;
     private int myColor;
     private Map<NodeId,Integer> neighborColors;
     private boolean flagSelectColor;
     private int counter;
     private boolean flagSelectNeighborAndSendInfo;
-    private Map<NodeId,Integer> partnerCounter;
+    private Map<NodeId,Integer> neighborCounters;
+    private Map<NodeId,Integer> neighborPartnerCounters;
+
+    private KOptInfo myInfo;
+    private NodeId partnerNodeId;
 
     public MonotonicDeterministicColors2Coordination(int dcopId, int D, int id1) {
         super(dcopId, D, id1);
@@ -28,26 +32,31 @@ public class MonotonicDeterministicColors2Coordination extends AgentVariableSear
         resetAgentGivenParametersV3();
     }
 
+    //******************************************************************
+    //********--------------------initialize--------------------********
+    //******************************************************************
+
     @Override
     protected void resetAgentGivenParametersV3() {
-        rndForDoc = new Random(this.nodeId.getId1()*99999);
+        rndForParnters = new Random(this.nodeId.getId1()*99999);
         this.selfCounter = 1;
         this.myColor = -1;
         this.flagSelectColor = false;
         this.counter = 0;
         updateAlgorithmName();
         this.neighborColors = new HashMap<NodeId,Integer>();
-        this.partnerCounter = new HashMap<NodeId,Integer>();
-
+        this.neighborCounters = new HashMap<NodeId,Integer>();
+        neighborPartnerCounters = new HashMap<NodeId,Integer>();
         for (NodeId nId: this.neighborsConstraint.keySet()){
             this.neighborColors.put(nId,null);
-            this.neighborColors.put(nId,0);
+            this.neighborCounters.put(nId,0);
+            neighborPartnerCounters.put(nId,0);
         }
+
         flagSelectNeighborAndSendInfo = false;
-
-
+        partnerNodeId = null;
+        myInfo=null;
     }
-
     @Override
     public void initialize() {
         if (canSetColor()){
@@ -60,7 +69,9 @@ public class MonotonicDeterministicColors2Coordination extends AgentVariableSear
     }
 
 
-
+    //******************************************************************
+    //********--------------------color stuff-------------------********
+    //******************************************************************
     protected boolean canSetColor() {
 
         Set<NodeId> neighborsThatHaveColor = getNeighborsThatHaveColor();
@@ -73,7 +84,6 @@ public class MonotonicDeterministicColors2Coordination extends AgentVariableSear
         }
         return true;
     }
-
     private Set<NodeId> neighborsWithSmallerIndexThenMe() {
         Set<NodeId> ans = new HashSet<NodeId>();
         for (NodeId nodeId : neighborsConstraint.keySet()) {
@@ -92,7 +102,6 @@ public class MonotonicDeterministicColors2Coordination extends AgentVariableSear
         }
         return ans;
     }
-
     protected void chooseColor() {
         Integer currentColor = 1;
         while (true) {
@@ -115,6 +124,10 @@ public class MonotonicDeterministicColors2Coordination extends AgentVariableSear
     }
 
 
+    //*****************************************************************************
+    //********--------------------updateMessageInContext-------------------********
+    //*****************************************************************************
+
     @Override
     protected boolean updateMessageInContext(MsgAlgorithm msgAlgorithm) {
         NodeId sender = msgAlgorithm.getSenderId();
@@ -124,6 +137,10 @@ public class MonotonicDeterministicColors2Coordination extends AgentVariableSear
         if (msgAlgorithm instanceof MsgAMDLSColor) {
             int neighborColor = ((MsgAMDLSColor) msgAlgorithm).getColor();
             this.neighborColors.put(sender,neighborColor);
+
+            int neighborCounter = ((MsgAMDLSColor) msgAlgorithm).getCounter();
+            this.neighborCounters.put(sender,neighborCounter);
+
         }
 
 
@@ -136,34 +153,72 @@ public class MonotonicDeterministicColors2Coordination extends AgentVariableSear
         return flagSelectColor || flagSelectNeighborAndSendInfo;
     }
 
-
-
     @Override
     protected int getSenderCurrentTimeStampFromContext(MsgAlgorithm msgAlgorithm) {
         this.counter = this.counter+1;
         return this.counter;
     }
 
+    //**************************************************************
+    //********--------------------compute-------------------********
+    //**************************************************************
 
     @Override
     protected boolean compute() {
         if (flagSelectColor){
-            this.chooseColor();
-            changeValueAssignment();
+
         }
         if (flagSelectNeighborAndSendInfo){
             NodeId neighborSelect = this.selectNeighborForPartnership();
+            int countByOne = neighborPartnerCounters.get(neighborSelect)+1;
+            neighborPartnerCounters.put(neighborSelect,countByOne);
+            this.myInfo  = makeMyKOptInfo();
+            this.partnerNodeId = neighborSelect;
+
         }
         return true;
     }
 
+
+    //**********************************************************************
+    //********--------------------select neighbor-------------------********
+    //**********************************************************************
+
+    private KOptInfo makeMyKOptInfo() {
+        // TODO Auto-generated method stub
+        return new KOptInfo(this.valueAssignment, nodeId, neighborsConstraint, domainArray,
+                this.neighborsValueAssignmnet);
+    }
+
     private NodeId selectNeighborForPartnership() {
         Set <NodeId> potentialNeighbors= getPotentialNeighbors();
-        Map<NodeId,Integer> mapTemp = new HashMap<NodeId,Integer>();
-        Map<NodeId,Integer>mapTemp2 = new HashMap<NodeId,Integer>();
-        for (:) {
-
+        ArrayList <NodeId> nodeIdsWithMinCounter = this.getNodeIdsWithMinCounter(potentialNeighbors);
+        if (nodeIdsWithMinCounter.isEmpty()){
+            return null;
         }
+        if (nodeIdsWithMinCounter.size()==1){
+            return nodeIdsWithMinCounter.get(0);
+        }
+        Collections.shuffle(nodeIdsWithMinCounter,this.rndForParnters);
+        int selectedIndex = this.rndForParnters.nextInt(nodeIdsWithMinCounter.size());
+        return nodeIdsWithMinCounter.get(selectedIndex);
+    }
+
+    private ArrayList<NodeId> getNodeIdsWithMinCounter(Set<NodeId> potentialNeighbors) {
+        Map<NodeId,Integer> mapTemp = new HashMap<NodeId,Integer>();
+        for (NodeId nodeId:potentialNeighbors) {
+            int partnerCounter = this.neighborPartnerCounters.get(nodeId);
+            mapTemp.put(nodeId,partnerCounter);
+        }
+        int minPartnerCounter = Collections.min(mapTemp.values());
+        ArrayList<NodeId>nodeIds = new ArrayList<NodeId>();
+
+        for (NodeId nodeId:mapTemp.keySet()) {
+            if (mapTemp.get(nodeId) == minPartnerCounter){
+                nodeIds.add(nodeId);
+            }
+        }
+        return nodeIds;
     }
 
     private Set<NodeId> getPotentialNeighbors() {
@@ -190,6 +245,10 @@ public class MonotonicDeterministicColors2Coordination extends AgentVariableSear
     }
 
 
+    //****************************************************************
+    //********--------------------send Msgs-------------------********
+    //****************************************************************
+
     @Override
     public void sendMsgs() {
         if (flagSelectColor){
@@ -198,6 +257,22 @@ public class MonotonicDeterministicColors2Coordination extends AgentVariableSear
                 System.out.println(this.nodeId+", color: "+ this.myColor+", value assignment: "+ this.valueAssignment);
             }
         }
+
+        if (flagSelectNeighborAndSendInfo){
+
+            sendFriendRequest();
+
+        }
+    }
+
+    private void sendFriendRequest() {
+        List<Msg> msgsToInsertMsgBox = new ArrayList<Msg>();
+        if (partnerNodeId == null){
+            throw new RuntimeException();
+        }
+        MsgOpt2FriendRequest msg= new MsgOpt2FriendRequest(this.nodeId, partnerNodeId, this.myInfo,  this.timeStampCounter, this.time);
+        msgsToInsertMsgBox.add(msg);
+        outbox.insert(msgsToInsertMsgBox);
     }
 
     private void sendColorMsgs() {
@@ -211,16 +286,66 @@ public class MonotonicDeterministicColors2Coordination extends AgentVariableSear
     }
 
 
+
+    //****************************************************************************
+    //********----------------change Receive Flags To True----------------********
+    //****************************************************************************
+
     @Override
     protected void changeReceiveFlagsToTrue(MsgAlgorithm msgAlgorithm) {
-
-
         if (this.myColor == -1 && canSetColor() ){
             this.flagSelectColor = true;
+            this.chooseColor();
+            changeValueAssignment();
         }
 
-        if (allNeighborsHaveColor() && areCounterConsistent()){
+        if (allNeighborsHaveColor() && areCounterConsistent()&& this.myColor != -1){
             this.flagSelectNeighborAndSendInfo = true;
+        }
+    }
+
+    private boolean areCounterConsistent() {
+        Set<NodeId>larger = new HashSet<NodeId>();
+        Set<NodeId>smaller = new HashSet<NodeId>();
+        this.makeLargerSmall(larger,smaller);
+        boolean largerColorWithSelfCounterEqual  = isLargerColorWithSelfCounterEqual(larger);
+        boolean smallerColorWithSelfCounterPlusOne = isSmallerWithSelfCounterPlusOne(smaller);
+        return largerColorWithSelfCounterEqual && smallerColorWithSelfCounterPlusOne;
+    }
+
+    private boolean isSmallerWithSelfCounterPlusOne(Set<NodeId> smaller) {
+        for (NodeId nodeId:smaller) {
+            int nCounter = this.neighborCounters.get(nodeId);
+            if (nCounter!=this.selfCounter+1) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean isLargerColorWithSelfCounterEqual(Set<NodeId> larger) {
+
+        for (NodeId nodeId:larger) {
+            int nCounter = this.neighborCounters.get(nodeId);
+            if (nCounter!=this.selfCounter) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void makeLargerSmall(Set<NodeId> larger, Set<NodeId> smaller) {
+        for (NodeId nodeId:this.neighborColors.keySet()) {
+            int nColor = this.neighborColors.get(nodeId);
+            if (this.myColor<nColor){
+                larger.add(nodeId);
+            }
+            if (this.myColor>nColor){
+                smaller.add(nodeId);
+            }
+            if (this.myColor==nColor){
+                throw new RuntimeException(this+" has neighbor "+nodeId+ " with the same color");
+            }
         }
 
     }
@@ -235,12 +360,17 @@ public class MonotonicDeterministicColors2Coordination extends AgentVariableSear
     }
 
 
+
+    //*****************************************************************************
+    //********----------------change Receive Flags To False----------------********
+    //*****************************************************************************
     @Override
     public void changeReceiveFlagsToFalse() {
         flagSelectColor=false;
+        flagSelectNeighborAndSendInfo= false;
+        myInfo = null;
+        partnerNodeId = null;
     }
-
-
 
 
     @Override
