@@ -180,7 +180,6 @@ public abstract class Agent implements Runnable, Comparable<Agent> {
 		boolean isUpdate = updateMessageInContext(msgAlgorithm);
 		if (isUpdate) {
 			changeReceiveFlagsToTrue(msgAlgorithm);
-
 		}
 	}
 

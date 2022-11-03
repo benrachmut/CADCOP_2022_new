@@ -304,6 +304,8 @@ public abstract class AgentVariableSearch extends AgentVariable {
 
 	}
 
+
+
 	@Override
 	public boolean reactionToAlgorithmicMsgs() {
 		Context context_j = createMyContext();
