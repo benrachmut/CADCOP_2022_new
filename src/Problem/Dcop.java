@@ -205,6 +205,9 @@ public abstract class Dcop {
 		if (agentType == 15){
 			ans = new MonotonicDeterministicColors2Coordination(dcopId, D, agentId);
 		}
+		if (agentType == 16){
+			ans = new MonotonicDeterministicColors2CoordinationV2(dcopId, D, agentId);
+		}
 		/*
 		 * if (agentType == 100) {
 		 *

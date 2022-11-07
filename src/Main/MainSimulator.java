@@ -76,7 +76,7 @@ public class MainSimulator {
 	/*
 	 * 1 = DSA-ASY; 2 = DSA-SY; 3 = MGM-ASY ; 4 = MGM-SY ; 5 = AMDLS_V1 ; 6 =
 	 * AMDLS_V2; 7 = AMDLS_V3; 8 = DSA_SDP-ASY ; 9 = DSA_SDP-SY ; 10 = MGM2-ASY ; 11
-	 * = MGM2-SY; 12 = CAMDLS_NAIVE; 13 = CAMDLS V2; 14 = MSOS; 15= MSC2C
+	 * = MGM2-SY; 12 = CAMDLS_NAIVE; 13 = CAMDLS V2; 14 = MSOS; 15/16= MSC2C
 	 *
 	 * send all ------- 100 = 101 = MaxSum-SY; 102 =
 	 * MaxSum_split-SY; 103 = MaxSum-ASY; 104 = MaxSum_split-ASY;
@@ -84,7 +84,7 @@ public class MainSimulator {
 
 	// 4,7,11,14,15
 	// 1,3,8
-	public static int agentType = 15;
+	public static int agentType = 16;
 
 	/*
 	 * delayTypes: 0 = non, 1 = normal, 2 = uniform, 3 = Exponential 4 = Possion, 5
