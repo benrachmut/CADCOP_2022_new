@@ -137,7 +137,16 @@ public class MonotonicDeterminsticColors2CoordinationV2 extends AgentVariableSea
         if (msgAlgorithm instanceof MsgMDC2CFriendRequest){
             updateValueAWithKOptInfo(msgAlgorithm);
             KOptInfo nInfo = ((KOptInfo) msgAlgorithm.getContext());
-            this.neighborsInfo.put(sender,nInfo);
+            if (!neighborsInfo.isEmpty()){
+                for (NodeId nodeId:this.neighborsInfo.keySet()) {
+                    if (nodeId.getId1()>msgAlgorithm.getSenderId().getId1()){
+                        this.neighborsInfo.remove(nodeId);
+                        this.neighborsInfo.put(sender, nInfo);
+                    }
+                }
+            }else {
+                this.neighborsInfo.put(sender, nInfo);
+            }
             //if (MainSimulator.isMDC2CDebug) {
               //  System.out.println(this+" receive friend request from "+ msgAlgorithm.getSenderId()+", nCounters:"+this.neighborCounters+", selfCounter:"+this.selfCounter);
             //}
