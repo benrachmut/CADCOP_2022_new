@@ -61,7 +61,7 @@ public class MainSimulator {
 	public static int start = 0;
 	public static int end = 100;
 	public static int end_temp = start; // DO NOT CHANGE
-	public static long termination = 1000000;//30000007;
+	public static long termination = 10000;//30000007;
 	private static int everyHowManyExcel = 100;
 
 	// ------------------------------**PROBLEM MAGNITUDE**
@@ -84,7 +84,7 @@ public class MainSimulator {
 
 	// 4,7,11,14,15
 	// 1,3,8
-	public static int agentType = 16;
+	public static int agentType = 15;
 
 	/*
 	 * delayTypes: 0 = non, 1 = normal, 2 = uniform, 3 = Exponential 4 = Possion, 5
@@ -96,7 +96,7 @@ public class MainSimulator {
 	 */
 	public static int dcopBenchMark = 1;
 	// 1 = Random uniform
-	public static double dcopUniformP1 = 0.5;//0.1,0.6
+	public static double dcopUniformP1 = 0.5;//0.5
 	public static double dcopUniformP2 = 1;// Probability for two values in domain between neighbors to have constraints
 	public static int costLbUniform = 1;
 	public static int costUbUniform = 100;

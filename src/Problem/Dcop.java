@@ -2,17 +2,11 @@ package Problem;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
 import AgentsAbstract.Agent;
 import AgentsAbstract.AgentFunction;
@@ -20,8 +14,6 @@ import AgentsAbstract.AgentVariable;
 
 import AgentsAbstract.AgentVariableInference;
 import AgentsAbstract.AgentVariableSearch;
-import AgentsAbstract.Location;
-import AgentsAbstract.LocationRandomUniform;
 import AgentsAbstract.NodeId;
 
 import AlgorithmInference.MaxSumSplitConstraintFactorGraphDelay;
@@ -33,17 +25,14 @@ import AlgorithmInference.MaxSumStandardFunctionDelay_SY;
 //import AlgorithmInference.MaxSumStandardFunctionSync;
 import AlgorithmInference.MaxSumStandardVariableDelay;
 import AlgorithmInference.MaxSumStandardVariableDelay_SY;
-import AlgorithmInference.MaxSumStandardVarible;
 //import AlgorithmInference.MaxSumStandardVaribleSync;
 
 import AlgorithmSearch.*;
 
-import Comparators.CompAgentVariableByNeighborSize;
 import Formation.ColorFormation;
 import Formation.DFS;
 import Formation.Formation;
 import Main.Mailer;
-import Main.MailerThread;
 import Main.MainSimulator;
 import Main.UnboundedBuffer;
 import Messages.Msg;
@@ -202,11 +191,9 @@ public abstract class Dcop {
 			ans = new MonotonicStochasticOrderSearch(dcopId, D, agentId);
 		}
 
+
 		if (agentType == 15){
-			ans = new MonotonicDeterministicColors2Coordination(dcopId, D, agentId);
-		}
-		if (agentType == 16){
-			ans = new MonotonicDeterministicColors2CoordinationV2(dcopId, D, agentId);
+			ans = new MonotonicDeterminsticColors2CoordinationV2(dcopId, D, agentId);
 		}
 		/*
 		 * if (agentType == 100) {
