@@ -64,22 +64,14 @@ public class MonotonicDeterminsticColors2CoordinationV2 extends AgentVariableSea
     protected void changeReceiveFlagsToTrue(MsgAlgorithm msgAlgorithm) {
 
         NodeId sender = msgAlgorithm.getSenderId();
-
+        boolean flag = false;
         if (this.myColor == -1 && canSetColor()) {
+            flag = true;
             this.myStatues = status.selectColor;
             chooseColor();
         }
 
 
-        if (this.myStatues==status.waitForReply && this.partnerNodeId.getId1() == sender.getId1() && !(msgAlgorithm instanceof MsgMDC2CFriendReply)){
-            this.myStatues = status.changeAlone;
-            this.selfCounter = this.selfCounter+1;
-            changeValueAssignment();
-            if (MainSimulator.isMDC2CDebug && this.myStatues != status.idle) {
-                System.out.println(this + " is "+ this.myStatues+", nCounters:"+this.neighborCounters+", selfCounter:"+this.selfCounter+ " ***END");
-            }
-
-        }
         if ( checkConsistency() &&  (this.myStatues != status.waitForReply) ) {
             this.myStatues = status.consistent;
         }
@@ -106,6 +98,15 @@ public class MonotonicDeterminsticColors2CoordinationV2 extends AgentVariableSea
         }
 
 
+        if (this.myStatues==status.waitForReply && this.partnerNodeId.getId1() == sender.getId1() && !(msgAlgorithm instanceof MsgMDC2CFriendReply)){
+            this.myStatues = status.changeAlone;
+            this.selfCounter = this.selfCounter+1;
+            changeValueAssignment();
+            if (MainSimulator.isMDC2CDebug && this.myStatues != status.idle) {
+                System.out.println(this + " is "+ this.myStatues+", nCounters:"+this.neighborCounters+", selfCounter:"+this.selfCounter+ " ***END");
+            }
+
+        }
 
     }
 
@@ -131,6 +132,9 @@ public class MonotonicDeterminsticColors2CoordinationV2 extends AgentVariableSea
 
             int neighborCounter = ((MsgAMDLSColor) msgAlgorithm).getCounter();
             this.neighborCounters.put(sender,neighborCounter);
+            if (counterCheck()){
+                throw new RuntimeException();
+            }
         }
 
 
@@ -168,6 +172,17 @@ public class MonotonicDeterminsticColors2CoordinationV2 extends AgentVariableSea
 
 
             return  true;
+    }
+
+    private boolean counterCheck() {
+
+        int min = Collections.min(this.neighborCounters.values());
+        int max = Collections.max(this.neighborCounters.values());
+        int delta = max - min;
+        if (delta>=2){
+            return true;
+        }
+        return false;
     }
 
     private void updateValueAWithKOptInfo(MsgAlgorithm msgAlgorithm) {
