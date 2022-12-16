@@ -58,10 +58,11 @@ public class MainSimulator {
 	// --------------------------------**Experiment Repetitions**
 	public static int div = 1;
 
-	public static int start = 0;
+	public static int start =0
+			;
 	public static int end = 100;
 	public static int end_temp = start; // DO NOT CHANGE
-	public static long termination = 10000;//30000007;
+	public static long termination = 100000;//30000007;
 	private static int everyHowManyExcel = 100;
 
 	// ------------------------------**PROBLEM MAGNITUDE**
@@ -140,7 +141,7 @@ public class MainSimulator {
 	public static boolean isDcopCityDebug = false;
 	public static boolean isIdealTimeDebug = false;
 	public static boolean isMSOSDebug = false;
-	public static boolean isMDC2CDebug = false;
+	public static boolean isMDC2CDebug =false;
 
 
 	public static CreatorDelays creatorDelay;
