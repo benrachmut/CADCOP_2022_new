@@ -76,25 +76,18 @@ public class MonotonicDeterminsticColors2CoordinationV2 extends AgentVariableSea
             this.myStatues = status.consistent;
         }
 
-        if (this.myStatues == status.selectColor &&  this.myStatues == status.consistent  &&  (this.myStatues != status.waitForReply)){
+        if (flag &&  this.myStatues == status.consistent  &&  (this.myStatues != status.waitForReply)){
             this.myStatues = status.consistentAndColor;
         }
 
-        if (msgAlgorithm instanceof MsgMDC2CFriendRequest){
+        if (msgAlgorithm instanceof MsgMDC2CFriendRequest && this.selfCounter==((MsgMDC2CFriendRequest) msgAlgorithm).getCounter()){
             this.myStatues = status.receiveOffer;
         }
 
         if (msgAlgorithm instanceof MsgMDC2CFriendReply){
+
             this.myStatues = status.doWhatPartnerSay;
 
-        }
-        
-        
-
-
-
-        if (MainSimulator.isMDC2CDebug && this.myStatues != status.idle) {
-            System.out.println(this + " is "+ this.myStatues+", nCounters:"+this.neighborCounters+", selfCounter:"+this.selfCounter);
         }
 
 
@@ -107,6 +100,14 @@ public class MonotonicDeterminsticColors2CoordinationV2 extends AgentVariableSea
             }
 
         }
+
+
+
+        if (MainSimulator.isMDC2CDebug && this.myStatues != status.idle) {
+            System.out.println(this + " is "+ this.myStatues+", nCounters:"+this.neighborCounters+", selfCounter:"+this.selfCounter);
+        }
+
+
 
     }
 
@@ -132,9 +133,9 @@ public class MonotonicDeterminsticColors2CoordinationV2 extends AgentVariableSea
 
             int neighborCounter = ((MsgAMDLSColor) msgAlgorithm).getCounter();
             this.neighborCounters.put(sender,neighborCounter);
-            if (counterCheck()){
-                throw new RuntimeException();
-            }
+            //if (counterCheck()){
+              //  throw new RuntimeException();
+            //}
         }
 
 
@@ -231,7 +232,7 @@ public class MonotonicDeterminsticColors2CoordinationV2 extends AgentVariableSea
         }
         
         if (this.myStatues == status.receiveOffer ||  this.myStatues == status.unableToReply){
-            if (isNeighborsByIndexConstraintOk()){
+            if (isNeighborsByIndexConstraintOk() && allLargerColorsCountersAreEqual()){
                 this.selfCounter = selfCounter+1;
                 this.myStatues = status.ableToReply;
             }else{
@@ -271,7 +272,9 @@ public class MonotonicDeterminsticColors2CoordinationV2 extends AgentVariableSea
         }
         if (this.myStatues == status.ableToReply){
             NodeId whoNotToSendColor = sendPartnerReply();
-            System.out.println(this+" sends all the rest (except for partner)"+", nCounters:"+this.neighborCounters+", selfCounter:"+this.selfCounter);
+            if (MainSimulator.isMDC2CDebug) {
+                System.out.println(this + " sends all the rest (except for partner)" + ", nCounters:" + this.neighborCounters + ", selfCounter:" + this.selfCounter);
+            }
             sendColorToTheRest(whoNotToSendColor);
         }
     }
@@ -288,6 +291,10 @@ public class MonotonicDeterminsticColors2CoordinationV2 extends AgentVariableSea
             this.myStatues = status.waitForReply;
         }
 
+
+        if(this.myStatues == status.doWhatPartnerSay){
+            this.partnerNodeId = null;
+        }
         if (this.myStatues == status.doWhatPartnerSay|| this.myStatues == status.idle || this.myStatues == status.selectColor || this.myStatues == status.changeAlone || this.myStatues == status.ableToReply){
             this.myStatues = status.idle;
         }
@@ -295,6 +302,7 @@ public class MonotonicDeterminsticColors2CoordinationV2 extends AgentVariableSea
         if (this.myStatues == status.unableToReply){
             this.myStatues = status.unableToReply;
         }
+
 
         if (MainSimulator.isMDC2CDebug && this.myStatues != status.idle) {
             System.out.println(this + " is "+ this.myStatues+", nCounters:"+this.neighborCounters+", selfCounter:"+this.selfCounter+ " ***END");
@@ -328,12 +336,21 @@ public class MonotonicDeterminsticColors2CoordinationV2 extends AgentVariableSea
     //********--------------------messages-------------------********
 
     private void sendColorMsgs() {
+
+        if (this.checkConsistencyV2()&& this.selfCounter!=1){
+            this.selfCounter = this.selfCounter +1;
+
+        }
         List<Msg> msgsToInsertMsgBox = new ArrayList<Msg>();
         for (NodeId receiverNodeId : neighborsConstraint.keySet()) {
             MsgAMDLSColor msg= new MsgAMDLSColor(this.nodeId, receiverNodeId, this.valueAssignment,  this.timeStampCounter, this.time, this.selfCounter , this.myColor);
             msgsToInsertMsgBox.add(msg);
         }
         outbox.insert(msgsToInsertMsgBox);
+    }
+
+    private boolean checkConsistencyV2() {
+        return allNeighborsHaveColor()&& allLargerColorsCountersAreEqualV2() && allSmallerColorsPlusOne();
     }
 
     private void sendInfoToPartner() {
@@ -425,6 +442,9 @@ public class MonotonicDeterminsticColors2CoordinationV2 extends AgentVariableSea
 
     private boolean allLargerColorsCountersAreEqual() {
         Set<NodeId>largerColorNeighbors = getLargerColorNeighbors();
+        if (largerColorNeighbors == null){ // not all have colors
+            return false;
+        }
         for (NodeId ni: largerColorNeighbors) {
             int niCounter = this.neighborCounters.get(ni);
             if (niCounter == this.selfCounter  || niCounter-1 == this.selfCounter){
@@ -436,15 +456,38 @@ public class MonotonicDeterminsticColors2CoordinationV2 extends AgentVariableSea
         return true;
     }
 
+
+    private boolean allLargerColorsCountersAreEqualV2() {
+        Set<NodeId>largerColorNeighbors = getLargerColorNeighbors();
+        if (largerColorNeighbors == null){ // not all have colors
+            return false;
+        }
+        for (NodeId ni: largerColorNeighbors) {
+            int niCounter = this.neighborCounters.get(ni);
+            if (niCounter == this.selfCounter ){
+
+            }else{
+                return false;
+            }
+        }
+        return true;
+    }
+
+
     private Set<NodeId> getLargerColorNeighbors() {
         Set<NodeId>largerColorNeighbors = new HashSet<NodeId>();
 
         for (NodeId ni:this.neighborColors.keySet()) {
-            if (this.neighborColors.get(ni)>this.myColor){
-                largerColorNeighbors.add(ni);
+            try {
+                if (this.neighborColors.get(ni) > this.myColor) {
+                    largerColorNeighbors.add(ni);
+                }
+            }catch (Exception e){
+                return null;
             }
         }
         return  largerColorNeighbors;
+
     }
 
 
