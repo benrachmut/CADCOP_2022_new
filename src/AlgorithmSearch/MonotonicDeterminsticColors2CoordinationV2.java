@@ -125,24 +125,26 @@ public class MonotonicDeterminsticColors2CoordinationV2 extends AgentVariableSea
     @Override
     protected boolean updateMessageInContext(MsgAlgorithm msgAlgorithm) {
         NodeId sender = msgAlgorithm.getSenderId();
+
+        int neighborCounter = ((MsgAMDLSColor) msgAlgorithm).getCounter();
+        int currentNeighborCounter = this.neighborCounters.get(sender);
+        if (currentNeighborCounter<neighborCounter) {
+            if (msgAlgorithm instanceof MsgAMDLSColor) {
+                int neighborColor = ((MsgAMDLSColor) msgAlgorithm).getColor();
+                this.neighborColors.put(sender, neighborColor);
+
+                this.neighborCounters.put(sender, neighborCounter);
+                if (this.neighborsInfo.containsKey(sender)) {
+                    this.neighborsInfo.remove(sender);
+                }
+                //if (counterCheck()){
+                //  throw new RuntimeException();
+                //}
+            }
+        }
         if (msgAlgorithm instanceof MsgValueAssignmnet && !(msgAlgorithm instanceof MsgMDC2CFriendRequest)&& !(msgAlgorithm instanceof MsgMDC2CFriendReply)) {
             updateMsgInContextValueAssignmnet(msgAlgorithm);
         }
-
-        if (msgAlgorithm instanceof MsgAMDLSColor) {
-            int neighborColor = ((MsgAMDLSColor) msgAlgorithm).getColor();
-            this.neighborColors.put(sender,neighborColor);
-
-            int neighborCounter = ((MsgAMDLSColor) msgAlgorithm).getCounter();
-            this.neighborCounters.put(sender,neighborCounter);
-            if (this.neighborsInfo.containsKey(sender)){
-                this.neighborsInfo.remove(sender);
-            }
-            //if (counterCheck()){
-              //  throw new RuntimeException();
-            //}
-        }
-
 
         if (msgAlgorithm instanceof MsgMDC2CFriendRequest){
             updateValueAWithKOptInfo(msgAlgorithm);
@@ -523,11 +525,10 @@ public class MonotonicDeterminsticColors2CoordinationV2 extends AgentVariableSea
         Set<NodeId>smallerColorNeighbors = new HashSet<NodeId>();
 
         for (NodeId ni:this.neighborColors.keySet()) {
-            try {
                 if (this.neighborColors.get(ni)<this.myColor){
                     smallerColorNeighbors.add(ni);
                 }
-            }catch (Exception e){}
+
         }
 
 
@@ -645,7 +646,9 @@ public class MonotonicDeterminsticColors2CoordinationV2 extends AgentVariableSea
     private boolean isNeighborsByIndexConstraintOk() {
 
 
-
+        if(!allNeighborsHaveColor()){
+            return false;
+        }
         Set<NodeId>smallerColor = this.getSmallerColorNeighbors();
         extractNodeIdIHaveInfo(smallerColor);
         extractColorIndexMinusOneWithLargerDocIndex(smallerColor);
@@ -677,9 +680,11 @@ public class MonotonicDeterminsticColors2CoordinationV2 extends AgentVariableSea
         Collection<NodeId> toRemove = new HashSet<NodeId>();
 
         NodeId infoMaxIndex = getInfoMaxIndex();
-        for (NodeId ni:colorMinusOne) {
-            if (infoMaxIndex.getId1()<ni.getId1()){
-                toRemove.add(ni);
+        if (infoMaxIndex!=null) {
+            for (NodeId ni : colorMinusOne) {
+                if (infoMaxIndex.getId1() < ni.getId1()) {
+                    toRemove.add(ni);
+                }
             }
         }
         smallerColor.removeAll(toRemove);

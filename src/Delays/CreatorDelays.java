@@ -15,7 +15,7 @@ import Main.MainSimulator;
  */
 public abstract class CreatorDelays {
 
-	protected boolean[] imperfectCommunicationScenario = { false };
+	protected boolean[] imperfectCommunicationScenario = { true };
 	protected boolean[] isTimeStamps = { false};
 	protected double[] gammas = {0};
 
