@@ -350,7 +350,7 @@ public class Data {
 	private static Double calcChangeValueAssignmentCounter(AgentVariable[] variableAgents) {
 		Double ans = 0.0;
 		for (AgentVariable a : variableAgents) {
-			ans = +a.getChangeValueAssignmentCounter();
+			ans = ans+a.getChangeValueAssignmentCounter();
 		}
 		return ans;
 	}

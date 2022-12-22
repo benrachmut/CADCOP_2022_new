@@ -170,7 +170,6 @@ public abstract class AgentVariable extends Agent {
 	}
 
 	public Double getChangeValueAssignmentCounter() {
-		// TODO Auto-generated method stub
 		return this.computationCounter;
 	}
 /*

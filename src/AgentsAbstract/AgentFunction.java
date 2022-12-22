@@ -185,7 +185,7 @@ public abstract class AgentFunction extends Agent {
 				if (MainSimulator.isMaxSumThreadDebug) {
 					System.out.println(this + "time is " +  this.timeObject.getTimeOfObject() + " BEFORE because computation");
 				}
-				computationCounter = computationCounter + 1;
+				//computationCounter = computationCounter + 1;
 				this.timeStampCounter = this.timeStampCounter + 1;
 				if (MainSimulator.isAtomicTime) {
 					synchronized (timeObject) {

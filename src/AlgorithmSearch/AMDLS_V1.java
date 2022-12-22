@@ -250,7 +250,7 @@ public class AMDLS_V1 extends AgentVariableSearch {
 	protected void decideAndChange() {
 
 		changeMyCounterByOne();
-
+		this.computationCounter = this.computationCounter +1;
 
 		if (MainSimulator.is2OptDebug|| MainSimulator.isAMDLSDistributedDebug) {
 			System.out.println("A_"+this.id+" counter: "+this.myCounter);

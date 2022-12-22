@@ -193,7 +193,7 @@ public abstract class Dcop {
 
 
 		if (agentType == 15){
-			ans = new MonotonicDeterminsticColors2CoordinationV2(dcopId, D, agentId);
+			ans = new MonotonicDeterminsticColors2Coordination(dcopId, D, agentId);
 		}
 		/*
 		 * if (agentType == 100) {

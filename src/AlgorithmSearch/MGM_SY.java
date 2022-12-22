@@ -113,14 +113,14 @@ public class MGM_SY extends MGM {
 		/*
 		 * if (msgAlgorithm.getContext() != null) { NodeId sender =
 		 * msgAlgorithm.getSenderId(); int msgTimestamp = msgAlgorithm.getTimeStamp();
-		 * 
+		 *
 		 * if (msgAlgorithm instanceof MsgLR) { this.isFromNeighborLr.put(sender, true);
 		 * checkIfCanComputeVA(); }
-		 * 
+		 *
 		 * if (msgAlgorithm instanceof MsgValueAssignmnet) {
 		 * this.isFromNeighborValueAssignmnent.put(sender, true); checkIfCanComputeLR();
 		 * } }
-		 * 
+		 *
 		 */
 
 	}
@@ -130,6 +130,7 @@ public class MGM_SY extends MGM {
 		if (this.computeLr) {
 			this.computeLr = false;
 			currentPhaseWaitForVA = false;
+			//this.computationCounter = this.computationCounter+1;
 		}
 		if (this.computeVA) {
 			this.computeVA = false;

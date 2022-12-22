@@ -63,6 +63,7 @@ public abstract class MGM extends AgentVariableSearch {
 		candidateValueAssignment = -1;
 		computeLr = false;
 		computeVA = false;
+
 		resetAgentGivenParametersV4();
 	}
 
@@ -119,6 +120,7 @@ public abstract class MGM extends AgentVariableSearch {
 		if (computeVA) {
 			ans1 = computeChangeInValueAssignment();
 		}
+
 		boolean ans2 = false;
 		if (computeLr) {
 			ans2 = computeMyLR();
@@ -165,6 +167,8 @@ public abstract class MGM extends AgentVariableSearch {
 		int maxLrOfNeighbors = Collections.max(lrInfoPerNeighbor.values());
 		if (this.lr > maxLrOfNeighbors) {
 			this.valueAssignment = this.candidateValueAssignment;
+			this.computationCounter = this.computationCounter+1;
+
 			return true;
 		}
 
@@ -174,6 +178,10 @@ public abstract class MGM extends AgentVariableSearch {
 			if (this.nodeId.getId1() < bestCompetitor.getId1()) {
 				if (this.candidateValueAssignment != -1) {
 					this.valueAssignment = this.candidateValueAssignment;
+					this.computationCounter = this.computationCounter+1;
+					// (this.nodeId.getId1() == 0){
+					//	System.out.println(	this.computationCounter);
+					//}
 				}
 				return true;
 			} else {

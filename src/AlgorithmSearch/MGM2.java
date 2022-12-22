@@ -712,6 +712,7 @@ abstract public class MGM2 extends AgentVariableSearch {
 	protected boolean computeAllLRandWithNoPartnerAmIBestPhase4() {
 		if (amIBestLR_phase4()) {
 			this.valueAssignment = this.phase2PotentialComputedValueAssignmnet;
+			this.computationCounter = this.computationCounter +1;
 			if (MainSimulator.isMGM2Debug) {
 				System.out.println(this + " changed value at time " + time);
 
@@ -769,6 +770,7 @@ abstract public class MGM2 extends AgentVariableSearch {
 				System.out.println(this + " changed value at time " + time);
 			}
 			this.valueAssignment = this.phase2PotentialComputedValueAssignmnet;
+			this.computationCounter  = this.computationCounter +1;
 		}
 		NodeId myPartner = whoIsMyPartnerPhase4();
 		int timestampOfPartner = getTimestampOfPartner();
@@ -790,7 +792,7 @@ abstract public class MGM2 extends AgentVariableSearch {
 
 		boolean isUpdate = computePhase1();
 		// if (isMsgGoingToBeSent(isUpdate)) {
-		computationCounter = computationCounter + 1;
+		//computationCounter = computationCounter + 1;
 		this.timeStampCounter = this.timeStampCounter + 1;
 		if (MainSimulator.isAtomicTime) {
 			this.time = this.time + this.atomicActionCounter;

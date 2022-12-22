@@ -8,7 +8,7 @@ import Messages.*;
 
 import java.util.*;
 
-public class MonotonicDeterminsticColors2CoordinationV2 extends AgentVariableSearch {
+public class MonotonicDeterminsticColors2Coordination extends AgentVariableSearch {
     private NodeId partnerNodeId;
     public static  char typeDecision = 'c' ;
     enum status {
@@ -29,7 +29,7 @@ public class MonotonicDeterminsticColors2CoordinationV2 extends AgentVariableSea
     //private boolean isInconsistent;
     private status myStatues;
 
-    public MonotonicDeterminsticColors2CoordinationV2(int dcopId, int D, int id1) {
+    public MonotonicDeterminsticColors2Coordination(int dcopId, int D, int id1) {
         super(dcopId, D, id1);
         AMDLS_V1.typeDecision = 'c';
         updateAlgorithmHeader();

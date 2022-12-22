@@ -130,7 +130,6 @@ public abstract class AgentVariableSearch extends AgentVariable {
 		anytimeBestContext = null;
 		randContext = new Random(this.id * 10 + dcopId * 153);
 		hasAnytimeNews = false;
-
 		resetAgentGivenParametersV3();
 	}
 

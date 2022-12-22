@@ -2,16 +2,8 @@ package Main;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 import AgentsAbstract.Agent;
 import AgentsAbstract.AgentFunction;
@@ -43,7 +35,7 @@ public class MainSimulator {
 	// public static int dividAtomicTime = 1;
 
 	public static int multiplicationTime = 1;// 2;
-	public static int howManyIterationForCalculation = 1000;// 10000;//100000; // sparse = 100,dense=100
+	public static int howManyIterationForCalculation = 1;// 10000;//100000; // sparse = 100,dense=100
 	private static Double[] convergeEximne = { };
 
 	// ------------------------------**any time**
@@ -57,12 +49,11 @@ public class MainSimulator {
 
 	// --------------------------------**Experiment Repetitions**
 	public static int div = 1;
-
-	public static int start =0
-			;
-	public static int end = 100;
+	public static int delta = 10;
+	public static int start =0;
+	public static int end = start+delta;
 	public static int end_temp = start; // DO NOT CHANGE
-	public static long termination = 1000000;//30000007;
+	public static long termination = 10000;//30000007;
 	private static int everyHowManyExcel = 100;
 
 	// ------------------------------**PROBLEM MAGNITUDE**
@@ -75,17 +66,15 @@ public class MainSimulator {
 
 	// ------------------------------**Algorithm Selection**
 	/*
-	 * 1 = DSA-ASY; 2 = DSA-SY; 3 = MGM-ASY ; 4 = MGM-SY ; 5 = AMDLS_V1 ; 6 =
-	 * AMDLS_V2; 7 = AMDLS_V3; 8 = DSA_SDP-ASY ; 9 = DSA_SDP-SY ; 10 = MGM2-ASY ; 11
-	 * = MGM2-SY; 12 = CAMDLS_NAIVE; 13 = CAMDLS V2; 14 = MSOS; 15/16= MSC2C
+	 * 1 = DSA-ASY; 2 = DSA-SY; 3 = MGM-ASY ; 4 = MGM-SY ; 7 = AMDLS_V3; 8 = DSA_SDP-ASY ; 9 = DSA_SDP-SY ; 10 = MGM2-ASY ; 11
+	 * = MGM2-SY; 12 = CAMDLS_NAIVE; 13 = CAMDLS V2; 14 = MSOS; 15= MSC2C
 	 *
 	 * send all ------- 100 = 101 = MaxSum-SY; 102 =
 	 * MaxSum_split-SY; 103 = MaxSum-ASY; 104 = MaxSum_split-ASY;
 	 */
 
-	// 4,7,11,14,15
-	// 1,3,8
-	public static int agentType = 15;
+	// 11,4,14,7
+	public static int agentType = 11;
 
 	/*
 	 * delayTypes: 0 = non, 1 = normal, 2 = uniform, 3 = Exponential 4 = Possion, 5
@@ -204,7 +193,7 @@ public class MainSimulator {
 	private static void createData() {
 		createMeanData();
 		createLastData();
-		//	createConvergeData();
+		//createConvergeData();
 
 	}
 
@@ -237,16 +226,16 @@ public class MainSimulator {
 			String protocolString = e.getKey().getDelay().toString();
 			List<Mailer> mailers = e.getValue();
 			for (Mailer mailer : mailers) {
-				SortedMap<Long, Data> datasOfMailer = mailer.getAllDataMap();
-				for (Double convergeLimit : convergeEximne) {
-					Long ncloGlobal = Data.convergeTime(datasOfMailer, convergeLimit, true);
-					Long ncloAnytime = Data.convergeTime(datasOfMailer, convergeLimit, false);
+				SortedMap<Long, Data> dataOfMailer = mailer.getAllDataMap();
+				//Long convergeTime = mailer.getConvergeTime();
+				//for (Double convergeLimit : convergeEximne) {
+					//Long ncloGlobal = Data.convergeTime(datasOfMailer, convergeLimit, true);
+					//Long ncloAnytime = Data.convergeTime(datasOfMailer, convergeLimit, false);
 					int dcopId = mailer.dcop.getId();
 					String line = dcopId + "," + dcopString + "," + protocolString + "," + algoString + ","
-							+ mailer.getLastGlobalCost() + "," + mailer.getLastGlobalAnytimeCost() + "," + convergeLimit
-							+ "," + ncloGlobal + "," + ncloAnytime;
+							+ mailer.getLastGlobalCost() + "," + mailer.getLastGlobalAnytimeCost() + ",";
 					convergeLineInExcel.add(line);
-				}
+				//}
 			}
 
 			/*
@@ -275,9 +264,11 @@ public class MainSimulator {
 		for (Entry<Protocol, List<Mailer>> e : mailersByProtocol.entrySet()) {
 			String protocolString = e.getKey().getDelay().toString();
 			SortedMap<Integer, Data> mapLastDataPerDcop = getMapLastDataPerDcop(e.getValue());
+			Map<Integer,Long> mailerAndConvergeMap = createConvergeDataPerMailer(e);
+			
 			String anytimeInfoString = getAnytimeString();
 			for (Entry<Integer, Data> e1 : mapLastDataPerDcop.entrySet()) {
-				String tempAns = dcopString + "," + protocolString + "," + algoString + "," + e1.getValue();
+				String tempAns = dcopString + "," + protocolString + "," + algoString + "," + e1.getValue()+","+mailerAndConvergeMap.get(e1.getKey());
 				if (isAnytime) {
 					tempAns = tempAns + "," + anytimeInfoString;
 				}
@@ -286,6 +277,42 @@ public class MainSimulator {
 		}
 
 	}
+
+	private static Map<Integer,Long> createConvergeDataPerMailer(Entry<Protocol, List<Mailer>> e) {
+		Map<Integer,Long> ans = new HashMap<Integer,Long>();
+		for (Mailer m:e.getValue()){
+			double lastGlobalCost = getLastGlobalCost(m);
+			List<Long> timesSorted = getTimesSorted(lastGlobalCost,m);
+
+			for (int i = 0; i < timesSorted.size(); i++) {
+				Long maxTime = timesSorted.get(i);
+				Data data = m.getDataPerIteration(maxTime);
+				Double gcData = data.getGlobalCost();
+				if (gcData!=lastGlobalCost){
+					ans.put(m.dcop.getId(),maxTime);
+					break;
+				}
+			}
+		}
+		return ans;
+
+	}
+
+	private static List<Long> getTimesSorted(double lastGlobalCost, Mailer m) {
+		SortedMap<Long, Data> dataMap = m.getAllDataMap();
+		List<Long> times = new ArrayList<Long>(dataMap.keySet());
+		Collections.sort(times);
+		Collections.reverse(times);
+		return times;
+	}
+
+	private static double getLastGlobalCost(Mailer m) {
+		SortedMap<Long, Data> dataMap = m.getAllDataMap();
+		Long maxIter = Collections.max(dataMap.keySet());
+		Data lastData = m.getDataPerIteration(maxIter);
+		return   lastData.getGlobalCost();
+	}
+
 
 	private static void createMeanData() {
 		createFileName("Mean");
@@ -639,7 +666,7 @@ public class MainSimulator {
 
 		header = "DCOP";
 		header = header + "," + protocolDelayHeader + "," + "Algorithm" + "," + AgentVariable.algorithmHeader + ",";
-		header = header + Data.header();
+		header = header + Data.header()+",converge (NCLO)";
 		if (isAnytime) {
 			header = header + "," + "Formation" + "," + "Heuristic" + "," + "Memory Size" + ","
 					+ "Delete After Combine";
