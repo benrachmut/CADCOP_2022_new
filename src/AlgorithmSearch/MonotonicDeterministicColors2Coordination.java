@@ -8,7 +8,7 @@ import Messages.*;
 
 import java.util.*;
 
-public class MonotonicDeterminsticColors2Coordination extends AgentVariableSearch {
+public class MonotonicDeterministicColors2Coordination extends AgentVariableSearch {
     private NodeId partnerNodeId;
     public static  char typeDecision = 'c' ;
     enum status {
@@ -18,8 +18,8 @@ public class MonotonicDeterminsticColors2Coordination extends AgentVariableSearc
         waitForReply, changeAlone, receiveOffer, ableToReply, unableToReply, doWhatPartnerSay, idle
     }
     private int counter;
-    private int selfCounter;
-    private int myColor;
+    protected int selfCounter;
+    protected int myColor;
     private Random rndForPartners;
     private HashMap<NodeId, KOptInfo> neighborsInfo;
     private HashMap<NodeId, Integer> neighborColors;
@@ -29,7 +29,7 @@ public class MonotonicDeterminsticColors2Coordination extends AgentVariableSearc
     //private boolean isInconsistent;
     private status myStatues;
 
-    public MonotonicDeterminsticColors2Coordination(int dcopId, int D, int id1) {
+    public MonotonicDeterministicColors2Coordination(int dcopId, int D, int id1) {
         super(dcopId, D, id1);
         AMDLS_V1.typeDecision = 'c';
         updateAlgorithmHeader();
@@ -49,12 +49,14 @@ public class MonotonicDeterminsticColors2Coordination extends AgentVariableSearc
         this.neighborColors = new HashMap<NodeId,Integer>();
         this.neighborCounters = new HashMap<NodeId,Integer>();
         this.neighborPartnerCounters = new HashMap<NodeId,Integer>();
+
         for (NodeId nId: this.neighborsConstraint.keySet()){
             this.neighborColors.put(nId,null);
             this.neighborCounters.put(nId,0);
             this.neighborPartnerCounters.put(nId,0);
-
         }
+
+
         myStatues = status.idle;
         isWithTimeStamp = false;
         partnerNodeId = null;
@@ -346,7 +348,7 @@ public class MonotonicDeterminsticColors2Coordination extends AgentVariableSearc
 
     //********--------------------messages-------------------********
 
-    private void sendColorMsgs() {
+    protected void sendColorMsgs() {
 
         if (this.checkConsistencyV2()&& this.selfCounter!=1){
             this.selfCounter = this.selfCounter +1;
@@ -360,7 +362,7 @@ public class MonotonicDeterminsticColors2Coordination extends AgentVariableSearc
         outbox.insert(msgsToInsertMsgBox);
     }
 
-    private boolean checkConsistencyV2() {
+    protected boolean checkConsistencyV2() {
         return allNeighborsHaveColor()&& allLargerColorsCountersAreEqualV2() && allSmallerColorsPlusOne();
     }
 
@@ -410,7 +412,7 @@ public class MonotonicDeterminsticColors2Coordination extends AgentVariableSearc
     }
 
 
-    private void sendColorToTheRest(NodeId whoNotToSendColor) {
+    protected void sendColorToTheRest(NodeId whoNotToSendColor) {
         List<Msg> msgsToInsertMsgBox = new ArrayList<Msg>();
         Set<NodeId>whoISent = new HashSet<NodeId>();
         for (NodeId receiverNodeId : neighborsConstraint.keySet()) {
