@@ -20,7 +20,6 @@ public class MonotonicStochasticOrderSearch extends AgentVariableSearch {
     private double selfDocId;
     private Random rndForDoc;
     private boolean isConsistent;
-    private boolean toFixBug;
 
 
     public MonotonicStochasticOrderSearch(int dcopId, int D, int id1) {
@@ -49,7 +48,6 @@ public class MonotonicStochasticOrderSearch extends AgentVariableSearch {
             msgsFromNeighbors.put(nodeId,null);
         }
         isConsistent = false;
-        toFixBug=false;
         updateAlgorithmName();
         //System.out.println(this.nodeId+" "+this.selfCounter);
 

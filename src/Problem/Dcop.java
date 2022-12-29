@@ -197,14 +197,9 @@ public abstract class Dcop {
 		}
 
 		if(agentType == 16){
-			ans = new MonotonicStochastic2Coordination(dcopId, D, agentId);
+			ans = new MonotonicStochastic2CoordinationV2(dcopId, D, agentId);
 		}
-		/*
-		 * if (agentType == 100) {
-		 *
-		 * ans = new MaxSumStandardVarible(dcopId, D, agentId); // Async version without
-		 * memory. }
-		 */
+
 		if (agentType == 101) {
 			ans = new MaxSumStandardVariableDelay_SY(dcopId, D, agentId); // Sync version without memory.
 		}

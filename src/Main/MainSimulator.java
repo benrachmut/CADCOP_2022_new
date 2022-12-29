@@ -130,8 +130,10 @@ public class MainSimulator {
 	public static boolean isDcopCityDebug = false;
 	public static boolean isIdealTimeDebug = false;
 	public static boolean isMSOSDebug = false;
+	public static boolean isMS2SDebug= false;
+
+	public static boolean isColorMS2SDebug= true;
 	public static boolean isMDC2CDebug =false;
-	public static boolean isMS2SDebug= true;
 
 	public static CreatorDelays creatorDelay;
 

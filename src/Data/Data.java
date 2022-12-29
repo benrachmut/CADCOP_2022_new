@@ -48,6 +48,7 @@ public class Data {
 	private Double topContextCounters;
 	private Double numberOfRepsMeanAtTop;
 	private Double numberOfRepsMeanAtAll;
+	private Double avgSelfCounter;
 
 	public Data(Entry<Long, List<Data>> e) {
 		this.time = e.getKey();
@@ -68,13 +69,13 @@ public class Data {
 		this.numberOfColors = Statistics.mean(colletionPerFields.get(11));
 		this.avgIdleTime = Statistics.mean(colletionPerFields.get(12));
 		this.maxIdleTime = Statistics.mean(colletionPerFields.get(13));
-
+		this.avgSelfCounter = Statistics.mean(colletionPerFields.get(14));
 		if (MainSimulator.isAnytime) {
-			this.topAgentsAnytimeContextCost = Statistics.mean(colletionPerFields.get(14));
-			this.anytimeCost = Statistics.mean(colletionPerFields.get(15));
-			this.topContextCounters = Statistics.mean(colletionPerFields.get(16));
-			this.numberOfRepsMeanAtTop = Statistics.mean(colletionPerFields.get(17));
-			this.numberOfRepsMeanAtAll = Statistics.mean(colletionPerFields.get(18));
+			this.topAgentsAnytimeContextCost = Statistics.mean(colletionPerFields.get(15));
+			this.anytimeCost = Statistics.mean(colletionPerFields.get(16));
+			this.topContextCounters = Statistics.mean(colletionPerFields.get(17));
+			this.numberOfRepsMeanAtTop = Statistics.mean(colletionPerFields.get(18));
+			this.numberOfRepsMeanAtAll = Statistics.mean(colletionPerFields.get(19));
 
 		}
 	}
@@ -82,11 +83,11 @@ public class Data {
 	private List<List<Double>> createColletionsPerField(List<Data> datas) {
 		List<List<Double>> ans = new ArrayList<List<Double>>();
 		if (MainSimulator.isAnytime) {
-			for (int i = 0; i < 14 + 5; i++) {
+			for (int i = 0; i < 15 + 5; i++) {
 				ans.add(new ArrayList<Double>());
 			}
 		} else {
-			for (int i = 0; i < 14; i++) {
+			for (int i = 0; i < 15; i++) {
 				ans.add(new ArrayList<Double>());
 			}
 		}
@@ -106,22 +107,23 @@ public class Data {
 			ans.get(11).add(d.numberOfColors);
 			ans.get(12).add(d.avgIdleTime);
 			ans.get(13).add(d.maxIdleTime);
+			ans.get(14).add(d.avgSelfCounter);
 
 			if (MainSimulator.isAnytime) {
-				ans.get(14).add(d.topAgentsAnytimeContextCost);
-				ans.get(15).add(d.anytimeCost);
-				ans.get(16).add(d.topContextCounters);
+				ans.get(15).add(d.topAgentsAnytimeContextCost);
+				ans.get(16).add(d.anytimeCost);
+				ans.get(17).add(d.topContextCounters);
 
 				if (d.topAgentsAnytimeContextCost == null) {
-					ans.get(17).add(0.0);
-				} else {
-					ans.get(17).add(1.0);
-				}
-
-				if (d.anytimeCost == null) {
 					ans.get(18).add(0.0);
 				} else {
 					ans.get(18).add(1.0);
+				}
+
+				if (d.anytimeCost == null) {
+					ans.get(19).add(0.0);
+				} else {
+					ans.get(19).add(1.0);
 				}
 			}
 
@@ -153,7 +155,7 @@ public class Data {
 		this.numberOfColors = calcNumberOfColors(dcop.getVariableAgents());
 		this.avgIdleTime = calcAvgIdleTime(dcop.getVariableAgents());
 		this.maxIdleTime = calcMaxIdleTime(dcop.getVariableAgents());
-
+		this.avgSelfCounter=calcAvgSelfCounter(dcop.getVariableAgents());
 		if (MainSimulator.isAnytime) {
 			if (mailer.getDcop().isSearchAlgorithm()) {
 
@@ -163,6 +165,13 @@ public class Data {
 
 				this.topContextCounters = calcTopContextCounters(mailer);
 			}
+		}
+	}
+
+	private Double calcAvgSelfCounter(AgentVariable[] variableAgents) {
+		for (AgentVariable av : variableAgents) {
+
+
 		}
 	}
 
