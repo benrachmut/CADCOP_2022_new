@@ -11,13 +11,14 @@ import java.util.Set;
 import AgentsAbstract.AgentVariable;
 import AgentsAbstract.AgentVariableSearch;
 import AgentsAbstract.NodeId;
+import AgentsAbstract.SelfCounterable;
 import Main.MainSimulator;
 import Messages.Msg;
 import Messages.MsgAMDLS;
 import Messages.MsgAlgorithm;
 import Messages.MsgValueAssignmnet;
 
-public class AMDLS_V1 extends AgentVariableSearch {
+public class AMDLS_V1 extends AgentVariableSearch implements SelfCounterable {
 	protected Integer myColor;
 	public static boolean structureColor = true;
 	public static boolean sendWhenMsgReceive = false;
@@ -54,7 +55,10 @@ public class AMDLS_V1 extends AgentVariableSearch {
 		AgentVariable.AlgorithmName = "LAMDLS";
 
 	}
-
+	@Override
+	public int getSelfCounterable() {
+		return myCounter;
+	}
 	// done
 	@Override
 	public void initialize() {

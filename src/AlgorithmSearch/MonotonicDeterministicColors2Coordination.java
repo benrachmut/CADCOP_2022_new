@@ -3,14 +3,18 @@ package AlgorithmSearch;
 import AgentsAbstract.AgentVariable;
 import AgentsAbstract.AgentVariableSearch;
 import AgentsAbstract.NodeId;
+import AgentsAbstract.SelfCounterable;
 import Main.MainSimulator;
 import Messages.*;
 
 import java.util.*;
 
-public class MonotonicDeterministicColors2Coordination extends AgentVariableSearch {
+public class MonotonicDeterministicColors2Coordination extends AgentVariableSearch implements SelfCounterable {
     private NodeId partnerNodeId;
     public static  char typeDecision = 'c' ;
+
+
+
     enum status {
         selectColor,
         consistent,
@@ -38,7 +42,10 @@ public class MonotonicDeterministicColors2Coordination extends AgentVariableSear
         resetAgentGivenParametersV3();
     }
 
-
+    @Override
+    public int getSelfCounterable() {
+        return this.selfCounter;
+    }
     protected void resetAgentGivenParametersV3() {
         counter = 0;
         this.selfCounter = 1;
@@ -61,6 +68,7 @@ public class MonotonicDeterministicColors2Coordination extends AgentVariableSear
         isWithTimeStamp = false;
         partnerNodeId = null;
     }
+
 
     @Override
     protected void changeReceiveFlagsToTrue(MsgAlgorithm msgAlgorithm) {

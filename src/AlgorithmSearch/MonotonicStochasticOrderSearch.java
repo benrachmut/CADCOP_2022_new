@@ -3,6 +3,7 @@ package AlgorithmSearch;
 import AgentsAbstract.AgentVariable;
 import AgentsAbstract.AgentVariableSearch;
 import AgentsAbstract.NodeId;
+import AgentsAbstract.SelfCounterable;
 import Main.MainSimulator;
 import Messages.Msg;
 import Messages.MsgAlgorithm;
@@ -11,7 +12,7 @@ import Messages.MsgValueAssignmnet;
 
 import java.util.*;
 
-public class MonotonicStochasticOrderSearch extends AgentVariableSearch {
+public class MonotonicStochasticOrderSearch extends AgentVariableSearch implements SelfCounterable {
     public static  char typeDecision = 'c' ;
     private Map<NodeId,Integer> neighborCounters;
     private Map<NodeId,Map<Integer,Double>>neighborDocsIds;
@@ -53,6 +54,10 @@ public class MonotonicStochasticOrderSearch extends AgentVariableSearch {
 
     }
 
+    @Override
+    public int getSelfCounterable() {
+        return selfCounter;
+    }
 
     @Override
     public void initialize() {

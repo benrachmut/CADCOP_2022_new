@@ -14,6 +14,7 @@ import java.util.TreeMap;
 
 import AgentsAbstract.AgentVariable;
 import AgentsAbstract.AgentVariableSearch;
+import AgentsAbstract.SelfCounterable;
 import Main.Mailer;
 import Main.MainSimulator;
 import Problem.Dcop;
@@ -169,10 +170,16 @@ public class Data {
 	}
 
 	private Double calcAvgSelfCounter(AgentVariable[] variableAgents) {
+		double sum = 0.0;
 		for (AgentVariable av : variableAgents) {
+			if (av instanceof SelfCounterable){
+				sum = sum + ((SelfCounterable) av).getSelfCounterable();
+			}else{
 
-
+			}
 		}
+		return sum/MainSimulator.A;
+
 	}
 
 	private Double calcMaxIdleTime(AgentVariable[] variableAgents) {
@@ -381,7 +388,7 @@ public class Data {
 		ans = ans + "Iteration" + "," + "Global View Cost" + "," + "Monotonicy" + "," + "Agent View Cost" + ","
 				+ "Global Anytime Cost" + "," + "Value Assignmnet Counter" + "," + "Msgs Counter Arrive" + ","+ "Msgs Counter Deliver" + ","
 				+ "Global View Cost Agent Zero" + "," + "Agent View Cost Agent Zero" + "," + "Abs Delta Global and POV"
-				+ "," + "Percent Agents With Colors" + "," + "Number of Colors" + ","+ "Average Idle Time" + ","+"Max Idle Time";
+				+ "," + "Percent Agents With Colors" + "," + "Number of Colors" + ","+ "Average Idle Time" + ","+"Max Idle Time"+ ","+"self_counter";
 		if (MainSimulator.isAnytime) {
 			ans = ans + "," + "Anytime top agents best context cost" + "," + "Anytime Cost" + ","
 					+ "Contexts of all agents reported" + "," + "Number of Repetitions top" + ","
@@ -396,7 +403,7 @@ public class Data {
 		String ans = this.time + "," + this.globalCost + "," + this.monotonicy + "," + this.povCost + ","
 				+ this.globalAnytimeCost + "," + this.changeValueAssignmentCounter + "," + this.algorithmMsgsCounterArrive+ "," +this.algorithmMsgsCounterDeliver
 				+ "," + this.agentZeroGlobalCost + "," + this.agentZeroPOVCost + "," + this.globalPovABSDelta + ","
-				+ agentPercentCanStart + "," + numberOfColors+ "," +this.avgIdleTime + ","+this.maxIdleTime;
+				+ agentPercentCanStart + "," + numberOfColors+ "," +this.avgIdleTime + ","+this.maxIdleTime+ ","+this.avgSelfCounter;
 
 		if (MainSimulator.isAnytime) {
 			ans = ans + "," + this.topAgentsAnytimeContextCost + "," + this.anytimeCost + "," + this.topContextCounters
