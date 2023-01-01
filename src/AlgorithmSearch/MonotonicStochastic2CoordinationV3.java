@@ -9,19 +9,18 @@ import Messages.*;
 
 import java.util.*;
 
-public class MonotonicStochastic2CoordinationV2 extends AgentVariableSearch implements SelfCounterable {
-
+public class MonotonicStochastic2CoordinationV3 extends AgentVariableSearch implements SelfCounterable {
     private NodeId partnerNodeId;
     public static  char typeDecision = 'c' ;
-    public static int moduleChangeColor=2;
-    public static boolean isWithChangeVAwithColor = true;
+    public static int moduleChangeColor=1;
+
 
 
     enum status {
         selectColor,
         consistent,
         consistentAndColor,
-        waitForReply, changeAlone, receiveOffer, ableToReply, unableToReply, doWhatPartnerSay, reformat, waitToChangeColor, idle
+        waitForReply, changeAlone, receiveOffer, ableToReply, unableToReply, doWhatPartnerSay, changeColorMode, idle
     }
     private int counter;
     protected int selfCounter;
@@ -31,19 +30,15 @@ public class MonotonicStochastic2CoordinationV2 extends AgentVariableSearch impl
     private HashMap<NodeId, Integer> neighborsColor;
     HashMap<NodeId, Integer> neighborCounters;
     private HashMap<NodeId, Integer> neighborPartnerCounters;
+
     private status myStatues;
-
-
-    private  Random docIdRandom;
-    private double myDocId;
-
 
     private Map<NodeId, Double> neighborsDocIdsT;
     private Map<NodeId, Double> neighborsDocIdsT1;
+    private  Random docIdRandom;
+    private double myDocId;
 
-    private int changedColorCounter;
-
-    public MonotonicStochastic2CoordinationV2(int dcopId, int D, int id1) {
+    public MonotonicStochastic2CoordinationV3(int dcopId, int D, int id1) {
         super(dcopId, D, id1);
         AMDLS_V1.typeDecision = 'c';
         updateAlgorithmHeader();
@@ -52,15 +47,16 @@ public class MonotonicStochastic2CoordinationV2 extends AgentVariableSearch impl
         resetAgentGivenParametersV3();
     }
 
-
+    @Override
+    public int getSelfCounterable() {
+        return this.selfCounter;
+    }
     protected void resetAgentGivenParametersV3() {
         counter = 0;
         this.selfCounter = 1;
         this.myColor = -1;
-        changedColorCounter = -1;
-        this.myDocId  = this.nodeId.getId1();
-
         this.rndForPartners = new Random(1+this.nodeId.getId1()*17);
+
         this.neighborsInfo = new HashMap<NodeId,KOptInfo>();
         this.neighborsColor = new HashMap<NodeId,Integer>();
         this.neighborCounters = new HashMap<NodeId,Integer>();
@@ -71,9 +67,7 @@ public class MonotonicStochastic2CoordinationV2 extends AgentVariableSearch impl
             this.neighborCounters.put(nId,0);
             this.neighborPartnerCounters.put(nId,0);
         }
-        myStatues = status.reformat;
-        isWithTimeStamp = false;
-        partnerNodeId = null;
+
         this.docIdRandom = new Random((dcopId+nodeId.getId1()+1)*17877);
         docIdRandom.nextDouble();
 
@@ -83,26 +77,42 @@ public class MonotonicStochastic2CoordinationV2 extends AgentVariableSearch impl
             neighborsDocIdsT.put(nId, (double) nId.getId1());
             neighborsDocIdsT1.put(nId, null);
         }
-
+        myStatues = status.idle;
+        isWithTimeStamp = false;
+        partnerNodeId = null;
     }
 
-
-
+    private boolean haveAllDocIds() {
+        for (NodeId nId:
+                this.neighborsDocIdsT.keySet()) {
+            if (this.neighborsDocIdsT.get(nId) == null){
+                return false;
+            }
+        }
+        return true;
+    }
 
     @Override
     protected void changeReceiveFlagsToTrue(MsgAlgorithm msgAlgorithm) {
 
         NodeId sender = msgAlgorithm.getSenderId();
         boolean flag = false;
-        if ((this.myStatues == status.reformat || this.myStatues == status.idle) && this.haveAllDocIds()&& !canSetColor()&&this.myColor == -1){
-            this.myStatues = status.waitToChangeColor;
+
+        if (this.myStatues == status.changeColorMode && this.haveAllDocIds() && this.myColor == -1 && canSetColor()){
+            this.myStatues = status.idle;
+            chooseColor();
+            this.changeValueAssignment();
+            sendColorMsgs();
+            if (MainSimulator.isAnotherColorDebug){
+                System.out.println(this+" color is: "+this.myColor );
+            }
+            return;
         }
 
-        if (this.myColor == -1  && haveAllDocIds() && canSetColor()) {
+        if (this.haveAllDocIds()&&this.myColor == -1 && canSetColor()) {
             flag = true;
             this.myStatues = status.selectColor;
             chooseColor();
-            //this.selfCounter = this.selfCounter + 1;
         }
 
 
@@ -139,38 +149,18 @@ public class MonotonicStochastic2CoordinationV2 extends AgentVariableSearch impl
 
 
 
-
-
         if (MainSimulator.isMDC2CDebug ) {
             System.out.println(this + " is "+ this.myStatues+", nCounters:"+this.neighborCounters+", selfCounter:"+this.selfCounter+" sender id: "+msgAlgorithm.getSenderId()+" **changeToTrue");
-
-
         }
-        if (MainSimulator.isMS2SDebug){
-            System.out.println(this+" DOC ID:"+this.myDocId+" view of docs is T: "+this.neighborsDocIdsT);
-            System.out.println(this+" view of docs is T1: "+this.neighborsDocIdsT1);
-        }
+
 
 
 
 
     }
 
-    private boolean haveAllDocIds() {
-        for (NodeId nId:
-             this.neighborsDocIdsT.keySet()) {
-            if (this.neighborsDocIdsT.get(nId) == null){
-                return false;
-            }
-        }
-        return true;
-    }
 
 
-    @Override
-    public int getSelfCounterable() {
-        return this.selfCounter;
-    }
 
     @Override
     protected int getSenderCurrentTimeStampFromContext(MsgAlgorithm msgAlgorithm) {
@@ -180,39 +170,25 @@ public class MonotonicStochastic2CoordinationV2 extends AgentVariableSearch impl
 
     @Override
     protected boolean updateMessageInContext(MsgAlgorithm msgAlgorithm) {
-
-
-
         NodeId sender = msgAlgorithm.getSenderId();
+
         int neighborCounter = ((MsgAMDLSColor) msgAlgorithm).getCounter();
         int currentNeighborCounter = this.neighborCounters.get(sender);
-
-
         if (currentNeighborCounter<neighborCounter) {
             if (msgAlgorithm instanceof MsgAMDLSColor) {
-                //updateColorFromMsg(msgAlgorithm,sender,neighborCounter);
-
-                Integer neighborColor = ((MsgAMDLSColor) msgAlgorithm).getColor();
-                if (neighborColor!=null) {
+                int neighborColor = ((MsgAMDLSColor) msgAlgorithm).getColor();
+                if (neighborColor!=-1) {
                     this.neighborsColor.put(sender, neighborColor);
                 }
                 this.neighborCounters.put(sender, neighborCounter);
                 if (this.neighborsInfo.containsKey(sender)) {
                     this.neighborsInfo.remove(sender);
                 }
+                //if (counterCheck()){
+                //  throw new RuntimeException();
+                //}
             }
         }
-
-        if (msgAlgorithm instanceof MsgAMDLSColorAndDoc){
-            Double neighborDocId = ((MsgAMDLSColorAndDoc) msgAlgorithm).getDocId();
-            if (this.myStatues == status.reformat){
-                this.neighborsDocIdsT.put(sender,neighborDocId);
-            }
-            else{
-                this.neighborsDocIdsT1.put(sender,neighborDocId);
-            }
-        }
-
         if (msgAlgorithm instanceof MsgValueAssignmnet && !(msgAlgorithm instanceof MsgMDC2CFriendRequest)&& !(msgAlgorithm instanceof MsgMDC2CFriendReply)) {
             updateMsgInContextValueAssignmnet(msgAlgorithm);
         }
@@ -244,23 +220,25 @@ public class MonotonicStochastic2CoordinationV2 extends AgentVariableSearch impl
                 this.selfCounter = this.selfCounter + 1;
             }
         }
+
+
+        if (msgAlgorithm instanceof MsgAMDLSColorAndDoc){
+            Double neighborDocId = ((MsgAMDLSColorAndDoc) msgAlgorithm).getDocId();
+            if (this.myStatues == status.changeColorMode){
+                this.neighborsDocIdsT.put(sender,neighborDocId);
+            }
+            else{
+                this.neighborsDocIdsT1.put(sender,neighborDocId);
+            }
+        }
         //}else{
         // changeValueAssignment();
         //}
 
-        if (msgAlgorithm instanceof MsgAMDLSColorAndDoc){
-            double docIdN  = ((MsgAMDLSColorAndDoc)msgAlgorithm).getDocId();
-            if (this.myStatues == status.reformat || this.myStatues == status.waitToChangeColor){
-                this.neighborsDocIdsT.put(sender,docIdN);
-            }else{
-                this.neighborsDocIdsT1.put(sender,docIdN);
-            }
-        }
+
 
         return  true;
     }
-
-
 
     private boolean counterCheck() {
 
@@ -290,10 +268,8 @@ public class MonotonicStochastic2CoordinationV2 extends AgentVariableSearch impl
 
     @Override
     protected boolean compute() {
-        if ((this.myStatues == status.selectColor || this.myStatues == status.consistentAndColor) &&this.selfCounter>1){
-            if (isWithChangeVAwithColor) {
-                changeValueAssignment();
-            }
+        if (this.myStatues == status.selectColor || this.myStatues == status.consistentAndColor){
+
         }
 
         if (this.myStatues == status.consistent|| this.myStatues == status.consistentAndColor){
@@ -336,11 +312,6 @@ public class MonotonicStochastic2CoordinationV2 extends AgentVariableSearch impl
         if (MainSimulator.isMDC2CDebug ) {
             System.out.println(this + " is "+ this.myStatues+", nCounters:"+this.neighborCounters+", selfCounter:"+this.selfCounter+" **compute");
         }
-
-        if (MainSimulator.isMS2SDebug){
-            System.out.println(this+" view of docs is T: "+this.neighborsDocIdsT);
-            System.out.println(this+" view of docs is T1: "+this.neighborsDocIdsT1);
-        }
         return true;
     }
 
@@ -361,15 +332,9 @@ public class MonotonicStochastic2CoordinationV2 extends AgentVariableSearch impl
 
     @Override
     public void sendMsgs() {
-        if (this.myStatues == status.selectColor|| this.myStatues == status.consistentAndColor )  {
+        if (this.myStatues == status.selectColor || this.myStatues == status.consistentAndColor || this.myStatues == status.changeAlone ||this.myStatues == status.doWhatPartnerSay) {
             this.neighborsInfo.clear();
             sendColorMsgs();
-        }
-
-        if ( this.myStatues == status.changeAlone ||this.myStatues == status.doWhatPartnerSay){
-            this.neighborsInfo.clear();
-            sendValueAndDoc();
-
         }
         if (this.myStatues == status.consistent || this.myStatues == status.consistentAndColor) {
             sendInfoToPartner();
@@ -379,9 +344,7 @@ public class MonotonicStochastic2CoordinationV2 extends AgentVariableSearch impl
             if (MainSimulator.isMDC2CDebug) {
                 System.out.println(this + " sends all the rest (except for partner" + whoNotToSendColor+"), nCounters:" + this.neighborCounters + ", selfCounter:" + this.selfCounter);
             }
-            sendValueAndDoc();
-
-            //sendDocToTheRest(whoNotToSendColor);
+            sendColorToTheRest(whoNotToSendColor);
         }
     }
 
@@ -393,6 +356,26 @@ public class MonotonicStochastic2CoordinationV2 extends AgentVariableSearch impl
 
     @Override
     public void changeReceiveFlagsToFalse() {
+
+        boolean didChangeValueThisIteration = this.myStatues == status.changeAlone || this.myStatues == status.ableToReply || this.myStatues == status.doWhatPartnerSay;
+
+        if (shouldChangeColorMode()&&didChangeValueThisIteration){
+            this.myStatues = status.changeColorMode;
+            this.myDocId = this.docIdRandom.nextDouble();
+            resetColors();
+            updateNeighborDocs();
+
+
+            if (MainSimulator.isAnotherColorDebug){
+
+                System.out.println("******"+this+" changed doc_id to: "+this.myDocId+" and selfCounter:"+this.selfCounter+"******");
+                //System.out.println(this+" view of docs is T: "+this.neighborsDocIdsT);
+                //System.out.println(this+" view of docs is T1: "+this.neighborsDocIdsT1);
+            }
+            sendNewDocMsg();
+            return;
+        }
+
         if (this.myStatues == status.consistentAndColor ||this.myStatues == status.consistent){
             this.myStatues = status.waitForReply;
         }
@@ -401,38 +384,60 @@ public class MonotonicStochastic2CoordinationV2 extends AgentVariableSearch impl
         if(this.myStatues == status.doWhatPartnerSay){
             this.partnerNodeId = null;
         }
-        if (this.myStatues == status.idle || this.myStatues == status.selectColor){
+        if (this.myStatues == status.doWhatPartnerSay|| this.myStatues == status.idle || this.myStatues == status.selectColor || this.myStatues == status.changeAlone || this.myStatues == status.ableToReply){
             this.myStatues = status.idle;
         }
-
-        boolean didChangeValueThisIteration = this.myStatues == status.changeAlone || this.myStatues == status.ableToReply || this.myStatues == status.doWhatPartnerSay;
-        boolean shouldChangeColorGivenCounter = this.selfCounter%moduleChangeColor == 0 && this.selfCounter>1;
-
-        if(didChangeValueThisIteration && shouldChangeColorGivenCounter){
-            this.myStatues = status.reformat;
+/*
+        if (this.myStatues == status.unableToReply){
+            this.myStatues = status.unableToReply;
         }
-
-        if (didChangeValueThisIteration && !shouldChangeColorGivenCounter){
-            this.myStatues = status.idle;
-        }
-
+*/
 
         if (MainSimulator.isMDC2CDebug ) {
             System.out.println(this + " is "+ this.myStatues+", nCounters:"+this.neighborCounters+", selfCounter:"+this.selfCounter+ " ***END");
         }
 
+
+    }
+
+    private void sendNewDocMsg() {
+
+        List<Msg> msgsToInsertMsgBox = new ArrayList<Msg>();
+        for (NodeId receiverNodeId : neighborsConstraint.keySet()) {
+            MsgAMDLSColorAndDoc msg = new MsgAMDLSColorAndDoc(this.nodeId, receiverNodeId, this.valueAssignment, this.timeStampCounter, this.time, this.selfCounter, null, this.myDocId);
+            msgsToInsertMsgBox.add(msg);
+        }
+        if(!msgsToInsertMsgBox.isEmpty()) {
+            outbox.insert(msgsToInsertMsgBox);
+        }
+    }
+
+    private void resetColors() {
+        this.myColor = -1;
+
+        for (NodeId nId:this.neighborsConstraint.keySet() ) {
+            this.neighborsColor.put(nId,null);
+        }
     }
 
 
+    private void updateNeighborDocs() {
+        for (NodeId nid: this.neighborsDocIdsT.keySet()) {
+            this.neighborsDocIdsT.put(nid,this.neighborsDocIdsT1.get(nid));
+            this.neighborsDocIdsT1.put(nid,null);
+        }
+    }
 
+    private boolean shouldChangeColorMode() {
+        return this.selfCounter%moduleChangeColor==0 && this.selfCounter!=1;
+    }
 
 
     @Override
     public void initialize() {
-        if (haveAllDocIds() && canSetColor() ){
+        if (canSetColor()){
             this.myColor = 1;
             this.sendColorMsgs();
-            this.myStatues = status.idle;
             if (MainSimulator.isMDC2CDebug){
                 System.out.println(this.nodeId+", color: "+ this.myColor);
             }
@@ -449,41 +454,12 @@ public class MonotonicStochastic2CoordinationV2 extends AgentVariableSearch impl
 
     //********--------------------messages-------------------********
 
-
-    private void sendValueAndDoc() {
-        boolean flag = false;
-        if (shouldChangeDocId()) {
-            moveToNextDocPhase();
-            flag = true;
-        }
-
-        //if (!flag && this.checkConsistencyV2()&& this.selfCounter!=1){
-            //this.selfCounter = this.selfCounter +1;
-
-        //}
-        List<Msg> msgsToInsertMsgBox = new ArrayList<Msg>();
-        for (NodeId receiverNodeId : neighborsConstraint.keySet()) {
-            MsgAMDLSColorAndDoc msg= new MsgAMDLSColorAndDoc(this.nodeId, receiverNodeId, this.valueAssignment,  this.timeStampCounter, this.time, this.selfCounter , null,this.myDocId);
-            msgsToInsertMsgBox.add(msg);
-        }
-        outbox.insert(msgsToInsertMsgBox);
-
-    }
-
-    private boolean shouldChangeDocId(){
-        return this.selfCounter%moduleChangeColor == 0 && this.selfCounter>1 && this.changedColorCounter!=selfCounter;
-    }
-
     protected void sendColorMsgs() {
-        boolean flag = false;
-        if (shouldChangeDocId() ) {
-            moveToNextDocPhase();
-            flag = true;
-        }
 
-        //if (!flag && this.checkConsistencyV2()&& this.selfCounter!=1){
-          //  this.selfCounter = this.selfCounter +1;
-        //}
+        if (this.checkConsistencyV2()&& this.selfCounter!=1){
+            this.selfCounter = this.selfCounter +1;
+
+        }
         List<Msg> msgsToInsertMsgBox = new ArrayList<Msg>();
         for (NodeId receiverNodeId : neighborsConstraint.keySet()) {
             MsgAMDLSColor msg= new MsgAMDLSColor(this.nodeId, receiverNodeId, this.valueAssignment,  this.timeStampCounter, this.time, this.selfCounter , this.myColor);
@@ -542,62 +518,12 @@ public class MonotonicStochastic2CoordinationV2 extends AgentVariableSearch impl
     }
 
 
-
-    private void moveToNextDocPhase() {
-
-        this.myDocId = this.docIdRandom.nextDouble();
-        this.myColor = -1;
-        changedColorCounter = this.selfCounter;
-        for (NodeId nId:this.neighborsConstraint.keySet() ) {
-            this.neighborsColor.put(nId,null);
-        }
-        updateNeighborDocs();
-        if (MainSimulator.isColorMS2SDebug){
-            System.out.println(this+" changed doc_id to: "+this.myDocId+" neighborDoc: "+neighborsDocIdsT);
-        }
-        if (MainSimulator.isMS2SDebug){
-            System.out.println(this+" view of docs is T: "+this.neighborsDocIdsT);
-            System.out.println(this+" view of docs is T1: "+this.neighborsDocIdsT1);
-        }
-
-        if (this.myColor == -1  && haveAllDocIds()&& canSetColor()      ) {
-
-            makeAnotherComputation();
-        }
-
-    }
-
-    private void makeAnotherComputation(){
-        chooseColor();
-        //if (isWithChangeVAwithColor){
-          //  changeValueAssignment();
-        //}
-        List<Msg> msgsToInsertMsgBox = new ArrayList<Msg>();
-        for (NodeId receiverNodeId : neighborsConstraint.keySet()) {
-            MsgAMDLSColor msg= new MsgAMDLSColor(this.nodeId, receiverNodeId, this.valueAssignment,  this.timeStampCounter, this.time, this.selfCounter , this.myColor);
-            msgsToInsertMsgBox.add(msg);
-        }
-        outbox.insert(msgsToInsertMsgBox);
-
-
-    }
-
-    private void updateNeighborDocs() {
-        for (NodeId nid: this.neighborsDocIdsT.keySet()) {
-            this.neighborsDocIdsT.put(nid,this.neighborsDocIdsT1.get(nid));
-            this.neighborsDocIdsT1.put(nid,null);
-        }
-    }
-
-    protected void sendDocToTheRest(NodeId whoNotToSendColor) {
-        if (shouldChangeDocId()) {
-            moveToNextDocPhase();
-        }
+    protected void sendColorToTheRest(NodeId whoNotToSendColor) {
         List<Msg> msgsToInsertMsgBox = new ArrayList<Msg>();
         Set<NodeId>whoISent = new HashSet<NodeId>();
         for (NodeId receiverNodeId : neighborsConstraint.keySet()) {
             if (receiverNodeId.getId1()!=whoNotToSendColor.getId1()){
-                MsgAMDLSColorAndDoc msg= new MsgAMDLSColorAndDoc(this.nodeId, receiverNodeId, this.valueAssignment,  this.timeStampCounter, this.time, this.selfCounter , null,this.myDocId);
+                MsgAMDLSColor msg= new MsgAMDLSColor(this.nodeId, receiverNodeId, this.valueAssignment,  this.timeStampCounter, this.time, this.selfCounter , this.myColor);
                 msgsToInsertMsgBox.add(msg);
                 whoISent.add(receiverNodeId);
             }
@@ -923,6 +849,6 @@ public class MonotonicStochastic2CoordinationV2 extends AgentVariableSearch impl
 
     @Override
     public void updateAlgorithmName() {
-        AgentVariable.AlgorithmName = "MSC2C(ccf="+moduleChangeColor+")"; //change color frequency
+        AgentVariable.AlgorithmName = "MDC2C";
     }
 }

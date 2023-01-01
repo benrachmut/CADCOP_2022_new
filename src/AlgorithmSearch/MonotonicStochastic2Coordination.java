@@ -9,7 +9,7 @@ import Messages.MsgAlgorithm;
 
 import java.util.*;
 
-public class MonotonicStochastic2Coordination extends MonotonicDeterministicColors2Coordination{
+public class MonotonicStochastic2Coordination extends MonotonicStochastic2CoordinationV3 {
     public static int moduleChangeColor=1;
     private  Random docIdRandom;
     private Map<NodeId, MS2CHelperInfoIntAndCounter> neighborsDocIdsT;
@@ -21,7 +21,8 @@ public class MonotonicStochastic2Coordination extends MonotonicDeterministicColo
 
     public MonotonicStochastic2Coordination(int dcopId, int D, int id1) {
         super(dcopId, D, id1);
-        this.docIdRandom = new Random((dcopId+nodeId.getId1()+1)*17);
+        this.docIdRandom = new Random((dcopId+nodeId.getId1()+1)*17877);
+        docIdRandom.nextDouble();
         this.neighborsDocIdsT = new HashMap<NodeId, MS2CHelperInfoIntAndCounter>();
         this.neighborsDocIdsT1 = new HashMap<NodeId, MS2CHelperInfoIntAndCounter>();
         this.neighborsColorT1 = new HashMap<NodeId, MS2CHelperInfoIntAndCounter>();
@@ -47,7 +48,9 @@ public class MonotonicStochastic2Coordination extends MonotonicDeterministicColo
     @Override
     protected void resetAgentGivenParametersV3() {
         super.resetAgentGivenParametersV3();
-        docIdRandom = new Random((dcopId+nodeId.getId1()+1)*17);
+        docIdRandom = new Random((dcopId+nodeId.getId1()+1)*17877);
+        docIdRandom.nextDouble();
+
         this.neighborsDocIdsT = new HashMap<NodeId, MS2CHelperInfoIntAndCounter>();
         this.neighborsDocIdsT1 = new HashMap<NodeId, MS2CHelperInfoIntAndCounter>();
         for (NodeId nId: this.neighborsConstraint.keySet()){

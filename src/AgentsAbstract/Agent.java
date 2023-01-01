@@ -183,6 +183,8 @@ public abstract class Agent implements Runnable, Comparable<Agent> {
 		}
 	}
 
+
+
 	// ------------**Reaction to algorithmic messages methods**------------
 	/**
 	 * used by mailer after, the mailer uses recieveAlgorithmicMsgs on the receiver
