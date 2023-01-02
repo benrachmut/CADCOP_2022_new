@@ -50,11 +50,11 @@ public class MainSimulator {
 
 	// --------------------------------**Experiment Repetitions**
 	public static int div = 1;
-	public static int delta = 5;
-	public static int start =10;
+	public static int delta = 100;
+	public static int start =0;
 	public static int end = start+delta;
 	public static int end_temp = start; // DO NOT CHANGE
-	public static long termination = 10000;//30000007;
+	public static long termination = 1000000;//30000007;
 	private static int everyHowManyExcel = 100;
 
 	// ------------------------------**PROBLEM MAGNITUDE**
@@ -133,9 +133,9 @@ public class MainSimulator {
 	public static boolean isMSOSDebug = false;
 
 	public static boolean isColorMS2SDebug= false;
-	public static boolean isMDC2CDebug =false;
 	public static boolean isMS2SDebug= false;
 	public static boolean isAnotherColorDebug= true;
+	public static boolean isMDC2CDebug =true;
 
 
 	public static CreatorDelays creatorDelay;
