@@ -408,7 +408,7 @@ public class MonotonicDeterministicColors2Coordination extends AgentVariableSear
         //-------------------
         List<Msg> msgsToInsertMsgBox = new ArrayList<Msg>();
         NodeId receiver = whoToReply;
-        MsgMDC2CFriendReply msg= new MsgMDC2CFriendReply(this.nodeId, receiver, infoToSend2Opt ,  this.timeStampCounter, this.time,this.selfCounter,this.myColor);
+        MsgMDC2CFriendReply msg= new MsgMDC2CFriendReply(this.nodeId, receiver, infoToSend2Opt ,  this.timeStampCounter, this.time,this.selfCounter,this.myColor,this.nodeId.getId1());
         msgsToInsertMsgBox.add(msg);
         outbox.insert(msgsToInsertMsgBox);
 
