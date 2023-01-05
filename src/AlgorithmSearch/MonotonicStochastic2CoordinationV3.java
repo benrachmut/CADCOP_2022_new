@@ -21,7 +21,7 @@ public class MonotonicStochastic2CoordinationV3 extends AgentVariableSearch impl
         selectColor,
         consistent,
         consistentAndColor,
-        waitForReply, changeAlone, receiveOffer, ableToReply, unableToReply, doWhatPartnerSay, changeColorMode, waitForAllColors, changeColorModeAndAbleToReply, idle
+        waitForReply, changeAlone, receiveOffer, ableToReply, unableToReply, doWhatPartnerSay, changeColorMode, waitForAllColors, changeColorModeAndAbleToReply, changeAloneAndColor, idle
     }
     private int counter;
     protected int selfCounter;
@@ -121,7 +121,7 @@ public class MonotonicStochastic2CoordinationV3 extends AgentVariableSearch impl
             return;
         }
 
-        if (this.myStatues == status.waitForAllColors && allNeighborsHaveColor()){
+        if (this.myStatues == status.waitForAllColors && (allNeighborsHaveColor())){
             this.myStatues = status.idle;
         }
 
@@ -251,20 +251,22 @@ public class MonotonicStochastic2CoordinationV3 extends AgentVariableSearch impl
 
         if (msgAlgorithm instanceof MsgMDC2CFriendRequest){
             updateValueAWithKOptInfo(msgAlgorithm);
-            KOptInfo nInfo = ((KOptInfo) msgAlgorithm.getContext());
-            if (!neighborsInfo.isEmpty()){
-                for (NodeId nodeId:this.neighborsInfo.keySet()) {
-                    //try {
-                        if (this.neighborsDocIdsT.get(nodeId) > this.neighborsDocIdsT.get(msgAlgorithm.getSenderId())) {
-                            this.neighborsInfo.remove(nodeId);
-                            this.neighborsInfo.put(sender, nInfo);
-                        }
-                   // }catch (Exception e){
-                   //     int x = 3;
-                   // }
+            if (this.myStatues != status.changeColorMode) {
+                KOptInfo nInfo = ((KOptInfo) msgAlgorithm.getContext());
+                if (!neighborsInfo.isEmpty()) {
+                    for (NodeId nodeId : this.neighborsInfo.keySet()) {
+                        //try {
+                            if (this.neighborsDocIdsT.get(nodeId) > this.neighborsDocIdsT.get(msgAlgorithm.getSenderId())) {
+                                this.neighborsInfo.remove(nodeId);
+                                this.neighborsInfo.put(sender, nInfo);
+                            }
+                        //} catch (Exception e) {
+                          //  int x = 3;
+                        //}
+                    }
+                } else {
+                    this.neighborsInfo.put(sender, nInfo);
                 }
-            }else {
-                this.neighborsInfo.put(sender, nInfo);
             }
             //if (MainSimulator.isMDC2CDebug) {
             //  System.out.println(this+" receive friend request from "+ msgAlgorithm.getSenderId()+", nCounters:"+this.neighborCounters+", selfCounter:"+this.selfCounter);
@@ -314,7 +316,7 @@ public class MonotonicStochastic2CoordinationV3 extends AgentVariableSearch impl
 
     @Override
     public boolean getDidComputeInThisIteration() {
-        return myStatues ==status.doWhatPartnerSay || myStatues ==status.consistent ||  myStatues ==status.selectColor ||
+        return myStatues ==status.doWhatPartnerSay || myStatues ==status.consistent ||  myStatues ==status.selectColor ||this.myStatues == status.changeAloneAndColor||
                 this.myStatues == status.consistentAndColor || this.myStatues == status.receiveOffer || this.myStatues == status.unableToReply || this.myStatues == status.changeAlone;
     }
 
@@ -332,7 +334,12 @@ public class MonotonicStochastic2CoordinationV3 extends AgentVariableSearch impl
             }
 
             if (partnerNodeId == null){
-                this.myStatues = status.changeAlone;
+                if (this.myStatues == status.consistent) {
+                    this.myStatues = status.changeAlone;
+                }
+                if (this.myStatues == status.consistentAndColor){
+                    this.myStatues = status.changeAloneAndColor;
+                }
                 this.selfCounter = this.selfCounter+1;
                 this.neighborsInfo.clear();
                 changeValueAssignment();
@@ -349,7 +356,7 @@ public class MonotonicStochastic2CoordinationV3 extends AgentVariableSearch impl
             }
         }
 
-        if (this.myStatues == status.receiveOffer ||  this.myStatues == status.unableToReply){
+        if (this.myStatues == status.receiveOffer ||  this.myStatues == status.unableToReply||this.myStatues == status.waitForAllColors){
             if (isNeighborsByIndexConstraintOk() && allLargerColorsCountersAreEqual()&&allNeighborsHaveColor()){
                 this.selfCounter = this.selfCounter+1;
                 this.myStatues = status.ableToReply;
@@ -384,7 +391,7 @@ public class MonotonicStochastic2CoordinationV3 extends AgentVariableSearch impl
 
     @Override
     public void sendMsgs() {
-        boolean didChangeValueThisIteration = this.myStatues == status.changeAlone || this.myStatues == status.ableToReply || this.myStatues == status.doWhatPartnerSay;
+        boolean didChangeValueThisIteration = this.myStatues == status.changeAlone ||this.myStatues == status.changeAloneAndColor|| this.myStatues == status.ableToReply || this.myStatues == status.doWhatPartnerSay;
 
         if (shouldChangeColorMode()&&didChangeValueThisIteration){
 
@@ -404,9 +411,15 @@ public class MonotonicStochastic2CoordinationV3 extends AgentVariableSearch impl
                 return;
             }
 
+            if (this.myStatues == status.changeAloneAndColor){
+                fixCounters();
 
-            sendDoc();
+                this.selfCounter = this.selfCounter+1;
+                sendReplyWithDocAndColor();
 
+            }else {
+                sendDoc();
+            }
             //sendNewDocMsg();
             this.myStatues = status.changeColorMode;
             return;
@@ -414,7 +427,7 @@ public class MonotonicStochastic2CoordinationV3 extends AgentVariableSearch impl
         }
 
 
-        if (this.myStatues == status.selectColor || this.myStatues == status.consistentAndColor || this.myStatues == status.changeAlone ||this.myStatues == status.doWhatPartnerSay) {
+        if (this.myStatues == status.selectColor || this.myStatues == status.consistentAndColor || this.myStatues == status.changeAlone ||this.myStatues == status.changeAloneAndColor ||this.myStatues == status.doWhatPartnerSay) {
             this.neighborsInfo.clear();
             sendColorMsgs();
         }
@@ -437,11 +450,11 @@ public class MonotonicStochastic2CoordinationV3 extends AgentVariableSearch impl
     private void sendDocWithColor() {
         if (this.myStatues == status.ableToReply){
             sendReplyWithDocAndColorAndReply();
-        }else{
+        } else{
             sendReplyWithDocAndColor();
         }
-
     }
+
 
     private void sendReplyWithDocAndColor() {
 
@@ -536,7 +549,7 @@ public class MonotonicStochastic2CoordinationV3 extends AgentVariableSearch impl
         if(this.myStatues == status.doWhatPartnerSay){
             this.partnerNodeId = null;
         }
-        if (this.myStatues == status.doWhatPartnerSay|| this.myStatues == status.idle || this.myStatues == status.selectColor || this.myStatues == status.changeAlone || this.myStatues == status.ableToReply){
+        if (this.myStatues == status.doWhatPartnerSay|| this.myStatues == status.idle || this.myStatues == status.selectColor || this.myStatues == status.changeAlone || this.myStatues == status.changeAloneAndColor|| this.myStatues == status.ableToReply){
             this.myStatues = status.idle;
         }
 /*
@@ -713,8 +726,17 @@ public class MonotonicStochastic2CoordinationV3 extends AgentVariableSearch impl
     //********--------------------consistency-------------------********
 
     protected boolean allNeighborsHaveColor() {
+        /*
+        Collection<NodeId>okNotToHaveColor = new ArrayList<NodeId>();
+        for (NodeId nId: this.neighborCounters.keySet()) {
+            if (this.neighborCounters.get(nId)>this.selfCounter)
+            okNotToHaveColor.add(nId);
+
+        }
+        */
+
         for (NodeId ni:this.neighborsColor.keySet()) {
-            if (this.neighborsColor.get(ni)==null){
+            if (this.neighborsColor.get(ni)==null){//&&!okNotToHaveColor.contains(ni)){
                 return false;
             }
         }
