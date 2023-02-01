@@ -1,21 +1,33 @@
 package Problem;
 
 import AgentsAbstract.AgentVariable;
+import Main.MainSimulatorIterations;
 
 public class DcopCircle extends Dcop{
 
-    private int costLb;
-    private int costUb;
 
-    public DcopCircle(int dcopId, int A, int D,int costLb,int costUb) {
+    private int constantColorCost;
+    private int uniformCostLB;
+    private int uniformCostUB;
+    private int numberOfCircles;
+
+    public DcopCircle(int dcopId, int A, int D,int numberOfCircles, int uniformCostLB,int uniformCostUB) {
         super(dcopId, A, D);
-        this.costLb = costLb;
-        this.costUb =costUb  ;
+        this.uniformCostLB = uniformCostLB;
+        this.uniformCostUB =uniformCostUB;
+        this.numberOfCircles = numberOfCircles;
+    }
+
+
+    public DcopCircle(int dcopId, int A, int D,int numberOfCircles, int constantColorCost) {
+        super(dcopId, A, D);
+        this.numberOfCircles = numberOfCircles;
+        this.constantColorCost = constantColorCost;
     }
 
     @Override
     protected void setDcopName() {
-        Dcop.dcopName = "Circle ";
+        Dcop.dcopName = "Circle_"+String.valueOf(numberOfCircles)+"_" +MainSimulatorIterations.costType;
 
 
 
@@ -23,19 +35,27 @@ public class DcopCircle extends Dcop{
 
     @Override
     protected void setDcopHeader() {
-        Dcop.dcopHeader = "Domain Size";
+        if (MainSimulatorIterations.CostType.uniform == MainSimulatorIterations.costType)
+        Dcop.dcopHeader = "D"+","+"circles";
 
     }
 
     @Override
     protected void setDcopParameters() {
-        Dcop.dcopParameters = this.D+"";
+        Dcop.dcopParameters = this.D+","+String.valueOf(this.numberOfCircles);
     }
 
 
 
     @Override
     public void createNeighbors() {
+
+
+
+
+
+
+
         for (int i = 0; i < agentsVariables.length; i++) {
             AgentVariable a1 = agentsVariables[i];
             AgentVariable a2 = null;

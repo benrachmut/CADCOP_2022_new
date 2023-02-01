@@ -31,9 +31,6 @@ public class MailerIterations extends Mailer {
 		for (int iteration = 0; iteration < this.terminationTime; iteration++) {
 			
 			System.out.println("#############ITERATION="+iteration+"#############");
-			if (iteration == 28) {
-				System.out.println("ahhhhhhhhhhh");
-			}
 			m_iteration = iteration;
 			createData(iteration);
 			List<Msg> msgsFromInbox = new ArrayList<Msg>();
@@ -77,49 +74,8 @@ public class MailerIterations extends Mailer {
 
 	}
 
-	private void printForDegbugMgm(int iteration) {
-		String ans = iteration + ",";
-		for (AgentVariable a : dcop.getVariableAgents()) {
-			ans = ans + a.getValueAssignment() + ",";
-		}
-		for (AgentVariable a : dcop.getVariableAgents()) {
-			ans = ans + ((MGM) a).getLR() + ",";
-		}
-		System.out.println(ans);
-	}
 
-	private void printHeaderForDebugDSA_SY() {
-		String ans = "Iteration,Global_Cost,";
-		for (int i = 0; i < dcop.getVariableAgents().length; i++) {
-			AgentVariable av = dcop.getVariableAgents()[i];
-			if (av instanceof DSA_B_SY) {
-				int currentId = av.getId();
-				ans = ans + currentId + "_rnd" + "," + currentId + "_value,";
-				for (NodeId nNodeId : av.getNeigborSetId()) {
-					int n = nNodeId.getId1();
-					ans = ans + currentId + "_view_on_" + n + "," + currentId + "_timestamp_on_" + n + ",";
-				}
-			}
-		}
-		System.out.println(ans);
 
-	}
-
-	private void printForDebugDSA_SY(int iteration) {
-		String ans = iteration + "," + this.dataMap.get(iteration).getGlobalCost() + ",";
-
-		for (int i = 0; i < dcop.getVariableAgents().length; i++) {
-			AgentVariable av = dcop.getVariableAgents()[i];
-			if (av instanceof DSA_B_SY) {
-				DSA_B_SY a = (DSA_B_SY) av;
-				ans = ans + a.getStringForDebug();
-			} else {
-				System.out.println("should not use printForDebugDSA_SY");
-				throw new RuntimeException();
-			}
-		}
-		System.out.println(ans);
-	}
 
 	private void agentsReactToMsgs(int iteration) {
 
@@ -127,34 +83,18 @@ public class MailerIterations extends Mailer {
 
 			if (iteration == 0) {
 				//agent.resetAgent();
-			//	agent.initialize(); // abstract method in agents
+				agent.initialize(); // abstract method in agents
 			} else {
 				agent.reactionToAlgorithmicMsgs();
 				agentsCommunicateThierAction(agent);	
 			}
-			debugMethodsAfterComputationPerAgent(iteration,agent);
+			//debugMethodsAfterComputationPerAgent(iteration,agent);
 		}
-		sendAnytimeMsgs();
-		debugMethodsAfterComputations(iteration);
+		//sendAnytimeMsgs();
+		//debugMethodsAfterComputations(iteration);
 	}
 
-	private void debugMethodsAfterComputationPerAgent(int iteration, Agent agent) {
-		if (MainSimulator.isAMDLSDistributedDebug && iteration == 4000) {
-			((AMDLS_V1) agent).printAMDLSstatus();
-		}
-		
-	}
 
-	private void sendAnytimeMsgs() {
-		if (MainSimulator.isAnytime) {
-			for (AgentVariable a : dcop.getVariableAgents()) {
-				if (a instanceof AgentVariableSearch) {
-					((AgentVariableSearch) a).sendAnytimeMsgs();
-				}
-			}
-		}
-		
-	}
 
 	private void agentsCommunicateThierAction(Agent agent) {
 		if (agent.getDidComputeInThisIteration()) {

@@ -159,6 +159,10 @@ public class MainSimulator {
 	public static String fileName = "";
 
 	public static void main(String[] args) {
+
+
+
+
 		if (dcopBenchMark == 4 && !((delayType == 5)||(delayType == 6)||(delayType == 7))) {
 			throw new RuntimeException("if dcopBenchMark is city then delay type must be distance base distance");
 		}
@@ -502,7 +506,7 @@ public class MainSimulator {
 					exponentForNeighborCitizens);
 		}
 		if (dcopBenchMark == 5){
-			ans = new DcopCircle(dcopId, A, D, costLbUniform, costUbUniform);
+			//ans = new DcopCircle(dcopId, A, D, costLbUniform, costUbUniform);
 		}
 
 		return ans;
