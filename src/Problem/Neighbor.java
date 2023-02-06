@@ -38,6 +38,17 @@ public class Neighbor {
 		neighborsMeetings();
 	}
 
+	/*
+	// USED BY SIMULATOR FOR MAXSUM
+	public Neighbor(AgentVariable a1, AgentVariable a2, int D, int costConstantForColor, int dcopId, boolean dummy) {
+		updateVariables(a1, a2, 0, costConstantForColor, D);
+		this.randomCost = new Random((1+dcopId) * 100 + (1+a1.getId()) * 300 + (1+a2.getId()) * 1200);
+		createConstraintsForEquality();
+		neighborsMeetings();
+	}
+	*/
+
+
 	private void updateVariables(AgentVariable a1, AgentVariable a2, int costLb, int costUb, int D) {
 		this.a1 = a1;
 		this.a2 = a2;

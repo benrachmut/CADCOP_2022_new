@@ -90,7 +90,7 @@ public class MonotonicStochasticOrderSearch extends AgentVariableSearch implemen
     }
 
     @Override
-    protected boolean updateMessageInContext(MsgAlgorithm msgAlgorithm) {
+    public boolean updateMessageInContext(MsgAlgorithm msgAlgorithm) {
         if (msgAlgorithm instanceof MsgMSOS) {
             NodeId sender = msgAlgorithm.getSenderId();
             MsgMSOS msg = (MsgMSOS)msgAlgorithm;
@@ -127,7 +127,7 @@ public class MonotonicStochasticOrderSearch extends AgentVariableSearch implemen
 
 
     @Override
-    protected boolean compute() {
+    public boolean compute() {
         if (allNeighborsSentCurrentCounter()){
             this.selfCounter = this.selfCounter +1;
         }

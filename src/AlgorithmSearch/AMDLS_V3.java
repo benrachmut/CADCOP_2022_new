@@ -55,7 +55,7 @@ public class AMDLS_V3 extends AMDLS_V2 {
 		}
 	}
 
-	protected boolean compute() {
+	public boolean compute() {
 			boolean flag = false;
 			if (canSetColorFlag) {
 				chooseColor();

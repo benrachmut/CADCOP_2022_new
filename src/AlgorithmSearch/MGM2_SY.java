@@ -30,7 +30,7 @@ public class MGM2_SY extends MGM2 {
 	}
 
 	@Override
-	protected boolean updateMessageInContext(MsgAlgorithm m) {
+    public boolean updateMessageInContext(MsgAlgorithm m) {
 		if (m instanceof MsgValueAssignmnet) {
 			if (waitingForValueMsgs && !waitingForPartnerIsBestLR) {
 				recieveMsgPhase1(m);
@@ -255,7 +255,7 @@ public class MGM2_SY extends MGM2 {
 	}
 
 	@Override
-	protected boolean compute() {
+    public boolean compute() {
 		if (this.flagComputeRecieveValueMsgsPhase1 && flagComputePartnerLRIsBestLRPhase5) {
 			computePartnerLRIsBestLRPhase5();
 			computePhase1();

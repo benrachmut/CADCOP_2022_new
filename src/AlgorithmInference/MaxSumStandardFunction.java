@@ -113,7 +113,7 @@ public class MaxSumStandardFunction extends AgentFunction {
 		
 	//OmerP - function node don't need to update anything so he will return false - Checked !!!
 	@Override
-	protected boolean compute() {
+    public boolean compute() {
 		
 		if(receiveMessageFlag) {
 			
@@ -202,7 +202,7 @@ public class MaxSumStandardFunction extends AgentFunction {
 
 	//OmerP - will get the message and update context in HashMap - Need to check during run. 
 	@Override
-	protected boolean  updateMessageInContext(MsgAlgorithm msgAlgorithm) {
+    public boolean  updateMessageInContext(MsgAlgorithm msgAlgorithm) {
 		
 		MsgAlgorithmFactor msgAlgorithmFactor = (MsgAlgorithmFactor) msgAlgorithm;
 

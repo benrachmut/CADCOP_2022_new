@@ -7,7 +7,8 @@ import java.util.Collections;
  */
 public class NodeId implements Comparable<NodeId> {
 
-    ///// ******* Variables ******* ////
+
+	///// ******* Variables ******* ////
 
 	public enum NodeType {Variable, Function}; 
 	private NodeType type;
@@ -29,12 +30,29 @@ public class NodeId implements Comparable<NodeId> {
 		setType(NodeType.Variable);
 		
 	}
+
+	public NodeId(int id1) {
+
+
+		this.id1 = id1;
+		this.id2 = 0;
+		setType(NodeType.Variable);
+
+	}
 	
 	//OmerP - Constructor for Function Node.
 	public NodeId(int id1, int id2) {
 		this.isPlusOne = true;
 		this.id1 = id1+1; 
 		this.id2 = id2+1;
+		setType(NodeType.Function);
+
+	}
+
+	public NodeId(int id1, int id2, boolean b) {
+
+		this.id1 = id1;
+		this.id2 = id2;
 		setType(NodeType.Function);
 
 	}
@@ -151,7 +169,12 @@ public class NodeId implements Comparable<NodeId> {
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
-		return "A_"+this.id1;
+		if (this.id2==0) {
+			return "A_" + this.id1;
+		}else{
+			return "A_" + this.id1+"."+this.id2;
+
+		}
 	}
 
 	public boolean isPlusOne() {

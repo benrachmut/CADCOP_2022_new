@@ -2,7 +2,7 @@ package Messages;
 
 import AgentsAbstract.NodeId;
 
-public abstract class Msg<Identity> {
+public class Msg<InfoType> {
 
 	private NodeId sender;
 	private NodeId reciever;

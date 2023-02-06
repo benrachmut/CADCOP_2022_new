@@ -113,7 +113,7 @@ public class AOpt2_V1 extends AMDLS_V3 {
 
 //(1)------------------updateMessageInContext------------------
 	@Override
-	protected boolean updateMessageInContext(MsgAlgorithm msgAlgorithm) {
+    public boolean updateMessageInContext(MsgAlgorithm msgAlgorithm) {
 		boolean flag = false;
 		if (msgAlgorithm instanceof MsgAMDLS) {
 			updateValueAndCounter(msgAlgorithm, msgAlgorithm.getSenderId());
@@ -210,7 +210,7 @@ public class AOpt2_V1 extends AMDLS_V3 {
 	}
 //(3)------------------compute------------------
 
-	protected boolean compute() {
+	public boolean compute() {
 		if (flag_chooseColor) {
 			chooseColor();
 			setAboveAndBelow();

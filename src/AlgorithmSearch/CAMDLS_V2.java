@@ -100,7 +100,7 @@ public class CAMDLS_V2 extends AgentVariableSearch {
         }
     }
     @Override
-    protected boolean updateMessageInContext(MsgAlgorithm msgAlgorithm) {
+    public boolean updateMessageInContext(MsgAlgorithm msgAlgorithm) {
         if (msgAlgorithm instanceof MsgAMDLSColorKAware) {
             MsgAMDLSColorKAware msg = (MsgAMDLSColorKAware) msgAlgorithm;
             updateColor(msg.getSenderId(),msg.getColor());
@@ -196,7 +196,7 @@ public class CAMDLS_V2 extends AgentVariableSearch {
 
 
     @Override
-    protected boolean compute() {
+    public boolean compute() {
         if(canSetColor){
             chooseColor();
             placeInAboveAndBelowMaps();

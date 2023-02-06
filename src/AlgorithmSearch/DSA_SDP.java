@@ -28,7 +28,7 @@ public abstract class DSA_SDP extends DSA_B {
 	}
 
 	@Override
-	protected boolean compute() {
+    public boolean compute() {
 		double ratio = calcRatio();
 
 		boolean didChangToSecondBest = checkToChangeToSecondBest(ratio);

@@ -133,7 +133,7 @@ public class MonotonicDeterministicColors2Coordination extends AgentVariableSear
     }
 
     @Override
-    protected boolean updateMessageInContext(MsgAlgorithm msgAlgorithm) {
+    public boolean updateMessageInContext(MsgAlgorithm msgAlgorithm) {
         NodeId sender = msgAlgorithm.getSenderId();
 
         int neighborCounter = ((MsgAMDLSColor) msgAlgorithm).getCounter();
@@ -219,7 +219,7 @@ public class MonotonicDeterministicColors2Coordination extends AgentVariableSear
     }
 
     @Override
-    protected boolean compute() {
+    public boolean compute() {
         if (this.myStatues == status.selectColor || this.myStatues == status.consistentAndColor){
 
         }

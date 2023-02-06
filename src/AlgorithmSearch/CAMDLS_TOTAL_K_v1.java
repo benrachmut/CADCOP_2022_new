@@ -96,7 +96,7 @@ public class CAMDLS_TOTAL_K_v1 extends CAMDLS_NAIVE {
     }
 
     @Override
-    protected boolean updateMessageInContext(MsgAlgorithm msgAlgorithm) {
+    public boolean updateMessageInContext(MsgAlgorithm msgAlgorithm) {
         this.updateTimestampMap(msgAlgorithm);
         if (MainSimulator.isAMDLSDistributedDebug){
             System.out.println("A_"+this.id+" recieve message from  A_"+msgAlgorithm.getSenderId().getId1());

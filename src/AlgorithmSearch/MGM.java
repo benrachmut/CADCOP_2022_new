@@ -92,7 +92,7 @@ public abstract class MGM extends AgentVariableSearch {
 	}
 
 	@Override
-	protected boolean updateMessageInContext(MsgAlgorithm msgAlgorithm) {
+    public boolean updateMessageInContext(MsgAlgorithm msgAlgorithm) {
 		if (msgAlgorithm instanceof MsgValueAssignmnet) {
 			updateMsgInContextValueAssignmnet(msgAlgorithm);
 			return true;
@@ -115,7 +115,7 @@ public abstract class MGM extends AgentVariableSearch {
 	}
 
 	@Override
-	protected boolean compute() {
+    public boolean compute() {
 		boolean ans1 = false;
 		if (computeVA) {
 			ans1 = computeChangeInValueAssignment();

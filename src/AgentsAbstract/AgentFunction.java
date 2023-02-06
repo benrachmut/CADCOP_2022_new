@@ -56,6 +56,8 @@ public abstract class AgentFunction extends Agent {
 
 	}
 
+
+
 	protected abstract void resetAgentGivenParametersV2();
 
 	// -----------------------------------------------------------------------------------------------------------//

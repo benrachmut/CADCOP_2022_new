@@ -65,7 +65,7 @@ abstract public class DSA_B extends AgentVariableSearch {
 	}
 
 	@Override
-	protected boolean compute() {
+    public boolean compute() {
 		// if (canCompute) {
 		int candidate = getCandidateToChange_B();
 		if (candidate == valueAssignment) {
@@ -94,7 +94,7 @@ abstract public class DSA_B extends AgentVariableSearch {
 		sendValueAssignmnetMsgs();
 	}
 
-	protected boolean  updateMessageInContext(MsgAlgorithm msgAlgorithm) {
+	public boolean  updateMessageInContext(MsgAlgorithm msgAlgorithm) {
 		updateMsgInContextValueAssignmnet(msgAlgorithm);
 		return true;
 	}

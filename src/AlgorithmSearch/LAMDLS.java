@@ -113,7 +113,7 @@ public class LAMDLS extends AgentVariableSearch {
 
 
     @Override
-    protected boolean updateMessageInContext(MsgAlgorithm msgAlgorithm) {
+    public boolean updateMessageInContext(MsgAlgorithm msgAlgorithm) {
         NodeId sender = msgAlgorithm.getSenderId();
         if (msgAlgorithm instanceof MsgValueAssignmnet) {
             updateMsgInContextValueAssignmnet(msgAlgorithm);
@@ -143,7 +143,7 @@ public class LAMDLS extends AgentVariableSearch {
 
 
     @Override
-    protected boolean compute() {
+    public boolean compute() {
         if (flagSelectColor){
             this.chooseColor();
             changeValueAssignment();

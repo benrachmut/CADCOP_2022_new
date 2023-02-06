@@ -16,15 +16,9 @@ import AgentsAbstract.AgentVariableInference;
 import AgentsAbstract.AgentVariableSearch;
 import AgentsAbstract.NodeId;
 
-import AlgorithmInference.MaxSumSplitConstraintFactorGraphDelay;
-import AlgorithmInference.MaxSumSplitConstraintFactorGraphDelay_SY;
+import AlgorithmInference.*;
 //import AlgorithmInference.MaxSumSplitConstraintFactorGraphSync;
-import AlgorithmInference.MaxSumStandardFunction;
-import AlgorithmInference.MaxSumStandardFunctionDelay;
-import AlgorithmInference.MaxSumStandardFunctionDelay_SY;
 //import AlgorithmInference.MaxSumStandardFunctionSync;
-import AlgorithmInference.MaxSumStandardVariableDelay;
-import AlgorithmInference.MaxSumStandardVariableDelay_SY;
 //import AlgorithmInference.MaxSumStandardVaribleSync;
 
 import AlgorithmSearch.*;
@@ -34,6 +28,7 @@ import Formation.DFS;
 import Formation.Formation;
 import Main.Mailer;
 import Main.MainSimulator;
+import Main.MainSimulatorIterations;
 import Main.UnboundedBuffer;
 import Messages.Msg;
 
@@ -223,6 +218,13 @@ public abstract class Dcop {
 
 		}
 
+		//------------------------
+		if (MainSimulatorIterations.amIRunning){
+			if (MainSimulatorIterations.algorithm == MainSimulatorIterations.Algorithm.maxsum){
+				ans = new MaxSumVariableBen(dcopId, D, agentId+1);
+			}
+		}
+
 		return ans;
 	}
 
@@ -374,7 +376,7 @@ public abstract class Dcop {
 	private void createFactorGraphCombined() {
 
 		int agentType = MainSimulator.agentType;
-		Collections.shuffle(this.neighbors, new Random(this.dcopId));
+		//Collections.shuffle(this.neighbors, new Random(this.dcopId));
 		for (Neighbor n : neighbors) {
 
 			AgentVariableInference av1 = (AgentVariableInference) n.getA1();
@@ -384,87 +386,101 @@ public abstract class Dcop {
 
 			AgentFunction af = null;
 
-			if (agentType == 101) {
-				af = new MaxSumStandardFunctionDelay_SY(dcopId, D, av1.getId(), av2.getId(), constraints);
-				this.agentFunctions.add(af);
-				this.agentsAll.add(af);
-				av1.meetFunction(af.getMyNodes());
-				av2.meetFunction(af.getMyNodes());
-				af.meetVariables(av1.getNodeId(), av2.getNodeId());
+			if (MainSimulatorIterations.amIRunning) {
+				if (MainSimulatorIterations.algorithm == MainSimulatorIterations.Algorithm.maxsum) {
+					af = new MaxSumFunctionBen(dcopId, D, av1.getId(), av2.getId(), constraints);
 
-				AgentVariableInference agentVariableThatWillHoldFunction = whichAgentShouldHoldFunctionNode(av1, av2);
-				agentVariableThatWillHoldFunction.holdTheFunctionNode(af);
+					av1.meetFunctionV2(af.getNodeId());
+					av2.meetFunctionV2(af.getNodeId());
 
-			}
-
-			if (agentType == 102) {
-
-				af = new MaxSumSplitConstraintFactorGraphDelay_SY(dcopId, D, av1.getId() , av2.getId() ,
-						constraints); // Will create a new MaxSumSplitConstraintFactorGraphSync
-				MaxSumSplitConstraintFactorGraphDelay_SY splitConstraintAgent = (MaxSumSplitConstraintFactorGraphDelay_SY) af;
-
-				List<MaxSumStandardFunctionDelay_SY> splitList = splitConstraintAgent.getSplitFunctionNodes();
-
-				for (int i = 0; i < splitConstraintAgent.getSplitFunctionNodes().size(); i++) {
-					this.agentFunctions.add(splitList.get(i));
-					this.agentsAll.add(splitList.get(i));
+					this.agentFunctions.add(af);
+					this.agentsAll.add(af);
 				}
 
-				av1.meetFunction(af.getMyNodes());
-				av2.meetFunction(af.getMyNodes());
-				af.meetVariables(av1.getNodeId(), av2.getNodeId());
+			} else {
 
-				MaxSumStandardFunction af1 = splitConstraintAgent.getFirstSplit();
-				av1.holdTheFunctionNode(af1);
-				// af1.variableNodeThatHoldsMe(av1);
+				if (agentType == 101) {
+					af = new MaxSumStandardFunctionDelay_SY(dcopId, D, av1.getId(), av2.getId(), constraints);
+					this.agentFunctions.add(af);
+					this.agentsAll.add(af);
+					av1.meetFunction(af.getMyNodes());
+					av2.meetFunction(af.getMyNodes());
+					af.meetVariables(av1.getNodeId(), av2.getNodeId());
 
-				MaxSumStandardFunction af2 = splitConstraintAgent.getSecondSplit();
-				av2.holdTheFunctionNode(af2);
-				// af2.variableNodeThatHoldsMe(av2);
+					AgentVariableInference agentVariableThatWillHoldFunction = whichAgentShouldHoldFunctionNode(av1, av2);
+					agentVariableThatWillHoldFunction.holdTheFunctionNode(af);
 
-			}
-
-			if (agentType == 103) {
-				af = new MaxSumStandardFunctionDelay(dcopId, D, av1.getId(), av2.getId(), constraints);
-				this.agentFunctions.add(af);
-				this.agentsAll.add(af);
-				av1.meetFunction(af.getMyNodes());
-				av2.meetFunction(af.getMyNodes());
-				af.meetVariables(av1.getNodeId(), av2.getNodeId());
-
-				AgentVariableInference agentVariableThatWillHoldFunction = whichAgentShouldHoldFunctionNode(av1, av2);
-
-				agentVariableThatWillHoldFunction.holdTheFunctionNode(af);
-				// af.variableNodeThatHoldsMe(agentVariableThatWillHoldFunction);
-			}
-
-			if (agentType == 104) {
-
-				af = new MaxSumSplitConstraintFactorGraphDelay(dcopId, D, av1.getId() , av2.getId(),
-						constraints); // Will create a new MaxSumSplitConstraintFactorGraphSync
-				MaxSumSplitConstraintFactorGraphDelay splitConstraintAgent = (MaxSumSplitConstraintFactorGraphDelay) af;
-
-				List<MaxSumStandardFunctionDelay> splitList = splitConstraintAgent.getSplitFunctionNodes();
-
-				for (int i = 0; i < splitConstraintAgent.getSplitFunctionNodes().size(); i++) {
-					this.agentFunctions.add(splitList.get(i));
-					this.agentsAll.add(splitList.get(i));
 				}
 
-				av1.meetFunction(af.getMyNodes());
-				av2.meetFunction(af.getMyNodes());
-				af.meetVariables(av1.getNodeId(), av2.getNodeId());
+				if (agentType == 102) {
 
-				MaxSumStandardFunction af1 = splitConstraintAgent.getFirstSplit();
-				av1.holdTheFunctionNode(af1);
-				// af1.variableNodeThatHoldsMe(av1);
+					af = new MaxSumSplitConstraintFactorGraphDelay_SY(dcopId, D, av1.getId(), av2.getId(),
+							constraints); // Will create a new MaxSumSplitConstraintFactorGraphSync
+					MaxSumSplitConstraintFactorGraphDelay_SY splitConstraintAgent = (MaxSumSplitConstraintFactorGraphDelay_SY) af;
 
-				MaxSumStandardFunction af2 = splitConstraintAgent.getSecondSplit();
-				av2.holdTheFunctionNode(af2);
-				// af2.variableNodeThatHoldsMe(av2);
+					List<MaxSumStandardFunctionDelay_SY> splitList = splitConstraintAgent.getSplitFunctionNodes();
+
+					for (int i = 0; i < splitConstraintAgent.getSplitFunctionNodes().size(); i++) {
+						this.agentFunctions.add(splitList.get(i));
+						this.agentsAll.add(splitList.get(i));
+					}
+
+					av1.meetFunction(af.getMyNodes());
+					av2.meetFunction(af.getMyNodes());
+					af.meetVariables(av1.getNodeId(), av2.getNodeId());
+
+					MaxSumStandardFunction af1 = splitConstraintAgent.getFirstSplit();
+					av1.holdTheFunctionNode(af1);
+					// af1.variableNodeThatHoldsMe(av1);
+
+					MaxSumStandardFunction af2 = splitConstraintAgent.getSecondSplit();
+					av2.holdTheFunctionNode(af2);
+					// af2.variableNodeThatHoldsMe(av2);
+
+				}
+
+				if (agentType == 103) {
+					af = new MaxSumStandardFunctionDelay(dcopId, D, av1.getId(), av2.getId(), constraints);
+					this.agentFunctions.add(af);
+					this.agentsAll.add(af);
+					av1.meetFunction(af.getMyNodes());
+					av2.meetFunction(af.getMyNodes());
+					af.meetVariables(av1.getNodeId(), av2.getNodeId());
+
+					AgentVariableInference agentVariableThatWillHoldFunction = whichAgentShouldHoldFunctionNode(av1, av2);
+
+					agentVariableThatWillHoldFunction.holdTheFunctionNode(af);
+					// af.variableNodeThatHoldsMe(agentVariableThatWillHoldFunction);
+				}
+
+				if (agentType == 104) {
+
+					af = new MaxSumSplitConstraintFactorGraphDelay(dcopId, D, av1.getId(), av2.getId(),
+							constraints); // Will create a new MaxSumSplitConstraintFactorGraphSync
+					MaxSumSplitConstraintFactorGraphDelay splitConstraintAgent = (MaxSumSplitConstraintFactorGraphDelay) af;
+
+					List<MaxSumStandardFunctionDelay> splitList = splitConstraintAgent.getSplitFunctionNodes();
+
+					for (int i = 0; i < splitConstraintAgent.getSplitFunctionNodes().size(); i++) {
+						this.agentFunctions.add(splitList.get(i));
+						this.agentsAll.add(splitList.get(i));
+					}
+
+					av1.meetFunction(af.getMyNodes());
+					av2.meetFunction(af.getMyNodes());
+					af.meetVariables(av1.getNodeId(), av2.getNodeId());
+
+					MaxSumStandardFunction af1 = splitConstraintAgent.getFirstSplit();
+					av1.holdTheFunctionNode(af1);
+					// af1.variableNodeThatHoldsMe(av1);
+
+					MaxSumStandardFunction af2 = splitConstraintAgent.getSecondSplit();
+					av2.holdTheFunctionNode(af2);
+					// af2.variableNodeThatHoldsMe(av2);
+
+				}
 
 			}
-
 		}
 
 		if (MainSimulator.isFactorGraphDebug) {

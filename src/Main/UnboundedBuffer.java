@@ -56,6 +56,28 @@ public class UnboundedBuffer<T>{
 	public boolean isEmpty() {
 		return this.buffer.isEmpty();
 	}
+
+
+	public  List<T> extractForIteration() {
+
+
+
+		List<T> ans = new ArrayList<T>();
+
+		for (List<T> l1 : buffer) {
+			if (l1 == null) {
+				return null;
+			}
+			for (T t : l1) {
+				ans.add(t);
+			}
+		}
+
+
+		buffer.clear();
+		return ans;
+	}
+
 }
 
 

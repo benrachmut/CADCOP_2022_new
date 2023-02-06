@@ -63,7 +63,7 @@ public class MonotonicStochastic2Coordination extends MonotonicStochastic2Coordi
     }
 
 
-    protected boolean updateMessageInContext(MsgAlgorithm msgAlgorithm) {
+    public boolean updateMessageInContext(MsgAlgorithm msgAlgorithm) {
         super.updateMessageInContext(msgAlgorithm);
         NodeId senderId = msgAlgorithm.getSenderId();
         if (msgAlgorithm instanceof MsgAMDLSColorAndDoc){

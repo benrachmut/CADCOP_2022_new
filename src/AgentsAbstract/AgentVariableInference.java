@@ -1,9 +1,6 @@
 package AgentsAbstract;
 
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 
 import Main.MainSimulator;
 import Messages.Msg;
@@ -14,6 +11,7 @@ public abstract class AgentVariableInference extends AgentVariable {
 	protected SortedMap<NodeId, MsgReceive<double[]>> functionMsgs;
 	protected Map<NodeId, AgentFunction> functionNodes;
 	protected boolean flagOfInferenceForKey;
+	protected Set<NodeId> functionNeighbors;
 
 	public AgentVariableInference(int dcopId, int D, int id1) {
 		super(dcopId, D, id1);
@@ -21,6 +19,7 @@ public abstract class AgentVariableInference extends AgentVariable {
 		this.functionNodes = new TreeMap<NodeId, AgentFunction>();
 		flagOfInferenceForKey = false;
 		this.nodeId = new NodeId(id1,true);
+		functionNeighbors = new HashSet<NodeId>();
 
 	}
 	public void meetNeighbor(int neighborId, Integer[][] constraint) {
@@ -83,6 +82,10 @@ public abstract class AgentVariableInference extends AgentVariable {
 
 		}
 
+	}
+
+	public void meetFunctionV2(NodeId nodeId) {
+		this.functionNeighbors.add(nodeId);
 	}
 
 	// OmerP - New meetFunction method.

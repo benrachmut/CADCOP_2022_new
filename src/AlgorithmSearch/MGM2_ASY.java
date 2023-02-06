@@ -21,7 +21,7 @@ public class MGM2_ASY extends MGM2{
 
 
 	@Override
-	protected boolean updateMessageInContext(MsgAlgorithm msgAlgorithm) {
+    public boolean updateMessageInContext(MsgAlgorithm msgAlgorithm) {
 		return false;
 	}
 
@@ -31,7 +31,7 @@ public class MGM2_ASY extends MGM2{
 	}
 
 	@Override
-	protected boolean compute() {
+    public boolean compute() {
 		return false;
 	}
 

@@ -29,8 +29,8 @@ public abstract class Agent implements Runnable, Comparable<Agent> {
 
 	protected boolean isWithTimeStamp;
 	// protected Mailer mailer;
-	protected UnboundedBuffer<Msg> outbox;
-	protected UnboundedBuffer<Msg> inbox;
+	public UnboundedBuffer<Msg> outbox;
+	public UnboundedBuffer<Msg> inbox;
 
 	protected Double computationCounter;
 	// protected boolean stopThreadCondition;
@@ -384,7 +384,7 @@ public abstract class Agent implements Runnable, Comparable<Agent> {
 	 */
 	protected abstract int getSenderCurrentTimeStampFromContext(MsgAlgorithm msgAlgorithm);
 
-	protected abstract boolean updateMessageInContext(MsgAlgorithm msgAlgorithm);
+	public abstract boolean updateMessageInContext(MsgAlgorithm msgAlgorithm);
 
 	public abstract boolean getDidComputeInThisIteration();
 
@@ -394,7 +394,7 @@ public abstract class Agent implements Runnable, Comparable<Agent> {
 	 * 
 	 * @return if statues changed after context was updated
 	 */
-	protected abstract boolean compute();
+	public abstract boolean compute();
 
 	/**
 	 * after verification, loop over neighbors and send them the message using the

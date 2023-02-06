@@ -58,7 +58,7 @@ public class MGM_SY extends MGM {
 	}
 
 	@Override
-	protected boolean updateMessageInContext(MsgAlgorithm m) {
+    public boolean updateMessageInContext(MsgAlgorithm m) {
 		if (this.timeStampCounter == m.getTimeStamp()) {
 			super.updateMessageInContext(m);
 		} else {

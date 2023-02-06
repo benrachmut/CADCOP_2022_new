@@ -144,7 +144,7 @@ public class AMDLS_V1 extends AgentVariableSearch implements SelfCounterable {
 
 	// 1
 	@Override
-	protected boolean updateMessageInContext(MsgAlgorithm msgAlgorithm) {
+    public boolean updateMessageInContext(MsgAlgorithm msgAlgorithm) {
 /*
 		if (MainSimulator.isAMDLSdebug && this.id==19) {
 			System.out.println();
@@ -238,7 +238,7 @@ public class AMDLS_V1 extends AgentVariableSearch implements SelfCounterable {
 
 	// 4
 	@Override
-	protected boolean compute() {
+    public boolean compute() {
 		if (consistentFlag ) {
 			
 			decideAndChange();

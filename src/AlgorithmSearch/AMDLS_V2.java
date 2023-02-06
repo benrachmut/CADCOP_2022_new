@@ -180,7 +180,7 @@ public class AMDLS_V2 extends AMDLS_V1 {
 	}
 
 	@Override
-	protected boolean updateMessageInContext(MsgAlgorithm msgAlgorithm) {
+    public boolean updateMessageInContext(MsgAlgorithm msgAlgorithm) {
 	
 		if (msgAlgorithm instanceof MsgAMDLSColor) {
 			Integer colorN = ((MsgAMDLSColor) msgAlgorithm).getColor();
@@ -247,7 +247,7 @@ public class AMDLS_V2 extends AMDLS_V1 {
 
 	}
 
-	protected boolean compute() {
+	public boolean compute() {
 		if (canSetColorFlag) {
 			chooseColor();
 			setAboveAndBelow();

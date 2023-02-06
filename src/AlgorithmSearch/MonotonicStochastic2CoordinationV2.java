@@ -179,7 +179,7 @@ public class MonotonicStochastic2CoordinationV2 extends AgentVariableSearch impl
     }
 
     @Override
-    protected boolean updateMessageInContext(MsgAlgorithm msgAlgorithm) {
+    public boolean updateMessageInContext(MsgAlgorithm msgAlgorithm) {
 
 
 
@@ -289,7 +289,7 @@ public class MonotonicStochastic2CoordinationV2 extends AgentVariableSearch impl
     }
 
     @Override
-    protected boolean compute() {
+    public boolean compute() {
         if ((this.myStatues == status.selectColor || this.myStatues == status.consistentAndColor) &&this.selfCounter>1){
             if (isWithChangeVAwithColor) {
                 changeValueAssignment();

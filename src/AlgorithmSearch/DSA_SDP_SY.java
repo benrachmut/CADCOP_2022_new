@@ -34,7 +34,7 @@ public class DSA_SDP_SY extends DSA_SDP {
 	}
 
 	@Override
-	protected boolean updateMessageInContext(MsgAlgorithm msgAlgorithm) {
+    public boolean updateMessageInContext(MsgAlgorithm msgAlgorithm) {
 
 		
 		if (this.timeStampCounter == msgAlgorithm.getTimeStamp()) {

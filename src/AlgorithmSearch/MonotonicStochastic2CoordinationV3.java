@@ -214,7 +214,7 @@ public class MonotonicStochastic2CoordinationV3 extends AgentVariableSearch impl
     }
 
     @Override
-    protected boolean updateMessageInContext(MsgAlgorithm msgAlgorithm) {
+    public boolean updateMessageInContext(MsgAlgorithm msgAlgorithm) {
         NodeId sender = msgAlgorithm.getSenderId();
 
         int neighborCounter = ((MsgAMDLSColor) msgAlgorithm).getCounter();
@@ -321,7 +321,7 @@ public class MonotonicStochastic2CoordinationV3 extends AgentVariableSearch impl
     }
 
     @Override
-    protected boolean compute() {
+    public boolean compute() {
         if (this.myStatues == status.selectColor || this.myStatues == status.consistentAndColor){
 
         }

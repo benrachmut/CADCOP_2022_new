@@ -130,7 +130,7 @@ public  class  MaxSumStandardVarible extends AgentVariableInference {
 	// OmerP - when a message received will update the context and flag that a
 	// message was received.
 	@Override
-	protected boolean updateMessageInContext(MsgAlgorithm msgAlgorithm) {
+	public boolean updateMessageInContext(MsgAlgorithm msgAlgorithm) {
 
 		MsgAlgorithmFactor msgAlgorithmFactor = (MsgAlgorithmFactor) msgAlgorithm;
 
