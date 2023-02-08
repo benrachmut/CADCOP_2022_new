@@ -1,12 +1,6 @@
 package Problem;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 import AgentsAbstract.Agent;
 import AgentsAbstract.AgentFunction;
@@ -86,6 +80,21 @@ public abstract class Dcop {
 	protected abstract void setDcopHeader();
 
 	protected abstract void setDcopParameters();
+
+	public Map<NodeId,Integer> getVariableNodeMap(){
+		Map<NodeId,Integer> ans = new HashMap<>();
+		for (AgentVariable av:this.agentsVariables) {
+			ans.put(av.getNodeId(),av.getValueAssignment());
+		}
+		return ans;
+	}
+	public Double getGlobalCost(){
+		return Data.Data.calcGlobalCost(this.neighbors);
+
+	}
+
+
+
 
 	public void dcopMeetsMailer(Mailer mailer) {
 		UnboundedBuffer<Msg> msgsFromAgentsToMailer = new UnboundedBuffer<Msg>();

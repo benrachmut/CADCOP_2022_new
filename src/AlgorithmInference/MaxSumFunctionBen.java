@@ -2,6 +2,7 @@ package AlgorithmInference;
 
 import AgentsAbstract.AgentFunction;
 import AgentsAbstract.NodeId;
+import Main.MainSimulatorIterations;
 import Main.UnboundedBuffer;
 import Messages.Msg;
 import Messages.MsgAlgorithm;
@@ -9,6 +10,7 @@ import Messages.MsgAlgorithm;
 import java.util.*;
 
 public class MaxSumFunctionBen extends AgentFunction {
+
 
     private  int id1;
     private  int id2;
@@ -43,7 +45,9 @@ public class MaxSumFunctionBen extends AgentFunction {
     private void createConstraintMap(Integer[][] constraints) {
         this.constraintsTemp = constraints;
         this.constraints = new double[constraints.length][constraints[0].length];
-        addDust();
+        if (MaxSumVariableBen.isWithDust) {
+            addDust();
+        }
         this.constraintsMap = new HashMap<>();
         this.constraintsMap.put(new NodeId(id1),this.constraints);
         this.constraintsMap.put(new NodeId(id2),transposeConstraintMatrix(this.constraints));
@@ -99,7 +103,11 @@ public class MaxSumFunctionBen extends AgentFunction {
 
     @Override
     public boolean updateMessageInContext(MsgAlgorithm msgAlgorithm) {
-        return false;
+        NodeId sender = msgAlgorithm.getSenderId();
+        Map<Integer,Double> infoFromMsg = (HashMap<Integer,Double>)msgAlgorithm.getContext();
+        this.localView.put(sender,infoFromMsg);
+        return true;
+
     }
 
     @Override
@@ -127,7 +135,26 @@ public class MaxSumFunctionBen extends AgentFunction {
                 this.infoToSend.put(sendTo,infoToSendMap);
             }
         }
+
+        if (MainSimulatorIterations.debugMaxsumR){
+            printRInfo();
+        }
+
         return true;
+    }
+
+    private void printRInfo() {
+        System.out.println("******"+this.toString()+" R:");
+        for (NodeId nodeId: this.infoToSend.keySet()) {
+            System.out.print("**"+nodeId+":{");
+            for (Integer domain:this.infoToSend.get(nodeId).keySet()) {
+                System.out.print("<"+domain+","+this.infoToSend.get(nodeId).get(domain)+">;");
+            }
+            System.out.println("}");
+
+
+        }
+
     }
 
     private double getInfoFromConstraint(NodeId sendTo, Integer potentialDomain, Integer otherDomain) {

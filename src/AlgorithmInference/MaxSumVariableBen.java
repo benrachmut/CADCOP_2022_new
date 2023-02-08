@@ -2,7 +2,6 @@ package AlgorithmInference;
 
 import AgentsAbstract.AgentVariableInference;
 import AgentsAbstract.NodeId;
-import Main.MainSimulator;
 import Main.MainSimulatorIterations;
 import Main.UnboundedBuffer;
 import Messages.Msg;
@@ -15,10 +14,9 @@ public class MaxSumVariableBen extends AgentVariableInference {
     private Map<NodeId, Map<Integer,Double>> localView;
     private Map<NodeId,Map<Integer,Double>> infoToSend;
 
+    public static boolean isWithDust = true;
     public static boolean isWithValueEqualityNotOnlyMin = false;
     public static boolean isWithValueEqualityMin = false;
-
-
     public static boolean isWithMsgEqualityNotOnlyMin = false;
     public static boolean isWithMsgEqualityMin = false;
 
@@ -60,26 +58,39 @@ public class MaxSumVariableBen extends AgentVariableInference {
     public boolean updateMessageInContext(MsgAlgorithm msgAlgorithm) {
         NodeId sender = msgAlgorithm.getSenderId();
         Map<Integer,Double> infoFromMsg = (HashMap<Integer,Double>)msgAlgorithm.getContext();
-        isWithMsgEqualityMin = checkForEqualityMin(infoFromMsg);
-        isWithMsgEqualityNotOnlyMin = checkForEqualityNotOnlyMin(infoFromMsg);
         this.localView.put(sender,infoFromMsg);
+        this.checkForMsgEquality(sender);
+
         return true;
     }
 
-    private static boolean checkForEqualityMin(Map<Integer, Double> infoFromMsg) {
+    private void checkForMsgEquality(NodeId sender) {
+        if (!isWithMsgEqualityMin) {
+            isWithMsgEqualityMin = this.checkForEqualityMinMsg(sender);
+        }
+        if (!isWithMsgEqualityNotOnlyMin) {
+            isWithMsgEqualityNotOnlyMin = this.checkForEqualityNotOnlyMinMsg(sender);
+        }
+    }
+
+
+    private boolean checkForEqualityMinMsg(NodeId sender) {
+        Map<Integer, Double>  infoFromMsg = this.localView.get(sender);
         Map<Double,Integer> repetitions= getByRepetitions(infoFromMsg.values());
         double minVal = Collections.min(infoFromMsg.values());
         repetitions = filterAboveOne(repetitions);
         return  repetitions.containsValue(minVal);
-
     }
 
 
-    private static boolean checkForEqualityNotOnlyMin(Map<Integer, Double> currentContext) {
-        Map<Double,Integer> repetitions= getByRepetitions(currentContext.values());
+    private boolean checkForEqualityNotOnlyMinMsg(NodeId sender) {
+        Map<Integer, Double>  infoFromMsg = this.localView.get(sender);
+        Map<Double,Integer> repetitions= getByRepetitions(infoFromMsg.values());
         repetitions = filterAboveOne(repetitions);
-        return repetitions.isEmpty();
+        return !repetitions.isEmpty();
     }
+
+
 
     private static Map<Double, Integer> filterAboveOne(Map<Double, Integer> repetitions) {
         Map<Double, Integer> ans = new HashMap<>();
@@ -124,12 +135,45 @@ public class MaxSumVariableBen extends AgentVariableInference {
             this.infoToSend.put(sendTo,infoMap);
         }
 
+
+        if (MainSimulatorIterations.debugMaxsumQ){
+                printQInfo();
+        }
         normalizeInfo();
+
 
 
     }
 
+    private void printQInfo() {
+        System.out.println("******"+this.toString()+" Q:");
+        for (NodeId nodeId: this.infoToSend.keySet()) {
+            System.out.print("**"+nodeId+":{");
+            for (Integer domain:this.infoToSend.get(nodeId).keySet()) {
+                System.out.print("<"+domain+","+this.infoToSend.get(nodeId).get(domain)+">;");
+            }
+            System.out.println("}");
+
+
+        }
+
+    }
+
     private void normalizeInfo() {
+        for (NodeId nodeId : this.infoToSend.keySet()) {
+            Map<Integer, Double> map = this.infoToSend.get(nodeId);
+            double minVal = Collections.min(map.values());
+            for (Integer domain : map.keySet()) {
+                double currentVal = map.get(domain);
+                double updatedVal = currentVal - minVal;
+                if (updatedVal < 0) {
+                    throw new RuntimeException("something with normalization doesnt make sense");
+                }
+                this.infoToSend.get(nodeId).put(domain, updatedVal);
+            }
+        }
+    }
+        /*
         double minValSent =  this.getMinValSent();
         boolean flag = false;
 
@@ -150,8 +194,10 @@ public class MaxSumVariableBen extends AgentVariableInference {
         if (!flag){
             throw  new RuntimeException("something with normalization doesnt make sense");
         }
-    }
+        */
 
+
+/*
     private double getMinValSent() {
         List<Double>list = new ArrayList<Double>();
         for (NodeId nodeId:this.infoToSend.keySet()) {
@@ -160,6 +206,8 @@ public class MaxSumVariableBen extends AgentVariableInference {
         }
         return Collections.min(list);
     }
+
+ */
 
     private Map<Integer, Double> createInfoMap(NodeId sendTo) {
         Map<Integer, Double> infoMap = new HashMap<Integer, Double>();
@@ -190,12 +238,9 @@ public class MaxSumVariableBen extends AgentVariableInference {
         this.cleanCurrentContext();
         this.updateCurrentContextFromLocalView();
         this.selectValueFromCurrentContext();
-        if (MainSimulatorIterations.debug){
+        if (MainSimulatorIterations.debugMaxsumBelief){
             printBelief();
         }
-
-
-
     }
 
     private void printBelief() {
@@ -207,16 +252,40 @@ public class MaxSumVariableBen extends AgentVariableInference {
 
     private void selectValueFromCurrentContext() {
         double minValue = Collections.min(this.currentContext.values());
-        isWithValueEqualityMin = checkForEqualityMin(this.currentContext);
-        isWithValueEqualityNotOnlyMin = checkForEqualityNotOnlyMin(this.currentContext);
+        checkValueEquality();
+
+        //if (isWithValueEqualityMin){
+          //  System.out.println(1);
+        //}
 
         List<Integer> domains = getDomains(minValue);
-        if (domains.size()>1){
-            isWithValueEqualityMin = true;
-        }
+
         this.valueAssignment = domains.get(0);
     }
 
+    private void checkValueEquality() {
+        if (!isWithValueEqualityNotOnlyMin) {
+            isWithValueEqualityNotOnlyMin = checkForEqualityNotOnlyMinValue();
+        }
+        if (!isWithValueEqualityMin) {
+            isWithValueEqualityMin = checkForEqualityMinMsgValue();
+        }
+    }
+
+
+    private boolean checkForEqualityMinMsgValue() {
+        Map<Double,Integer> repetitions= getByRepetitions(currentContext.values());
+        double minVal = Collections.min(currentContext.values());
+        repetitions = filterAboveOne(repetitions);
+        return  repetitions.containsKey(minVal);
+    }
+
+
+    private boolean checkForEqualityNotOnlyMinValue() {
+        Map<Double,Integer> repetitions= getByRepetitions(this.currentContext.values());
+        repetitions = filterAboveOne(repetitions);
+        return !repetitions.isEmpty();
+    }
 
 
     private List<Integer> getDomains(double minValue) {

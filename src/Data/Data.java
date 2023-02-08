@@ -371,7 +371,7 @@ public class Data {
 		return ans;
 	}
 
-	private static Double calcGlobalCost(List<Neighbor> neighbors) {
+	public static Double calcGlobalCost(List<Neighbor> neighbors) {
 		double ans = 0.0;
 		for (Neighbor n : neighbors) {
 			if (n.getCurrentCost() == null) {
