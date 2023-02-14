@@ -2,14 +2,14 @@ package Main;
 
 import AgentsAbstract.Agent;
 import AgentsAbstract.NodeId;
+import AlgorithmInference.MaxSumVariableBen;
 import Messages.Msg;
 import Messages.MsgAlgorithm;
 import Problem.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.util.*;
 
 
 public class MainSimulatorIterations {
@@ -34,7 +34,7 @@ public class MainSimulatorIterations {
     public static int uniformCostUB = 100;
 
     public static int parameterForConverges = 30;
-    public static int[] agentSizeList = {3};
+    public static int[] agentSizeList = {2,3,4,5,6,7,8,9,10};
     public static int[] domainsSizeList = {3};
 
     public static boolean runKnownAmount = false;
@@ -65,33 +65,119 @@ public class MainSimulatorIterations {
     private static void runUntilReachNonConvergeLimit() {
         for (int domainSize:domainsSizeList) {
             for(int agentSize: agentSizeList){
+                System.out.println("A_"+agentSize+", D_"+domainSize);
                 int dcopId = 0;
                 int amountNotConvergedCounter = 0;
                 initializeDataStructures();
-
                 while(amountNotConvergedCounter!=amountNotConverged){
                     globalCostsData.put(dcopId,new HashMap<Integer,Double>());
                     Dcop dcop = createDcop(dcopId,agentSize,domainSize);
                     dcop.initiate();
+                    if (dcop.getId()%10000 == 0){
+                        System.out.println(dcop.getId());
+                    }
                     boolean isConverged = runDcop(dcop);
+                    updateData(isConverged,dcop);
                     if (!isConverged) {
                         amountNotConvergedCounter = amountNotConvergedCounter + 1;
                     }
                     dcopId = dcopId+1;
                 }
 
-                createData(domainSize,agentSize);
+                exportData(domainSize,agentSize);
             }
 
         }
     }
 
+    private static void exportData(int domainSize, int agentSize) {
+        String fileName = createFileName(domainSize,agentSize);
+        String header = "Agents,Domain,Cost_Type,DCOP_ID,Diverge,Value_Equality,Msg_Equality";
+        List<String>lines = createLines(domainSize,agentSize);
+        createExcel(fileName,header,lines);
+
+
+    }
+
+    private static void createExcel(String fileName, String header, Collection<String> lines) {
+        BufferedWriter out = null;
+        try {
+            FileWriter s = new FileWriter(fileName + ".csv");
+            out = new BufferedWriter(s);
+            out.write(header);
+            out.newLine();
+
+            for (String o : lines) {
+                out.write(o);
+                out.newLine();
+            }
+
+            out.close();
+        } catch (Exception e) {
+            System.err.println("Couldn't open the file");
+        }
+
+    }
+
+    private static List<String> createLines(int domainSize, int agentSize) {
+        List<String>lines = new ArrayList<String>();
+        for (int i = 0; i < bitData.get("DCOP_ID").size(); i++) {
+            String line = "";
+            if (bitData.get("Diverge").get(i) == 1 ) {
+                int dcop_id_i = bitData.get("DCOP_ID").get(i);
+                int diverge_i = bitData.get("Diverge").get(i);
+                int value_equality_i = bitData.get("Value_Equality").get(i);
+                int msg_equality_i = bitData.get("Msg_Equality").get(i);
+
+                line = agentSize + "," + domainSize + "," + costType.toString() + "," + dcop_id_i + "," + diverge_i + "," + value_equality_i + "," + msg_equality_i;
+                lines.add(line);
+            }
+        }
+        return lines;
+
+    }
+
+    private static String createFileName(int domainSize, int agentSize) {
+
+        String name = "equality_test,";
+        String agents = "A_"+agentSize+",";
+        String domains ="D_"+domainSize+",";
+        String numberRuns = "amount_N_Converge_"+amountNotConverged+",";
+        String costDist = costType.toString();
+        return name + agents+domains+numberRuns+costDist;
+    }
+
+
+
+    private static void updateData(boolean isConverged, Dcop dcop) {
+        bitData.get("DCOP_ID").add(dcop.getId());
+
+
+        if (isConverged) {
+            bitData.get("Diverge").add(0);
+        }else{
+            bitData.get("Diverge").add(1);
+        }
+        if (MaxSumVariableBen.isWithValueEqualityMin){
+            bitData.get("Value_Equality").add(1);
+        }else{
+            bitData.get("Value_Equality").add(0);
+        }
+        if (MaxSumVariableBen.isWithMsgEqualityMin){
+            bitData.get("Msg_Equality").add(1);
+        }else{
+            bitData.get("Msg_Equality").add(0);
+        }
+
+    }
+
+
+
     private static void initializeDataStructures() {
         globalCostsData = new HashMap<Integer,Map<Integer,Double>>();// dcop id, <Iteration,globalCost>
         bitData = new HashMap<String,List<Integer>>();
         bitData.put("DCOP_ID",new ArrayList<Integer>());
-        bitData.put("Dust",new ArrayList<Integer>());
-        bitData.put("Converges",new ArrayList<Integer>());
+        bitData.put("Diverge",new ArrayList<Integer>());
         bitData.put("Value_Equality",new ArrayList<Integer>());
         bitData.put("Msg_Equality",new ArrayList<Integer>());
 

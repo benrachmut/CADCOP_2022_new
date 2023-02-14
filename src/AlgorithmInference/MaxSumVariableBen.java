@@ -33,7 +33,10 @@ public class MaxSumVariableBen extends AgentVariableInference {
         this.outbox = new UnboundedBuffer<Msg>();
         this.inbox = new UnboundedBuffer<Msg>();
         this.nodeId = new NodeId(id1);
+        isWithValueEqualityNotOnlyMin = false;
         isWithValueEqualityMin = false;
+        isWithMsgEqualityNotOnlyMin = false;
+        isWithMsgEqualityMin = false;
     }
 
 
@@ -75,11 +78,19 @@ public class MaxSumVariableBen extends AgentVariableInference {
 
 
     private boolean checkForEqualityMinMsg(NodeId sender) {
+       /*
+        Map<Double,Integer> repetitions= getByRepetitions(currentContext.values());
+        double minVal = Collections.min(currentContext.values());
+        repetitions = filterAboveOne(repetitions);
+        return  repetitions.containsKey(minVal);
+        */
+
         Map<Integer, Double>  infoFromMsg = this.localView.get(sender);
         Map<Double,Integer> repetitions= getByRepetitions(infoFromMsg.values());
         double minVal = Collections.min(infoFromMsg.values());
         repetitions = filterAboveOne(repetitions);
-        return  repetitions.containsValue(minVal);
+        boolean ans = repetitions.containsKey(minVal);
+        return  ans;
     }
 
 
