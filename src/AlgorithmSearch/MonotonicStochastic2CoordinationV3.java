@@ -188,12 +188,12 @@ public class MonotonicStochastic2CoordinationV3 extends AgentVariableSearch impl
         if (minCounter>this.selfCounter){
             minCounter = this.selfCounter;
         }
-    for (NodeId nId: this.neighborCounters.keySet()){
-        if (this.neighborsColor.get(nId)==null) {
-            this.neighborCounters.put(nId, minCounter);
+        for (NodeId nId: this.neighborCounters.keySet()){
+            if (this.neighborsColor.get(nId)==null) {
+                this.neighborCounters.put(nId, minCounter);
+            }
         }
-    }
-    this.selfCounter = minCounter;
+        this.selfCounter = minCounter;
     }
 
     private boolean allCountersAreEqual() {
@@ -256,12 +256,12 @@ public class MonotonicStochastic2CoordinationV3 extends AgentVariableSearch impl
                 if (!neighborsInfo.isEmpty()) {
                     for (NodeId nodeId : this.neighborsInfo.keySet()) {
                         //try {
-                            if (this.neighborsDocIdsT.get(nodeId) > this.neighborsDocIdsT.get(msgAlgorithm.getSenderId())) {
-                                this.neighborsInfo.remove(nodeId);
-                                this.neighborsInfo.put(sender, nInfo);
-                            }
+                        if (this.neighborsDocIdsT.get(nodeId) > this.neighborsDocIdsT.get(msgAlgorithm.getSenderId())) {
+                            this.neighborsInfo.remove(nodeId);
+                            this.neighborsInfo.put(sender, nInfo);
+                        }
                         //} catch (Exception e) {
-                          //  int x = 3;
+                        //  int x = 3;
                         //}
                     }
                 } else {
@@ -434,9 +434,9 @@ public class MonotonicStochastic2CoordinationV3 extends AgentVariableSearch impl
         if (this.myStatues == status.consistent || this.myStatues == status.consistentAndColor) {
             sendInfoToPartner();
         }
-       // if (this.myStatues == status.changeColorModeAndAbleToReply){
+        // if (this.myStatues == status.changeColorModeAndAbleToReply){
 
-       // }
+        // }
     }
 
     private void sendDoc() {
