@@ -214,12 +214,13 @@ public abstract class Mailer {
 	 * @param msgToSend created by handle msgs
 	 */
 	protected void agentsRecieveMsgs(List<Msg> msgToSend) {
-		Map<NodeId, List<Msg>>MsgsByRecieverNodeId = getRecieversByNodeId(msgToSend);
-		for (Entry<NodeId, List<Msg>> e : MsgsByRecieverNodeId.entrySet()) {
-			NodeId recieverId = e.getKey();
+		Map<NodeId, List<Msg>>MsgsByReceiverNodeId = getRecieversByNodeId(msgToSend);
+		for (Entry<NodeId, List<Msg>> e : MsgsByReceiverNodeId.entrySet()) {
+			NodeId receiverId = e.getKey();
 			List<Msg> msgsForAgnet = e.getValue();
-			UnboundedBuffer<Msg> nodeIdInbox = this.outboxes.get(recieverId);
+			UnboundedBuffer<Msg> nodeIdInbox = this.outboxes.get(receiverId);
 			nodeIdInbox.insert(msgsForAgnet);
+
 		}
 		
 		
