@@ -170,7 +170,9 @@ public class MonotonicStochastic2CoordinationV4 extends AgentVariableSearch impl
     @Override
     public boolean updateMessageInContext(MsgAlgorithm msgAlgorithm) {
         NodeId sender = msgAlgorithm.getSenderId();
-
+        if (this.nodeId.getId1() == 4) {
+            System.out.println("A_4 GOT MSG FROM "+sender.getId1());
+        }
         if (msgAlgorithm instanceof MsgInfoStatuesMonoStoch2){
             MsgInfoStatuesMonoStoch2 msg = (MsgInfoStatuesMonoStoch2)msgAlgorithm;
             Map<String, Double> info = (Map<String, Double>) msg.getContext();
@@ -186,7 +188,20 @@ public class MonotonicStochastic2CoordinationV4 extends AgentVariableSearch impl
             this.neighborsInfo.put(msg.getSenderId(),infoKopt);
         }
 
+        if (msgAlgorithm instanceof MsgFriendReplyMonoStoch2){
+            MsgFriendReplyMonoStoch2 msg = (MsgFriendReplyMonoStoch2)msgAlgorithm;
+            Find2Opt twoOptInfo = (Find2Opt) msg.getContext();
+            basicBeforeValueChange();
+            updateFieldsUsing2OptInfoFromMsg(twoOptInfo);
+        }
+
         return true;
+    }
+
+    private void updateFieldsUsing2OptInfoFromMsg(Find2Opt optInfo) {
+        this.valueAssignment = optInfo.getValueAssignmnet2();
+        this.neighborCounters.put(partnerNodeId,this.neighborCounters.get(partnerNodeId)+1);
+        this.neighborsValueAssignmnet.put(partnerNodeId, new MsgReceive<Integer>(optInfo.getValueAssignmnet1(),0));
     }
 
 
@@ -201,13 +216,18 @@ public class MonotonicStochastic2CoordinationV4 extends AgentVariableSearch impl
         }
         if (this.myStatues == Status.waitForAllColors){
             if (allNeighborsHaveColor()) {
+                this.myStatues = Status.idle;
                 if (isConsistent()) {
                     this.myStatues = Status.consistent;
-                }else{
-                    this.myStatues = Status.idle;
                 }
             }
         }
+        if (this.myStatues == Status.idle){
+            if (isConsistent()) {
+                this.myStatues = Status.consistent;
+            }
+        }
+
 
         if (msgAlgorithm instanceof MsgFriendRequestMonoStoch2) {
             if (this.myStatues == Status.consistent) {
@@ -217,6 +237,15 @@ public class MonotonicStochastic2CoordinationV4 extends AgentVariableSearch impl
             if (isNeighborsByIndexConstraintOk() && allLargerColorsCountersAreEqual() && allNeighborsHaveColor()) {
                 this.myStatues = Status.replyToOffer;
             }
+        }
+
+        if (msgAlgorithm.getSenderId().equals(this.partnerNodeId) && msgAlgorithm instanceof MsgFriendReplyMonoStoch2){
+            this.myStatues = Status.doWhatPartnerSay;
+        }
+
+        if (msgAlgorithm.getSenderId().equals(this.partnerNodeId) && !(msgAlgorithm instanceof MsgFriendReplyMonoStoch2)){
+            this.myStatues = Status.changeAlone;
+
         }
 
     }
@@ -265,7 +294,7 @@ public class MonotonicStochastic2CoordinationV4 extends AgentVariableSearch impl
     @Override
     public boolean getDidComputeInThisIteration() {
         return this.myStatues == Status.canSelectColor || this.myStatues == Status.consistent || this.myStatues == Status.changeAlone
-                || this.myStatues == Status.doWhatPartnerSay || this.myStatues == Status.replyToOffer ;
+                 || this.myStatues == Status.replyToOffer ;
     }
 
     @Override
@@ -283,6 +312,11 @@ public class MonotonicStochastic2CoordinationV4 extends AgentVariableSearch impl
 
         if (this.myStatues == Status.replyToOffer){
             computeIfReplyToOffer();
+        }
+
+        if(this.myStatues == Status.changeAlone){
+            this.basicBeforeValueChange();
+            this.changeValueAssignmentAlone();
         }
         return true;
     }
@@ -302,7 +336,12 @@ public class MonotonicStochastic2CoordinationV4 extends AgentVariableSearch impl
         }
 
         if (this.myStatues  == Status.consistent){
-            sendInfoToPartner(msgsToInsertMsgBox);
+            sendInfoToPartner();
+        }
+
+        if (this.myStatues == Status.replyToOffer || this.myStatues == Status.doWhatPartnerSay){
+            sendInfoToAllTheRest(msgsToInsertMsgBox);
+            partnerNodeId = null;
         }
 
         if(!msgsToInsertMsgBox.isEmpty()) {
@@ -311,7 +350,18 @@ public class MonotonicStochastic2CoordinationV4 extends AgentVariableSearch impl
 
     }
 
+    private void sendInfoToAllTheRest(List<Msg> msgsToInsertMsgBox) {
+        Map<String,Double> info = createInfo();
+        info.remove("color");
+        for (NodeId receiverNodeId : neighborsConstraint.keySet()) {
+            if (!receiverNodeId.equals(this.partnerNodeId)) {
+                MsgInfoStatuesMonoStoch2 msg = new MsgInfoStatuesMonoStoch2
+                        (this.nodeId, receiverNodeId, info, this.timeStampCounter, this.time);
+                msgsToInsertMsgBox.add(msg);
+            }
+        }
 
+    }
 
 
     @Override
@@ -327,7 +377,7 @@ public class MonotonicStochastic2CoordinationV4 extends AgentVariableSearch impl
             this.myStatues = Status.waitForReply;
         }
 
-        if (this.myStatues == Status.replyToOffer || this.myStatues == Status.changeAlone || this.myStatues == Status.replyToOffer ){
+        if (this.myStatues == Status.replyToOffer || this.myStatues == Status.changeAlone || this.myStatues == Status.doWhatPartnerSay ){
             clearData();
             this.myStatues = Status.waitToFinishIteration;
         }
@@ -343,25 +393,36 @@ public class MonotonicStochastic2CoordinationV4 extends AgentVariableSearch impl
     }
 
     private void clearData() {
-
         clearDocIds();
         clearColors();
     }
 
-    private void clearDocIds() {
-        moveDocFromDocIdToDocIdT1();
-        resetDocIdT1ToNull();
-
+    private void clearColors() {
+        for (NodeId nId:this.neighborsColors.keySet()) {
+            if (this.neighborsColorsT1.get(nId)!=null) {
+                int futureColor = this.neighborsColorsT1.get(nId);
+                this.neighborsColors.put(nId, futureColor);
+            }
+            this.neighborsColorsT1.put(nId,null);
+        }
     }
 
-    private void moveDocFromDocIdToDocIdT1() {
+
+    private void clearDocIds() {
+
         for (NodeId nId:this.neighborsDocIdsT.keySet()) {
-            double futureDoc = this.neighborsDocIdsT1.get(nId);
-            this.neighborsDocIdsT.put()
+            if (this.neighborsDocIdsT1.get(nId)!=null) {
+                double futureDoc = this.neighborsDocIdsT1.get(nId);
+                this.neighborsDocIdsT.put(nId, futureDoc);
+            }
+            this.neighborsDocIdsT1.put(nId,null);
         }
     }
 
     private boolean changeAfterCanSelectColor() {
+        if (this.myStatues != Status.canSelectColor){
+            return false;
+        }
         if (this.myStatues == Status.canSelectColor){
             if (!allNeighborsHaveColor()){
                 this.myStatues = Status.waitForAllColors;
@@ -390,8 +451,6 @@ public class MonotonicStochastic2CoordinationV4 extends AgentVariableSearch impl
     public void updateAlgorithmName() {
         AgentVariable.AlgorithmName = "MS2C";
     }
-
-
 
     @Override
     public int getSelfCounterable() {
@@ -558,7 +617,8 @@ public class MonotonicStochastic2CoordinationV4 extends AgentVariableSearch impl
 // -------------------************ msgs  ************-------------------
 
 
-    private void sendInfoToPartner(List<Msg> msgsToInsertMsgBox) {
+    private void sendInfoToPartner() {
+        List<Msg> msgsToInsertMsgBox = new ArrayList<>();
         MsgFriendRequestMonoStoch2 msg = new MsgFriendRequestMonoStoch2(this.nodeId, partnerNodeId, makeMyKOptInfo(), this.timeStampCounter, this.time);
         if (partnerNodeId == null){
             throw new RuntimeException("try to send info to partner but there is no PARTNER SELECTED");
@@ -748,7 +808,7 @@ public class MonotonicStochastic2CoordinationV4 extends AgentVariableSearch impl
         updateFieldsUsing2OptInfo(optInfo);
         sendMsgOfReply(optInfo);
         this.neighborsInfo.clear();
-        partnerNodeId = null;
+
     }
 
     private void sendMsgOfReply(Find2Opt optInfo) {
@@ -776,6 +836,7 @@ public class MonotonicStochastic2CoordinationV4 extends AgentVariableSearch impl
             if (minVal == whoIHaveInfoFor.get(nodeId)){
                 this.neighborCounters.put(nodeId,this.neighborCounters.get(nodeId)+1);
                 this.partnerNodeId = nodeId;
+                return;
             }
         }
         throw new RuntimeException("Was suppose to find partner");
