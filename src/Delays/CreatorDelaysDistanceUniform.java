@@ -14,6 +14,7 @@ public class CreatorDelaysDistanceUniform extends CreatorDelaysMatrixDependenet{
 		 return new ProtocolDelaysDistanceUniform(0);
 	}
 
+
 	@Override
 	protected Collection<? extends ProtocolDelay> createCombinationsDelay(boolean isTimeStamp, double gamma) {
 		List<ProtocolDelay> ans = new ArrayList<ProtocolDelay>();
