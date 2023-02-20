@@ -137,10 +137,8 @@ public class MainSimulator {
 	public static boolean isAnotherColorDebug= true;
 	public static boolean isMDC2CDebug =true;
 
-	public static boolean isMonoStochInit =true;
 
-	public static boolean isMonoStochComputationDebug =true;
-	public static boolean isMonoStochMsgExchangeDebug =true;
+	public static boolean  isMonoStochComputationDebug=true;
 
 
 	public static CreatorDelays creatorDelay;
