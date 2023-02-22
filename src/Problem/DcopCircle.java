@@ -8,35 +8,41 @@ import java.util.*;
 public class DcopCircle extends Dcop{
 
 
-    private int constantColorCost;
+    public enum CostType{uniform,normal,poisson}
+    private int lambda;
     private int uniformCostLB;
     private int uniformCostUB;
     private int numberOfCircles;
-    private boolean costLikeColor;
+    private CostType myCostType;
 
     public DcopCircle(int dcopId, int A, int D,int numberOfCircles, int uniformCostLB,int uniformCostUB) {
         super(dcopId, A, D);
         this.uniformCostLB = uniformCostLB;
         this.uniformCostUB =uniformCostUB;
         this.numberOfCircles = numberOfCircles;
-        costLikeColor = false;
+        myCostType = CostType.uniform;
 
     }
 
 
-    public DcopCircle(int dcopId, int A, int D,int numberOfCircles, int constantColorCost) {
+    public DcopCircle(int dcopId, int A, int D,int numberOfCircles, int lambda) {
         super(dcopId, A, D);
         this.numberOfCircles = numberOfCircles;
-        this.constantColorCost = constantColorCost;
-        costLikeColor = true;
+        this.lambda = lambda;
+        myCostType = CostType.poisson;
+
+    }
+
+    public DcopCircle(int dcopId, int A, int D,int numberOfCircles) {
+        super(dcopId, A, D);
+        this.numberOfCircles = numberOfCircles;
+        myCostType = CostType.normal;
 
     }
 
     @Override
     protected void setDcopName() {
         Dcop.dcopName = "Circle_"+String.valueOf(numberOfCircles)+"_" +MainSimulatorIterations.costType;
-
-
 
     }
 
@@ -67,11 +73,20 @@ public class DcopCircle extends Dcop{
             }else {
                  a2 = agentsVariables[i + 1];
             }
+            boolean flag = false;
+            if (this.myCostType == CostType.uniform) {
+                this.neighbors.add(new Neighbor(a1, a2, D, uniformCostLB, uniformCostUB, dcopId, 1));
+                flag = true;
+            }
 
-            if (costLikeColor) {
-                this.neighbors.add(new Neighbor(a1, a2, D, 0,constantColorCost, dcopId));
-            }else {
-            this.neighbors.add(new Neighbor(a1, a2, D, uniformCostLB,uniformCostUB, dcopId,1));
+            if (this.myCostType == CostType.poisson) {
+
+                Neighbor n = new Neighbor(a1, a2, D, lambda, dcopId, 1.0);
+                this.neighbors.add(n);
+                flag = true;
+            }
+            if (!flag){
+                throw new RuntimeException("must enter ifs");
             }
         }
 

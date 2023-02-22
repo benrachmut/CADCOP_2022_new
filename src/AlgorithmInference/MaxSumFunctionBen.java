@@ -79,7 +79,11 @@ public class MaxSumFunctionBen extends AgentFunction {
     protected void addDust() {
         for (int i = 0; i < constraints.length; i++) {
             for (int j = 0; j < constraints[i].length; j++) {
-                double randomValue = this.r.nextDouble()/ 10000;
+                double rangeMin =0.00000001;
+                double rangeMax = 0.0001;
+                double randomValue = rangeMin + (rangeMax - rangeMin) * r.nextDouble();
+
+                //double randomValue = this.r.nextDouble()/ 10000;
                 constraints[i][j] = (double)constraintsTemp[i][j] + randomValue;
             }
         }

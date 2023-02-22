@@ -11,7 +11,7 @@ import java.util.*;
 
 public class MonotonicStochastic2CoordinationV4 extends AgentVariableSearch implements SelfCounterable {
 
-
+    private boolean withNeighborSizeMultiplier = false;
     enum Status {
         waitToSelectColor,
         canSelectColor,
@@ -152,7 +152,11 @@ public class MonotonicStochastic2CoordinationV4 extends AgentVariableSearch impl
     private void computeIfSelectColor() {
 
         this.myDocId = this.myDocIdT1;
-        this.myDocIdT1 = docIdRandom.nextDouble();
+        if (withNeighborSizeMultiplier) {
+            this.myDocIdT1 = docIdRandom.nextDouble()* Math.pow(0.9,this.neighborsConstraint.size());
+        }else{
+            this.myDocIdT1 = docIdRandom.nextDouble();
+        }
         selfCounter = selfCounter + 1;
         //basicBeforeValueChange();
         if (selfCounter > 1) {
@@ -277,11 +281,16 @@ public class MonotonicStochastic2CoordinationV4 extends AgentVariableSearch impl
                 if (isConsistent()) {
                     this.myStatues = Status.consistent;
                 }
-                if (isNeighborsByIndexConstraintOk() && allLargerColorsCountersAreEqual() && allNeighborsHaveColor()&& !this.neighborsInfo.isEmpty()){
-                    if (this.myStatues == Status.consistent){
-                        throw new RuntimeException();
+                if (!this.neighborsInfo.isEmpty()) {
+                    if (isNeighborsByIndexConstraintOk() && allLargerColorsCountersAreEqual() && allNeighborsHaveColor()) {
+                        if (this.myStatues == Status.consistent) {
+                            throw new RuntimeException();
+                        }
+                        this.myStatues = Status.replyToOffer;
                     }
-                    this.myStatues = Status.replyToOffer;
+                    else {
+                        this.myStatues = Status.waitForReply;
+                    }
                 }
 
             }
@@ -719,8 +728,17 @@ public class MonotonicStochastic2CoordinationV4 extends AgentVariableSearch impl
 
     private boolean iAmMinDocId() {
         Collection <Double> docIds = this.neighborsDocIdsT.values();
+        Double minDocIdFromNeighbors = Double.MAX_VALUE;
+        if (docIds.size() == 0){
+            return true;
+        }
 
-        Double minDocIdFromNeighbors = Collections.min(docIds);
+        if (docIds.size() == 1) {
+            ArrayList<Double> ttt = new ArrayList<>(docIds);
+            minDocIdFromNeighbors = ttt.get(0);
+        }else {
+            minDocIdFromNeighbors = Collections.min(docIds);
+        }
         return this.myDocId < minDocIdFromNeighbors;
 
     }
@@ -966,6 +984,8 @@ public class MonotonicStochastic2CoordinationV4 extends AgentVariableSearch impl
         Collection<NodeId> toRemove = new HashSet<NodeId>();
 
         NodeId infoMaxIndex = getInfoMaxIndex();
+
+
         if (infoMaxIndex!=null) {
             for (NodeId ni : colorMinusOne) {
                 if (this.neighborsDocIdsT.get(infoMaxIndex) < this.neighborsDocIdsT.get(ni)) {
@@ -978,6 +998,16 @@ public class MonotonicStochastic2CoordinationV4 extends AgentVariableSearch impl
 
 
     private NodeId getInfoMaxIndex() {
+        double x = Double.MAX_VALUE;
+        NodeId ans = null;
+        for (NodeId ni: this.neighborsInfo.keySet()){
+            if (this.neighborsDocIdsT.get(ni)<x){
+                ans = ni;
+                x = this.neighborsDocIdsT.get(ni);
+            }
+        }
+        return ans;
+        /*
         int x = Integer.MIN_VALUE;
         NodeId ans = null;
         for (NodeId ni: this.neighborsInfo.keySet()){
@@ -986,6 +1016,8 @@ public class MonotonicStochastic2CoordinationV4 extends AgentVariableSearch impl
             }
         }
         return ans;
+
+         */
     }
     protected Set<NodeId> getColorMinusOne(Set<NodeId> smallerColor) {
         Set<NodeId>colorMinusOne = new HashSet<NodeId>();

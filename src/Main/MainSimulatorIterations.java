@@ -20,18 +20,19 @@ public class MainSimulatorIterations {
 
 
     public enum Algorithm {maxsum}
-    public enum GraphType{circle,uniform}
-    public enum CostType{color,uniform}
+    public enum GraphType{circle}
+    public enum CostType{uniform,poisson}
 
     public static Algorithm algorithm= Algorithm.maxsum;
     public static GraphType graphType= GraphType.circle;
-    public static CostType costType = CostType.uniform;
+    public static CostType costType = CostType.poisson;
 
 
     public static int numberOfCircles = 1;
     public static int constantColorCost = 100;
     public static int uniformCostLB = 0;
     public static int uniformCostUB = 100;
+    public static int lambda=50;
 
     public static int parameterForConverges = 30;
     public static int[] agentSizeList = {2,3,4,5,6,7,8,9,10};
@@ -353,11 +354,14 @@ public class MainSimulatorIterations {
         Dcop ans = null;
         // use default Domain contractors
         if (graphType == GraphType.circle){
-            if (costType == CostType.color) {
-                ans = new DcopCircle(dcopId, agentSize, domainSize, numberOfCircles,constantColorCost);
-            }
+
             if (costType == CostType.uniform) {
                 ans = new DcopCircle(dcopId, agentSize, domainSize, numberOfCircles,uniformCostLB,uniformCostUB);
+            }
+
+            if (costType == CostType.poisson) {
+
+                ans = new DcopCircle(dcopId, agentSize, domainSize, numberOfCircles,lambda);
             }
         }
 
