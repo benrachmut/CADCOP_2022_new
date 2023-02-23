@@ -21,11 +21,11 @@ public class MainSimulatorIterations {
 
     public enum Algorithm {maxsum}
     public enum GraphType{circle}
-    public enum CostType{uniform,poisson}
+    public enum CostType{uniform,poisson, color, poissonIndexBase}
 
     public static Algorithm algorithm= Algorithm.maxsum;
     public static GraphType graphType= GraphType.circle;
-    public static CostType costType = CostType.poisson;
+    public static CostType costType = CostType.poissonIndexBase;
 
 
     public static int numberOfCircles = 1;
@@ -356,12 +356,17 @@ public class MainSimulatorIterations {
         if (graphType == GraphType.circle){
 
             if (costType == CostType.uniform) {
-                ans = new DcopCircle(dcopId, agentSize, domainSize, numberOfCircles,uniformCostLB,uniformCostUB);
+                ans = new DcopCircle(dcopId, agentSize, domainSize, numberOfCircles,uniformCostLB,uniformCostUB,CostType.uniform);
             }
 
             if (costType == CostType.poisson) {
 
-                ans = new DcopCircle(dcopId, agentSize, domainSize, numberOfCircles,lambda);
+                ans = new DcopCircle(dcopId, agentSize, domainSize, numberOfCircles,CostType.poisson);
+            }
+
+            if (costType == CostType.poissonIndexBase) {
+                ans = new DcopCircle(dcopId, agentSize, domainSize, numberOfCircles,CostType.poissonIndexBase);
+
             }
         }
 

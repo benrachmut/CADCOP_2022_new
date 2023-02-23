@@ -26,31 +26,30 @@ public class MonotonicStochastic2CoordinationV4 extends AgentVariableSearch impl
         waitToFinishIteration
     }
 
-    private Map<NodeId, MsgAlgorithm> futureMsgs;
 
     protected int selfCounter;
     protected Integer myColor;
     private HashMap<NodeId, Integer> neighborsColors;
     private HashMap<NodeId, Integer> neighborsColorsT1;
-
     private Map<NodeId, Double> neighborsDocIdsT;
     private Map<NodeId, Double> neighborsDocIdsT1;
     private Random docIdRandom;
     private Double myDocId;
     private Double myDocIdT1;
-
     private Status myStatues;
-
-
     private NodeId partnerNodeId;
+
     public static char typeDecision = 'c';
     public static int moduleChangeColor = 1;
 
+    private HashMap<NodeId, Integer> neighborCounters;
+    private HashMap<NodeId, Integer> neighborPartnerCounters;
+
     private Random rndForPartners;
     private HashMap<NodeId, KOptInfo> neighborsInfo;
+    private Map<NodeId, MsgAlgorithm> futureMsgs;
 
-    HashMap<NodeId, Integer> neighborCounters;
-    private HashMap<NodeId, Integer> neighborPartnerCounters;
+
 
 
     public MonotonicStochastic2CoordinationV4(int dcopId, int D, int id1) {
@@ -663,7 +662,12 @@ public class MonotonicStochastic2CoordinationV4 extends AgentVariableSearch impl
 
     @Override
     public void updateAlgorithmName() {
-        AgentVariable.AlgorithmName = "MS2C";
+        if (withNeighborSizeMultiplier){
+            AgentVariable.AlgorithmName = "MS2C_NSM";
+        }else{
+            AgentVariable.AlgorithmName = "MS2C";
+
+        }
     }
 
     @Override

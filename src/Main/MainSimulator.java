@@ -35,7 +35,7 @@ public class MainSimulator {
 	// public static int dividAtomicTime = 1;
 
 	public static int multiplicationTime = 1;// 2;
-	public static int howManyIterationForCalculation = 10000
+	public static int howManyIterationForCalculation =10; //10000
 			;// 10000;//100000; // sparse = 100,dense=100
 	private static Double[] convergeEximne = { };
 
@@ -54,7 +54,7 @@ public class MainSimulator {
 	public static int start =0;
 	public static int end = start+delta;
 	public static int end_temp = start; // DO NOT CHANGE
-	public static long termination = 8000000;//30000007;
+	public static long termination = 100000;//8000000 30000007;
 	private static int everyHowManyExcel = 100;
 
 	// ------------------------------**PROBLEM MAGNITUDE**
@@ -75,7 +75,7 @@ public class MainSimulator {
 	 */
 
 	// 11,4,14,7
-	public static int agentType = 16;//16;
+	public static int agentType = 11;//16;
 
 	/*
 	 * delayTypes: 0 = non, 1 = normal, 2 = uniform, 3 = Exponential 4 = Possion, 5

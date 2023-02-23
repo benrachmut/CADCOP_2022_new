@@ -8,37 +8,34 @@ import java.util.*;
 public class DcopCircle extends Dcop{
 
 
-    public enum CostType{uniform,normal,poisson}
     private int lambda;
     private int uniformCostLB;
     private int uniformCostUB;
     private int numberOfCircles;
-    private CostType myCostType;
+    private MainSimulatorIterations.CostType costType;
 
-    public DcopCircle(int dcopId, int A, int D,int numberOfCircles, int uniformCostLB,int uniformCostUB) {
+    public DcopCircle(int dcopId, int A, int D,int numberOfCircles, int uniformCostLB,int uniformCostUB,MainSimulatorIterations.CostType costType) {
         super(dcopId, A, D);
         this.uniformCostLB = uniformCostLB;
         this.uniformCostUB =uniformCostUB;
         this.numberOfCircles = numberOfCircles;
-        myCostType = CostType.uniform;
-
+        this.costType = costType;
     }
 
-
-    public DcopCircle(int dcopId, int A, int D,int numberOfCircles, int lambda) {
+    public DcopCircle(int dcopId, int A, int D,int numberOfCircles, int lambda,MainSimulatorIterations.CostType costType) {
         super(dcopId, A, D);
         this.numberOfCircles = numberOfCircles;
         this.lambda = lambda;
-        myCostType = CostType.poisson;
-
+        this.costType = costType;
     }
 
-    public DcopCircle(int dcopId, int A, int D,int numberOfCircles) {
+    public DcopCircle(int dcopId, int A, int D,int numberOfCircles, MainSimulatorIterations.CostType costType) {
         super(dcopId, A, D);
         this.numberOfCircles = numberOfCircles;
-        myCostType = CostType.normal;
-
+        this.costType = costType;
     }
+
+
 
     @Override
     protected void setDcopName() {
@@ -74,52 +71,33 @@ public class DcopCircle extends Dcop{
                  a2 = agentsVariables[i + 1];
             }
             boolean flag = false;
-            if (this.myCostType == CostType.uniform) {
+            if (this.costType == MainSimulatorIterations.CostType.uniform) {
                 this.neighbors.add(new Neighbor(a1, a2, D, uniformCostLB, uniformCostUB, dcopId, 1));
                 flag = true;
             }
 
-            if (this.myCostType == CostType.poisson) {
-
+            if (this.costType == MainSimulatorIterations.CostType.poisson) {
                 Neighbor n = new Neighbor(a1, a2, D, lambda, dcopId, 1.0);
                 this.neighbors.add(n);
                 flag = true;
             }
+
+            if (this.costType == MainSimulatorIterations.CostType.poissonIndexBase) {
+                Neighbor n = new Neighbor(a1, a2, D, dcopId, 1.0);
+                this.neighbors.add(n);
+                flag = true;
+            }
+
+
+
+
             if (!flag){
                 throw new RuntimeException("must enter ifs");
             }
         }
 
-
-    }
-/*
-    private Set<AgentVariable> getNotChosenForCircle(Set<AgentVariable> chosenForCircle) {
-        Set<AgentVariable> notChosenForCircle = new HashSet<>();
-        for (AgentVariable av:this.agentsVariables) {
-            if (!chosenForCircle.contains(av)){
-                notChosenForCircle.add(av);
-            }
-        }
-        return notChosenForCircle;
-
     }
 
-    private Set<AgentVariable> getChosenForCircle() {
-
-        Set<AgentVariable> chosenForCircle = new HashSet<>();
-
-        Iterator<AgentVariable> it = List.of(this.agentsVariables).iterator();
-        int tempNumOfCircle = this.numberOfCircles;
-        while (it.hasNext()) {
-            if (tempNumOfCircle > 0) {
-                AgentVariable chosen = it.next();
-                chosenForCircle.add(chosen);
-                tempNumOfCircle--;
-            }
-        }
-    }
-
- */
 }
 
 
