@@ -9,7 +9,7 @@ import Messages.*;
 
 import java.util.*;
 
-public class MonotonicDeterministicColors2Coordination extends AgentVariableSearch implements SelfCounterable {
+public class MonoDeterministicColorChange extends AgentVariableSearch implements SelfCounterable {
     private NodeId partnerNodeId;
     public static  char typeDecision = 'c' ;
 
@@ -33,7 +33,7 @@ public class MonotonicDeterministicColors2Coordination extends AgentVariableSear
     //private boolean isInconsistent;
     private status myStatues;
 
-    public MonotonicDeterministicColors2Coordination(int dcopId, int D, int id1) {
+    public MonoDeterministicColorChange(int dcopId, int D, int id1) {
         super(dcopId, D, id1);
         AMDLS_V1.typeDecision = 'c';
         updateAlgorithmHeader();
@@ -153,7 +153,7 @@ public class MonotonicDeterministicColors2Coordination extends AgentVariableSear
             }
         }
         if (msgAlgorithm instanceof MsgValueAssignmnet && !(msgAlgorithm instanceof MsgMDC2CFriendRequest)&& !(msgAlgorithm instanceof MsgMDC2CFriendReply)) {
-            updateMsgInContextValueAssignmnet(msgAlgorithm);
+            updateMsgInContextValueAssignment(msgAlgorithm);
         }
 
         if (msgAlgorithm instanceof MsgMDC2CFriendRequest){

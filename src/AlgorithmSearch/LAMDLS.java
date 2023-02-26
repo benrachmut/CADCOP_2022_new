@@ -116,7 +116,7 @@ public class LAMDLS extends AgentVariableSearch {
     public boolean updateMessageInContext(MsgAlgorithm msgAlgorithm) {
         NodeId sender = msgAlgorithm.getSenderId();
         if (msgAlgorithm instanceof MsgValueAssignmnet) {
-            updateMsgInContextValueAssignmnet(msgAlgorithm);
+            updateMsgInContextValueAssignment(msgAlgorithm);
         }
         if (msgAlgorithm instanceof MsgAMDLSColor) {
             int neighborColor = ((MsgAMDLSColor) msgAlgorithm).getColor();

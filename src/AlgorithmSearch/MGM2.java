@@ -16,7 +16,6 @@ import AgentsAbstract.NodeId;
 import Main.MainSimulator;
 import Messages.Msg;
 import Messages.MsgAlgorithm;
-import Messages.MsgLR;
 import Messages.MsgMgm2Phase2FriendshipInformation;
 import Messages.MsgMgm2Phase3FriendshipReplay;
 import Messages.MsgMgm2Phase3LR;
@@ -309,7 +308,7 @@ abstract public class MGM2 extends AgentVariableSearch {
 	 */
 	protected void recieveMsgPhase1(MsgAlgorithm m) {
 		if (m instanceof MsgValueAssignmnet) {
-			updateMsgInContextValueAssignmnet(m);
+			updateMsgInContextValueAssignment(m);
 			phase1RecieveBooleanValueAssignmnet.put(m.getSenderId(), true);
 		} else {
 			throw new RuntimeException("Wrong type msg");

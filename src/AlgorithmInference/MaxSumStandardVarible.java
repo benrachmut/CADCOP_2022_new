@@ -506,28 +506,37 @@ public  class  MaxSumStandardVarible extends AgentVariableInference {
 
 	@Override
 	public void updateAlgorithmName() {
-		if (!damping && MainSimulator.agentType == 101) {
+		MainSimulator.Algorithm algorithm = MainSimulator.algorithm ;
+		/*
+		MainSimulator.MaxSum_SY
+		,MaxSum_split_SY, MaxSum_ASY, MaxSum_split_ASY;
+	/*
+	* 101 = MaxSum-SY; 102 =
+			* MaxSum_split-SY; 103 = MaxSum-ASY; 104 = MaxSum_split-ASY;
+	*/
+
+		if (!damping && algorithm == MainSimulator.Algorithm.MaxSum_SY) {
 			AgentVariable.AlgorithmName = "MaxSum_SY";
 		}
-		
-		if (damping && MainSimulator.agentType == 101) {
+
+		if (!damping && algorithm == MainSimulator.Algorithm.MaxSum_SY) {
 			AgentVariable.AlgorithmName = "MaxSum_DMS_SY";
 		}
-		
-		if (damping && MainSimulator.agentType == 102) {
+
+		if (!damping && algorithm == MainSimulator.Algorithm.MaxSum_split_SY) {
 			AgentVariable.AlgorithmName = "MaxSum_DMS_SCFG_SY";
 		}
-		
-		
-		if (!damping && MainSimulator.agentType == 103) {
+
+
+		if (!damping && algorithm == MainSimulator.Algorithm.MaxSum_ASY) {
 			AgentVariable.AlgorithmName = "MaxSum_ASY";
 		}
-		
-		if (damping && MainSimulator.agentType == 103) {
+
+		if (!damping && algorithm == MainSimulator.Algorithm.MaxSum_ASY) {
 			AgentVariable.AlgorithmName = "MaxSum_DMS_ASY";
 		}
-		
-		if (damping && MainSimulator.agentType == 104) {
+
+		if (!damping && algorithm == MainSimulator.Algorithm.MaxSum_split_ASY) {
 			AgentVariable.AlgorithmName = "MaxSum_DMS_SCFG_ASY";
 		}
 		

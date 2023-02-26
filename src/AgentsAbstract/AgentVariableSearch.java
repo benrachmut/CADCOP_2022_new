@@ -1,7 +1,6 @@
 package AgentsAbstract;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -272,7 +271,7 @@ public abstract class AgentVariableSearch extends AgentVariable {
 		return ans;
 	}
 
-	protected void updateMsgInContextValueAssignmnet(MsgAlgorithm msgAlgorithm) {
+	protected void updateMsgInContextValueAssignment(MsgAlgorithm msgAlgorithm) {
 		int context =  ((Integer) msgAlgorithm.getContext());
 		int timestamp = msgAlgorithm.getTimeStamp();
 		MsgReceive<Integer> msgReceive = new MsgReceive<Integer>(context, timestamp);

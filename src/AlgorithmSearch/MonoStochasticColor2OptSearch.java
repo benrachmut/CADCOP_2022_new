@@ -9,7 +9,7 @@ import Messages.*;
 
 import java.util.*;
 
-public class MonotonicStochastic2CoordinationV4 extends AgentVariableSearch implements SelfCounterable {
+public class MonoStochasticColor2OptSearch extends AgentVariableSearch implements SelfCounterable {
 
     private boolean withNeighborSizeMultiplier = false;
     enum Status {
@@ -52,7 +52,7 @@ public class MonotonicStochastic2CoordinationV4 extends AgentVariableSearch impl
 
 
 
-    public MonotonicStochastic2CoordinationV4(int dcopId, int D, int id1) {
+    public MonoStochasticColor2OptSearch(int dcopId, int D, int id1) {
         super(dcopId, D, id1);
         AMDLS_V1.typeDecision = 'c';
         updateAlgorithmHeader();

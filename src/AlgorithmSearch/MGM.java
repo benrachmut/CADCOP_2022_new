@@ -14,7 +14,6 @@ import AgentsAbstract.AgentVariable;
 import AgentsAbstract.AgentVariableSearch;
 import AgentsAbstract.NodeId;
 import Messages.Msg;
-import Messages.MsgAMDLS;
 import Messages.MsgAlgorithm;
 import Messages.MsgLR;
 import Messages.MsgReceive;
@@ -94,7 +93,7 @@ public abstract class MGM extends AgentVariableSearch {
 	@Override
     public boolean updateMessageInContext(MsgAlgorithm msgAlgorithm) {
 		if (msgAlgorithm instanceof MsgValueAssignmnet) {
-			updateMsgInContextValueAssignmnet(msgAlgorithm);
+			updateMsgInContextValueAssignment(msgAlgorithm);
 			return true;
 		}
 		if (msgAlgorithm instanceof MsgLR) {

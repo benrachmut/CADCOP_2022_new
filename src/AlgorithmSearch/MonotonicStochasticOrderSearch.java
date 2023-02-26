@@ -8,7 +8,6 @@ import Main.MainSimulator;
 import Messages.Msg;
 import Messages.MsgAlgorithm;
 import Messages.MsgMSOS;
-import Messages.MsgValueAssignmnet;
 
 import java.util.*;
 
@@ -103,7 +102,7 @@ public class MonotonicStochasticOrderSearch extends AgentVariableSearch implemen
                     this.neighborDocsIds.get(sender).put(msg.getCounter() - 1, msg.getDocId());
                 }
 
-                updateMsgInContextValueAssignmnet(msg);
+                updateMsgInContextValueAssignment(msg);
             }
         }else{
             throw new RuntimeException("can receive only MsgMSOS");

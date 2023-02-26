@@ -155,7 +155,7 @@ public class AMDLS_V1 extends AgentVariableSearch implements SelfCounterable {
 		int msgCounter = ((MsgAMDLS) msgAlgorithm).getCounter();
 
 		if (currentCounterInContext + 1 == msgCounter) {
-			updateMsgInContextValueAssignmnet(msgAlgorithm);
+			updateMsgInContextValueAssignment(msgAlgorithm);
 			updateCounterFromMsg(sender, msgCounter);
 
 		} else {

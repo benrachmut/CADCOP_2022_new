@@ -65,7 +65,6 @@ public class Find2Opt {
 			int costD1 = costPerDomainNoLinkOne.get(d1);
 			for (int j = 0; j < domainArray2.length; j++) {
 				int d2 = domainArray2[j];
-				
 				if (!(d1==this.currentValueAssingment1 && d2 == this.currentValueAssingment2)) {
 					int costD2 = costPerDomainNoLinkTwo.get(d2);
 					Integer costOfLink = findCostOfLink(d1, d2);

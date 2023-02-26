@@ -147,10 +147,13 @@ public class ColorFormation extends Formation {
 					}
 				}
 			}
+			/*
 			if (MainSimulator.agentType == 5) {
 				((AMDLS_V1) a).setAbove(above);
 				((AMDLS_V1) a).setBelow(below);
 			}
+			*/
+
 
 		}
 

@@ -26,6 +26,7 @@ import Main.MainSimulatorIterations;
 import Main.UnboundedBuffer;
 import Messages.Msg;
 
+
 public abstract class Dcop {
 
 	// ------- ** for graph use **------
@@ -149,78 +150,88 @@ public abstract class Dcop {
 */
 	private AgentVariable createAgentInstance(int agentId) {
 		AgentVariable ans = null;
-		int agentType = MainSimulator.agentType;
+		//int agentType = MainSimulator.agentType;
+		MainSimulator.Algorithm algorithm = MainSimulator.algorithm  ;
 
-		if (agentType == 1) {
+
+		if (algorithm == MainSimulator.Algorithm.DSA_ASY) {
 			ans = new DSA_B_ASY(dcopId, D, agentId);
 		}
-		if (agentType == 2) {
+		if (algorithm == MainSimulator.Algorithm.DSA_SY) {
 			ans = new DSA_B_SY(dcopId, D, agentId);
 		}
-		if (agentType == 3) {
+		if (algorithm == MainSimulator.Algorithm.MGM_ASY) {
 			ans = new MGM_ASY(dcopId, D, agentId);
 		}
-		if (agentType == 4) {
+		if (algorithm == MainSimulator.Algorithm.MGM_SY) {
 			ans = new MGM_SY(dcopId, D, agentId);
 		}
 
-		// if (agentType == 5) {
-		// ans = new AMDLS_V1(dcopId, D, agentId);
-		// }
-
-		if (agentType == 7) {
+		if (algorithm == MainSimulator.Algorithm.AMDLS) {
 			ans = new AMDLS_V3(dcopId, D, agentId);
 		}
 
-		if (agentType == 8) {
+		if (algorithm == MainSimulator.Algorithm.DSA_SDP_ASY) {
 			ans = new DSA_SDP_ASY(dcopId, D, agentId);
 		}
-		if (agentType == 9) {
+		if (algorithm == MainSimulator.Algorithm.DSA_SDP_SY) {
 			ans = new DSA_SDP_SY(dcopId, D, agentId);
 		}
-		if (agentType == 10) {
+		if (algorithm == MainSimulator.Algorithm.MGM2_ASY) {
 			ans = new MGM2_ASY(dcopId, D, agentId);
 		}
-		if (agentType == 11) {
+		if (algorithm == MainSimulator.Algorithm.MGM2_SY) {
 			ans = new MGM2_SY(dcopId, D, agentId);
 		}
-		if (agentType == 12) {
+		if (algorithm == MainSimulator.Algorithm.MGM2_SY_V2) {
+			ans = new MGM2_SY_V2(dcopId, D, agentId);
+		}
+
+		if (algorithm == MainSimulator.Algorithm.CAMDLS_NAIVE) {
 			ans = new CAMDLS_NAIVE(dcopId, D, agentId);
 		}
-		if (agentType == 13) {
+
+
+		if (algorithm == MainSimulator.Algorithm.CAMDLS_V2) {
 			ans = new CAMDLS_V2(dcopId, D, agentId);
 		}
 
-		if (agentType == 14) {
+
+		if (algorithm == MainSimulator.Algorithm.MonoDeterministicColorChange) {
+			ans = new MonoDeterministicColorChange(dcopId, D, agentId);
+		}
+
+		if (algorithm == MainSimulator.Algorithm.MonoStochasticOrderSearch) {
 			ans = new MonotonicStochasticOrderSearch(dcopId, D, agentId);
 		}
 
 
-		if(agentType == 16){
-			ans = new MonotonicStochastic2CoordinationV4(dcopId, D, agentId);
+		if (algorithm == MainSimulator.Algorithm.MonoStochasticColor2OptSearch) {
+			ans = new MonoStochasticColor2OptSearch(dcopId, D, agentId);
 		}
 
 
 
 
 
-		if (agentType == 101) {
+
+		if (algorithm == MainSimulator.Algorithm.MaxSum_SY) {
 			ans = new MaxSumStandardVariableDelay_SY(dcopId, D, agentId); // Sync version without memory.
 		}
 
-		if (agentType == 102) {
+		if (algorithm == MainSimulator.Algorithm.MaxSum_split_SY) {
 
 			ans = new MaxSumStandardVariableDelay_SY(dcopId, D, agentId); // Sync Split version without memory.
 
 		}
 
-		if (agentType == 103) { // To add.
+		if (algorithm == MainSimulator.Algorithm.MaxSum_ASY) {
 
 			ans = new MaxSumStandardVariableDelay(dcopId, D, agentId); // Sync and Async with memory.
 
 		}
 
-		if (agentType == 104) { // To add.
+		if (algorithm == MainSimulator.Algorithm.MaxSum_split_ASY) {
 
 			ans = new MaxSumStandardVariableDelay(dcopId, D, agentId); // Sync Split version without memory.
 
@@ -244,7 +255,7 @@ public abstract class Dcop {
 			f.execute();
 		}
 
-		handleFormationForAMDLS(formations);
+		//handleFormationForAMDLS(formations);
 		handleFormationForSearchAnytime(formations);
 
 		if (MainSimulator.isAnytime && MainSimulator.isAnytimeDebug) {
@@ -355,7 +366,7 @@ public abstract class Dcop {
 		}
 		return ans;
 	}
-
+/*
 	private void handleFormationForAMDLS(Formation[] formations) {
 
 		if (MainSimulator.agentType == 5) {
@@ -368,7 +379,7 @@ public abstract class Dcop {
 		}
 
 	}
-
+*/
 	public Dcop initiate() {
 		createNeighbors();
 		//calculateQuadarticDistance();
@@ -384,7 +395,22 @@ public abstract class Dcop {
 
 	private void createFactorGraphCombined() {
 
-		int agentType = MainSimulator.agentType;
+
+		MainSimulator.Algorithm algorithm = MainSimulator.algorithm ;
+		/*
+		MainSimulator.MaxSum_SY
+		,MaxSum_split_SY, MaxSum_ASY, MaxSum_split_ASY;
+
+
+		 */
+	/*
+	* 101 = MaxSum-SY; 102 =
+			* MaxSum_split-SY; 103 = MaxSum-ASY; 104 = MaxSum_split-ASY;
+	*/
+
+
+
+		//int agentType = MainSimulator.agentType;
 		//Collections.shuffle(this.neighbors, new Random(this.dcopId));
 		for (Neighbor n : neighbors) {
 
@@ -408,7 +434,7 @@ public abstract class Dcop {
 
 			} else {
 
-				if (agentType == 101) {
+				if (algorithm == MainSimulator.Algorithm.MaxSum_SY) {
 					af = new MaxSumStandardFunctionDelay_SY(dcopId, D, av1.getId(), av2.getId(), constraints);
 					this.agentFunctions.add(af);
 					this.agentsAll.add(af);
@@ -421,7 +447,7 @@ public abstract class Dcop {
 
 				}
 
-				if (agentType == 102) {
+				if (algorithm == MainSimulator.Algorithm.MaxSum_split_SY) {
 
 					af = new MaxSumSplitConstraintFactorGraphDelay_SY(dcopId, D, av1.getId(), av2.getId(),
 							constraints); // Will create a new MaxSumSplitConstraintFactorGraphSync
@@ -448,7 +474,7 @@ public abstract class Dcop {
 
 				}
 
-				if (agentType == 103) {
+				if (algorithm == MainSimulator.Algorithm.MaxSum_ASY) {
 					af = new MaxSumStandardFunctionDelay(dcopId, D, av1.getId(), av2.getId(), constraints);
 					this.agentFunctions.add(af);
 					this.agentsAll.add(af);
@@ -462,7 +488,7 @@ public abstract class Dcop {
 					// af.variableNodeThatHoldsMe(agentVariableThatWillHoldFunction);
 				}
 
-				if (agentType == 104) {
+				if (algorithm == MainSimulator.Algorithm.MaxSum_split_ASY) {
 
 					af = new MaxSumSplitConstraintFactorGraphDelay(dcopId, D, av1.getId(), av2.getId(),
 							constraints); // Will create a new MaxSumSplitConstraintFactorGraphSync
@@ -542,128 +568,6 @@ public abstract class Dcop {
 
 	}
 
-	private void createFactorGraph() {
-
-		int agentType = MainSimulator.agentType;
-
-		for (Neighbor n : neighbors) {
-
-			AgentVariableInference av1 = (AgentVariableInference) n.getA1();
-			AgentVariableInference av2 = (AgentVariableInference) n.getA2();
-
-			Integer[][] constraints = n.getConstraints();
-
-			AgentFunction af = null;
-
-			if (agentType == 100 || agentType == 101 || agentType == 103) {
-
-				if (agentType == 100) {
-
-					af = new MaxSumStandardFunction(dcopId, D, av1.getId(), av2.getId(), constraints);
-
-				}
-/*
-				if (agentType == 101) {
-
-					af = new MaxSumStandardFunctionSync(dcopId, D, av1.getId(), av2.getId(), constraints);
-
-				}
-*/
-
-
-				if (agentType == 103) {
-
-					af = new MaxSumStandardFunctionDelay(dcopId, D, av1.getId(), av2.getId(), constraints);
-
-				}
-
-				this.agentFunctions.add(af);
-				this.agentsAll.add(af);
-				av1.meetFunction(af.getMyNodes());
-				av2.meetFunction(af.getMyNodes());
-				af.meetVariables(av1.getNodeId(), av2.getNodeId());
-
-			}
-
-			if (agentType == 102 || agentType == 104) {
-
-				int avSplitOne = av1.getId() + 1;
-				int avSplitTwo = av2.getId() + 1;
-/*
-				if (agentType == 102) {
-
-					af = new MaxSumSplitConstraintFactorGraphSync(dcopId, D, av1.getId(), av2.getId(), constraints); // Will
-																														// create
-																														// a
-																														// new
-																														// MaxSumSplitConstraintFactorGraphSync
-					MaxSumSplitConstraintFactorGraphSync splitConstraintAgent = (MaxSumSplitConstraintFactorGraphSync) af; // Casting
-																															// af
-																															// as
-																															// MaxSumSplitConstraintFactorGraphSync
-					List<MaxSumStandardFunctionSync> splitList = splitConstraintAgent.getSplitFunctionNodes(); // Get
-																												// the
-																												// list
-																												// of
-																												// the
-																												// function
-																												// agents.
-					for (int i = 0; i < splitConstraintAgent.getSplitFunctionNodes().size(); i++) { // Looping over the
-																									// list and adds
-																									// each function
-																									// agent on the list
-																									// to agentFunction
-																									// and agentsAll.
-
-						this.agentFunctions.add(splitList.get(i));
-						this.agentsAll.add(splitList.get(i));
-
-					}
-
-				}
-*/
-				if (agentType == 104) {
-
-					af = new MaxSumSplitConstraintFactorGraphDelay(dcopId, D, av1.getId() + 1, av2.getId() + 1,
-							constraints); // Will create a new MaxSumSplitConstraintFactorGraphSync
-					MaxSumSplitConstraintFactorGraphDelay splitConstraintAgent = (MaxSumSplitConstraintFactorGraphDelay) af; // Casting
-																																// af
-																																// as
-																																// MaxSumSplitConstraintFactorGraphSync
-					List<MaxSumStandardFunctionDelay> splitList = splitConstraintAgent.getSplitFunctionNodes(); // Get
-																												// the
-																												// list
-																												// of
-																												// the
-																												// function
-																												// agents.
-					for (int i = 0; i < splitConstraintAgent.getSplitFunctionNodes().size(); i++) { // Looping over the
-																									// list and adds
-																									// each function
-																									// agent on the list
-																									// to agentFunction
-																									// and agentsAll.
-
-						this.agentFunctions.add(splitList.get(i));
-						this.agentsAll.add(splitList.get(i));
-
-					}
-
-				}
-
-				av1.meetFunction(af.getMyNodes());
-				av2.meetFunction(af.getMyNodes());
-				af.meetVariables(av1.getNodeId(), av2.getNodeId());
-
-			}
-
-		}
-
-		if (MainSimulator.isFactorGraphDebug) {
-			pringAgentAll();
-		}
-
-	}
 	/*
 	 * public List<Agent> getAgents() { return agentsAll; }
 	 */
@@ -719,55 +623,6 @@ public abstract class Dcop {
 
 	// OmerP - This method aims to check if for all function node there are two
 	// variable nodes at variable message size.
-	public void binaryDebug() {
-
-		boolean okMessage = true;
-
-		for (int i = 0; i < agentFunctions.size(); i++) {
-
-			if ((MainSimulator.agentType == 7) || (MainSimulator.agentType == 8)) {
-
-				if (agentFunctions.get(i).getVariableMsgsSize() != 2) {
-
-					System.out.println("Severe error !!! Agent Function (" + agentFunctions.get(i).getNodeId().getId1()
-							+ "," + agentFunctions.get(i).getNodeId().getId2() + ") has "
-							+ agentFunctions.get(i).getVariableMsgsSize() + " neighbors.\n");
-					okMessage = false;
-
-				}
-
-			}
-/*
-			if (MainSimulator.agentType == 9) {
-
-				MaxSumSplitConstraintFactorGraphSync maxSplitFunctionNode = (MaxSumSplitConstraintFactorGraphSync) agentFunctions
-						.get(i); // Casting the get access to getSplitFunctionNodes method.
-
-				for (int j = 0; j < maxSplitFunctionNode.getSplitFunctionNodes().size(); j++) {
-
-					if (maxSplitFunctionNode.getSplitFunctionNodes().get(j).getVariableMsgsSize() != 2) {
-
-						System.out.println(
-								"Severe error !!! Agent Function (" + agentFunctions.get(i).getNodeId().getId1() + ","
-										+ agentFunctions.get(i).getNodeId().getId2() + ") has "
-										+ agentFunctions.get(i).getVariableMsgsSize() + " neighbors.\n");
-						okMessage = false;
-
-					}
-
-				}
-
-			}
-*/
-		}
-
-		if (okMessage) {
-
-			System.out.println("Factor Graph Check: All Constraints Are Binary.\n");
-
-		}
-
-	}
 
 	// OmerP - This method aims to check if for all variable nodes that they have
 	// the number of function nodes as the number of neighbors.

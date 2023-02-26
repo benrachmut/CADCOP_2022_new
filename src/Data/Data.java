@@ -352,7 +352,13 @@ public class Data {
 		}
 		Double lastAnytimeGlobal = mailer.getLastGlobalAnytimeCost();
 
-		if (MainSimulator.agentType==7 || MainSimulator.agentType==12|| MainSimulator.agentType==13|| MainSimulator.agentType==14) {
+
+		MainSimulator.Algorithm algorithm = MainSimulator.algorithm  ;
+
+
+		if (algorithm==MainSimulator.Algorithm.AMDLS ||
+			algorithm==MainSimulator.Algorithm.CAMDLS_NAIVE||
+			algorithm==MainSimulator.Algorithm.CAMDLS_V2) {
 			return  0.0 ;
 		}
 		if (lastAnytimeGlobal == 0 || this.globalCost < lastAnytimeGlobal) {

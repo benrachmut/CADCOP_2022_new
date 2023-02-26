@@ -70,12 +70,25 @@ public class MainSimulator {
 	 * 1 = DSA-ASY; 2 = DSA-SY; 3 = MGM-ASY ; 4 = MGM-SY ; 7 = AMDLS_V3; 8 = DSA_SDP-ASY ; 9 = DSA_SDP-SY ; 10 = MGM2-ASY ; 11
 	 * = MGM2-SY; 12 = CAMDLS_NAIVE; 13 = CAMDLS V2; 14 = MSOS; 15= MSC2C
 	 *
-	 * send all ------- 100 = 101 = MaxSum-SY; 102 =
+	 * send all ------- 100 =
+	 *
+	 * 101 = MaxSum-SY; 102 =
 	 * MaxSum_split-SY; 103 = MaxSum-ASY; 104 = MaxSum_split-ASY;
 	 */
 
 	// 11,4,14,7
-	public static int agentType = 11;//16;
+
+
+	public enum Algorithm {
+		DSA_ASY, DSA_SY, MGM_ASY, MGM_SY, AMDLS, DSA_SDP_ASY, DSA_SDP_SY, MGM2_ASY, MGM2_SY,
+		CAMDLS_NAIVE, CAMDLS_V2,MGM2_SY_V2,
+		MonoStochasticOrderSearch,
+		MonoDeterministicColorChange,
+		MonoStochasticColor2OptSearch,
+		MaxSum_SY,MaxSum_split_SY, MaxSum_ASY, MaxSum_split_ASY;
+	}
+	public static Algorithm algorithm = Algorithm.MGM2_SY_V2;
+	//public static int agentType = 11;//16;
 
 	/*
 	 * delayTypes: 0 = non, 1 = normal, 2 = uniform, 3 = Exponential 4 = Possion, 5

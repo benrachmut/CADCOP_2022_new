@@ -4,26 +4,19 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
 import java.util.Map.Entry;
 import java.util.Random;
 
 import AgentsAbstract.AgentVariable;
-import AgentsAbstract.AgentVariableSearch;
 import AgentsAbstract.NodeId;
-import Comparators.CompTopColorAndMinIndex;
 import Main.MainSimulator;
 import Messages.Msg;
 import Messages.MsgAMDLS;
 import Messages.MsgAMDLSColor;
 import Messages.MsgAlgorithm;
-import Messages.MsgMgm2Phase5IsBestLR;
 import Messages.MsgOpt2FreezeRequest;
-import Messages.MsgOpt2FriendReplay;
 import Messages.MsgOpt2FriendRequest;
 import Messages.MsgOpt2RegionRequest;
 import Messages.MsgValueAssignmnet;
@@ -157,7 +150,7 @@ public class AOpt2_V1 extends AMDLS_V3 {
 		int msgCounter = ((MsgAMDLS) msgAlgorithm).getCounter();
 
 		if (currentCounterInContext + 1 == msgCounter) {
-			updateMsgInContextValueAssignmnet(msgAlgorithm);
+			updateMsgInContextValueAssignment(msgAlgorithm);
 			this.counters.put(sender, msgCounter);
 		} else {
 			this.future.add((MsgAMDLS) msgAlgorithm); // if the sencond msg was recieved before the first

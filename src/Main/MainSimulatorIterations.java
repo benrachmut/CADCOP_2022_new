@@ -52,7 +52,7 @@ public class MainSimulatorIterations {
     public static Map<String,List<Integer>> bitData = new HashMap<String,List<Integer>>();
 
     public static <DCOP> void main(String[] args) {
-        MainSimulator.agentType = 9999999;
+        //MainSimulator.agentType = 9999999;
         amIRunning = true;
         if (runKnownAmount) {
             Dcop[] dcops = generateDcops();

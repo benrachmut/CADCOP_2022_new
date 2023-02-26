@@ -105,7 +105,7 @@ public class CAMDLS_V2 extends AgentVariableSearch {
             MsgAMDLSColorKAware msg = (MsgAMDLSColorKAware) msgAlgorithm;
             updateColor(msg.getSenderId(),msg.getColor());
             updateCounter(msg.getSenderId(),msg.getCounter());
-            updateMsgInContextValueAssignmnet(msgAlgorithm);
+            updateMsgInContextValueAssignment(msgAlgorithm);
             updateTimestamp(msg.getTimestampMap());
 
             if (MainSimulator.isCAMDLS_V2) {

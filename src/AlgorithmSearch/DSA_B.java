@@ -95,7 +95,7 @@ abstract public class DSA_B extends AgentVariableSearch {
 	}
 
 	public boolean  updateMessageInContext(MsgAlgorithm msgAlgorithm) {
-		updateMsgInContextValueAssignmnet(msgAlgorithm);
+		updateMsgInContextValueAssignment(msgAlgorithm);
 		return true;
 	}
 

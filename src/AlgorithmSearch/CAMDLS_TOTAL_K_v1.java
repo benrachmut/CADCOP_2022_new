@@ -112,7 +112,7 @@ public class CAMDLS_TOTAL_K_v1 extends CAMDLS_NAIVE {
             int msgCounter = ((MsgAMDLSKAware) msgAlgorithm).getCounter();
 
             if (currentCounterInContext + 1 == msgCounter) {
-                updateMsgInContextValueAssignmnet(msgAlgorithm);
+                updateMsgInContextValueAssignment(msgAlgorithm);
                 updateCounterFromMsg(sender, msgCounter);
 
             } else {

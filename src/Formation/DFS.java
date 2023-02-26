@@ -86,10 +86,13 @@ public class DFS extends Formation {
 					throw new RuntimeException("something is wrong with psaudo tree");
 				}
 			}
+			/*
 			if (MainSimulator.agentType==5) {
 				((AMDLS_V1)a).setBelow(below);
 				((AMDLS_V1)a).setAbove(above);
 			}
+			*/
+
 			
 	
 			
