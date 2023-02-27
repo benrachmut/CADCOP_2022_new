@@ -2,15 +2,19 @@ package AlgorithmSearch;
 
 import AgentsAbstract.AgentVariableSearch;
 import AgentsAbstract.NodeId;
+import AgentsAbstract.SelfCounterable;
+import Main.MainSimulator;
 import Messages.*;
 
 import java.util.*;
 
-public class MGM2_SY_V2 extends AgentVariableSearch {
+public class MGM2_SY_V2 extends AgentVariableSearch implements SelfCounterable {
 
-
+    private int selfCounter;
     private double offerProb = 0.5;
     private boolean isPartnerTakeBest = true;
+
+
 
     enum Status {
         idle_451_waitForValueAssignments,
@@ -31,9 +35,15 @@ public class MGM2_SY_V2 extends AgentVariableSearch {
     private Map<NodeId, Boolean> toPhase2_boolean;
     private Map<NodeId, KOptInfo> toPhase2_info;
 
+    private HashMap<NodeId,Boolean> toPhase34_boolean;
+    private HashMap<NodeId,Integer> toPhase4_LR;
+    private Find2Opt toPhase34_partnerReply;
 
-    private int candidateValueAssignment;
-    private int lr;
+
+
+
+    private Integer candidateValueAssignment;
+    private Integer lr;
     private NodeId partner;
 
     private Random randomIsOfferToPartner;
@@ -58,13 +68,20 @@ public class MGM2_SY_V2 extends AgentVariableSearch {
         toPhase1_valueAssignmentsMsgs = new HashMap<NodeId,Integer>();
         toPhase2_boolean = new HashMap<NodeId,Boolean>();
         toPhase2_info= new HashMap<NodeId,KOptInfo>();
-        candidateValueAssignment = -1;
-        lr = Integer.MAX_VALUE;
+
+        toPhase34_boolean =  new HashMap<NodeId,Boolean>() ;
+        toPhase4_LR=  new HashMap<NodeId,Integer> ();
+        toPhase34_partnerReply=  null ;
+
+        candidateValueAssignment = null;
+        lr = Integer.MIN_VALUE;
 
         for (NodeId nodeId:this.neighborsConstraint.keySet()) {
             toPhase1_valueAssignmentsMsgs.put(nodeId,null);
             //toPhase2_info.put(nodeId,null);
             toPhase2_boolean.put(nodeId,null);
+            toPhase34_boolean.put(nodeId,null);
+            toPhase4_LR.put(nodeId,null);
         }
     }
 
@@ -77,35 +94,64 @@ public class MGM2_SY_V2 extends AgentVariableSearch {
     public boolean updateMessageInContext(MsgAlgorithm msgAlgorithm) {
         if (msgAlgorithm instanceof MsgValueAssignmnet){
             MsgValueAssignmnet msg = (MsgValueAssignmnet)msgAlgorithm;
-            recieveValueAssignment(msg);
+            receive_toPhase1_valueAssignment(msg);
         }
         if ( msgAlgorithm instanceof MsgMGM2V2_toPhase2_infoAndFalse){
-            toPhase2_boolean.put(msgAlgorithm.getSenderId(),true);
-
-            Object context  = msgAlgorithm.getContext();
-            if (context instanceof KOptInfo){
-                toPhase2_info.put(msgAlgorithm.getSenderId(), (KOptInfo) context);
-            }
+            receive_toPhase2_infoOrFalse(msgAlgorithm);
         }
+        if ( msgAlgorithm instanceof MsgMGM2V2_toPhase34_opt2andLR){
+            receive_toPhase34_2OptOrLR(msgAlgorithm);
+        }
+
         return true;
     }
 
-    private void recieveValueAssignment(MsgValueAssignmnet msg) {
+
+
+
+    private void receive_toPhase1_valueAssignment(MsgValueAssignmnet msg) {
         Integer va = (int)msg.getContext();
         this.toPhase1_valueAssignmentsMsgs.put(msg.getSenderId(),va);
         this.updateMsgInContextValueAssignment(msg);
     }
 
+    private void receive_toPhase2_infoOrFalse(MsgAlgorithm msgAlgorithm) {
+        toPhase2_boolean.put(msgAlgorithm.getSenderId(),true);
+        Object context  = msgAlgorithm.getContext();
+        if (context instanceof KOptInfo){
+            toPhase2_info.put(msgAlgorithm.getSenderId(), (KOptInfo) context);
+        }
+    }
+
+    private void receive_toPhase34_2OptOrLR(MsgAlgorithm msgAlgorithm) {
+        NodeId sender = msgAlgorithm.getSenderId();
+        toPhase34_boolean.put(msgAlgorithm.getSenderId(),true);
+        Object context  = msgAlgorithm.getContext();
+        if (context instanceof Find2Opt) {
+            if (!partner.equals(sender)){
+                throw new RuntimeException();
+            }
+            this.toPhase34_partnerReply = (Find2Opt)context;
+            this.toPhase4_LR.remove(partner);
+            if (MainSimulator.isMGM2v2Debug){
+                System.out.println(this+ " receives info back from: "+sender);
+            }
+        }else{
+            this.toPhase4_LR.put(sender,(Integer)context);
+        }
+    }
+
     @Override
     protected void changeReceiveFlagsToTrue(MsgAlgorithm msgAlgorithm) {
         if (this.myStatus == Status.idle_451_waitForValueAssignments && gotAllMsgs(this.toPhase1_valueAssignmentsMsgs.values())){
+
             this.myStatus = Status.phase1_initiateOfferPartner1;
         }
         if (this.myStatus == Status.idle_12_waitForOffers && gotAllMsgs(this.toPhase2_boolean.values())){
             this.myStatus = Status.phase2_acceptOfferPartner2;
         }
-
-        if (this.myStatus == Status.idle_13_waitForReply&& false){
+        NodeId sender = msgAlgorithm.getSenderId();
+        if (this.myStatus == Status.idle_13_waitForReply && sender == partner && toPhase34_partnerReply!=null){
             this.myStatus = Status.phase3_broadCastLReductionPartner1;
         }
         if (this.myStatus == Status.idle_234_waitForLocalReductionFromAll && false){
@@ -118,7 +164,10 @@ public class MGM2_SY_V2 extends AgentVariableSearch {
 
 
     }
-
+    @Override
+    public int getSelfCounterable() {
+        return selfCounter;
+    }
     private static boolean gotAllMsgs(Collection<?> info) {
         for (Object o:info) {
             if (o == null){
@@ -147,29 +196,72 @@ public class MGM2_SY_V2 extends AgentVariableSearch {
             computeMyLR();
         }
         if (this.myStatus == Status.phase2_acceptOfferPartner2 && this.partner==null && !this.toPhase2_info.isEmpty()){
+            computePhase2();
 
-            if (isPartnerTakeBest){
-                Map<NodeId,Find2Opt> twoOpts = getTwoOpts();
-                for (Find2Opt singleTwoOpt: twoOpts.values()) {
-                    this.atomicActionCounter = this.atomicActionCounter + singleTwoOpt.getAtomicActionCounter();
-                }
-                Map.Entry<NodeId,Find2Opt> bestPartner = getLocalReductions(twoOpts);
-            }else{
-                this.partner = getRandomPartnerFromInfo();
-            }
+        }
+
+        if (this.myStatus == Status.phase3_broadCastLReductionPartner1){
+            stop here
         }
         return true;
     }
 
-    private Map.Entry<NodeId,Integer> getLocalReductions(Map<NodeId, Find2Opt> twoOpts) {
-        int minLr = Integer.MIN_VALUE;
-        Map.Entry<NodeId,Integer> ans = null;
-        for (Map.Entry<NodeId,Find2Opt> f2o:
-             twoOpts.entrySet()) {
-            stop here
+    private void computePhase2() {
+        if (isPartnerTakeBest){
+            computePhase2IfPartnerTakeBest();
+
+        }else{
+            computePhase2SelectNeighborRandomly();
+
         }
 
+        if (MainSimulator.isMGM2v2Debug && this.partner != null){
+            System.out.println(this+" selected "+ this.partner);
+        }
+    }
 
+    private void computePhase2SelectNeighborRandomly() {
+        NodeId potentialPartner = getRandomPartnerFromInfo();
+        KOptInfo koi = this.toPhase2_info.get(potentialPartner);
+        Find2Opt f2o =  new Find2Opt(makeMyKOptInfo(),koi);
+        this.atomicActionCounter = this.atomicActionCounter + f2o.getAtomicActionCounter();
+
+        if (f2o.getLR()<this.lr) {
+            this.partner = potentialPartner;
+            this.candidateValueAssignment = f2o.getValueAssignmnet1();
+            this.lr = f2o.getLR();
+        }else{
+            System.out.println("--**--**--**--**");
+        }
+    }
+
+    private void computePhase2IfPartnerTakeBest() {
+        Map<NodeId,Find2Opt> twoOpts = getTwoOpts();
+        for (Find2Opt singleTwoOpt: twoOpts.values()) {
+            this.atomicActionCounter = this.atomicActionCounter + singleTwoOpt.getAtomicActionCounter();
+        }
+        Map.Entry<NodeId, Find2Opt> bestPartner = getLocalReductions(twoOpts);
+        Find2Opt f2o = bestPartner.getValue();
+        if (this.lr < f2o.getLR()) {
+            partner = bestPartner.getKey();
+            this.candidateValueAssignment = bestPartner.getValue().getValueAssignmnet1();
+            this.lr = f2o.getLR();
+        }
+    }
+
+
+    private Map.Entry<NodeId,Find2Opt> getLocalReductions(Map<NodeId, Find2Opt> twoOpts) {
+        int maxLr = Integer.MIN_VALUE;
+        Map.Entry<NodeId,Find2Opt> ans = null;
+        for (Map.Entry<NodeId,Find2Opt> e:twoOpts.entrySet()) {
+            Find2Opt f2o = e.getValue();
+            int lrOfF2O = f2o.getLR();
+            if (lrOfF2O>maxLr){
+                ans = e;
+                maxLr = lrOfF2O;
+            }
+        }
+        return ans;
     }
 
     private Map<NodeId, Find2Opt> getTwoOpts() {
@@ -191,6 +283,7 @@ public class MGM2_SY_V2 extends AgentVariableSearch {
 
     private void checkIfOffers() {
         double p = this.randomIsOfferToPartner.nextDouble();
+        p = this.randomIsOfferToPartner.nextDouble();
         if (p<this.offerProb){
             this.partner = getRandomPartner();
         }
@@ -242,7 +335,11 @@ public class MGM2_SY_V2 extends AgentVariableSearch {
         List<Msg> msgsToInsertMsgBox = new ArrayList<Msg>();
 
         if (this.myStatus == Status.phase1_initiateOfferPartner1) {
-            sendMsgsPhaseToPhase2(msgsToInsertMsgBox);
+            sendMsgs_toPhase2_sendInfoAndFalse(msgsToInsertMsgBox);
+        }
+
+        if (this.myStatus == Status.phase2_acceptOfferPartner2){
+            sendMsgs_toPhase3_send2OptAndLR(msgsToInsertMsgBox);
         }
 
 
@@ -251,7 +348,22 @@ public class MGM2_SY_V2 extends AgentVariableSearch {
         }
     }
 
-    private void sendMsgsPhaseToPhase2(List<Msg> msgsToInsertMsgBox) {
+    private void sendMsgs_toPhase3_send2OptAndLR(List<Msg> msgsToInsertMsgBox) {
+        for (NodeId receiverNodeId:this.neighborsConstraint.keySet()) {
+            MsgMGM2V2_toPhase34_opt2andLR msg = null;
+
+            if (this.partner != null && this.partner.equals(receiverNodeId)) {
+                Find2Opt f2o = new Find2Opt(makeMyKOptInfo(),toPhase2_info.get(partner));
+                msg = new MsgMGM2V2_toPhase34_opt2andLR (this.nodeId, receiverNodeId, f2o, this.timeStampCounter, this.time);
+            }  else{
+                msg = new MsgMGM2V2_toPhase34_opt2andLR
+                        (this.nodeId, receiverNodeId, this.lr, this.timeStampCounter, this.time);
+            }
+            msgsToInsertMsgBox.add(msg);
+        }
+    }
+
+    private void sendMsgs_toPhase2_sendInfoAndFalse(List<Msg> msgsToInsertMsgBox) {
         for (NodeId receiverNodeId:this.neighborsConstraint.keySet()) {
             MsgMGM2V2_toPhase2_infoAndFalse msg = null;
             if (this.partner != null && this.partner.equals(receiverNodeId)){
@@ -281,8 +393,14 @@ public class MGM2_SY_V2 extends AgentVariableSearch {
             this.clearValueAssignmentMap();
             if (this.partner==null) {
                 this.myStatus = Status.idle_12_waitForOffers;
+                if (MainSimulator.isMGM2v2Debug){
+                    System.out.println(this+" waits for offers. self counter: "+this.selfCounter);
+                }
             }else{
                 this.myStatus = Status.idle_13_waitForReply;
+                if (MainSimulator.isMGM2v2Debug){
+                    System.out.println(this+" waits for reply from "+this.partner+". self counter: "+this.selfCounter);
+                }
             }
 
 

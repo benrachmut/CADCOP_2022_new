@@ -58,7 +58,7 @@ public class MainSimulator {
 	private static int everyHowManyExcel = 100;
 
 	// ------------------------------**PROBLEM MAGNITUDE**
-	public static int A = 50; // amount of agents
+	public static int A = 10; // amount of agents
 	private static int D = 10;
 
 	// public static int D = -1; // if D or costParameter < 0 use default
@@ -100,7 +100,7 @@ public class MainSimulator {
 	 */
 	public static int dcopBenchMark = 1;
 	// 1 = Random uniform
-	public static double dcopUniformP1 = 0.2;//0.5
+	public static double dcopUniformP1 = 0.5;//0.5
 	public static double dcopUniformP2 = 1;// Probability for two values in domain between neighbors to have constraints
 	public static int costLbUniform = 1;
 	public static int costUbUniform = 100;
@@ -143,6 +143,7 @@ public class MainSimulator {
 	public static boolean isAnotherColorDebug= false;
 	public static boolean isMDC2CDebug =false;
 	public static boolean  isMonoStochComputationDebug=false;
+	public static boolean  isMGM2v2Debug=true;
 
 
 	public static CreatorDelays creatorDelay;
