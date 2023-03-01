@@ -10,7 +10,6 @@ import java.util.*;
 
 public class MGM2_SY_V2 extends AgentVariableSearch implements SelfCounterable {
 
-    private int selfCounter;
     private double offerProb = 0.5;
     private boolean isPartnerTakeBest = true;
     enum Status {
@@ -33,39 +32,40 @@ public class MGM2_SY_V2 extends AgentVariableSearch implements SelfCounterable {
         phase5_tryToChangeAlone,
         phase5_tryToChangeTogether
 
-
     }
 
     private Status myStatus;
 
-    private Map<NodeId, Integer> neighborsIterations;
     private Map<NodeId, Boolean> toPhase1_boolean_valueAssignmentsMsgs;
     private Map<NodeId, Boolean> toPhase2_boolean_infoOrFalse;
-
     private Map<NodeId, KOptInfo> toPhase2_info;
-
     private HashMap<NodeId,Boolean> toPhase4_booleanLR;
     private HashMap<NodeId,Integer> toPhase4_LR;
     private Find2Opt toPhase34_partnerReply;
-    private Boolean toPhase4_isAcceptPartner;
-
-
     private Integer aloneCandidateValueAssignment;
     private Integer aloneLr;
-
     private Integer withPartnerCandidateValueAssignment;
     private Integer withPartnerLr;
-
-
     private NodeId partner;
-
-    private Random randomIsOfferToPartner;
-    private Random randomPartnerSelection;
     private boolean isCommitted;
     private boolean partnerBestInNeighborhood;
     private boolean iAmBestInNeighborhood;
 
+
+
+    //private Boolean toPhase4_isAcceptPartner;
+
+
+
+
+
+
+
+    private Map<NodeId, Integer> neighborsIterations;
+    private Random randomIsOfferToPartner;
+    private Random randomPartnerSelection;
     private int iteration;
+    private int selfCounter;
 
 
 
@@ -77,7 +77,6 @@ public class MGM2_SY_V2 extends AgentVariableSearch implements SelfCounterable {
 
     @Override
     protected void resetAgentGivenParametersV3() {
-
         partner = null;
         iteration = 0;
         selfCounter = 0;
@@ -91,7 +90,6 @@ public class MGM2_SY_V2 extends AgentVariableSearch implements SelfCounterable {
         toPhase4_booleanLR =  new HashMap<NodeId,Boolean>() ;
         toPhase4_LR=  new HashMap<NodeId,Integer> ();
         toPhase34_partnerReply=  null ;
-        toPhase4_isAcceptPartner = false;
 
         withPartnerLr = Integer.MIN_VALUE;
         aloneLr = Integer.MIN_VALUE;
@@ -152,6 +150,8 @@ public class MGM2_SY_V2 extends AgentVariableSearch implements SelfCounterable {
     @Override
     protected void changeReceiveFlagsToTrue(MsgAlgorithm msgAlgorithm) {
 
+
+
         if (msgAlgorithm instanceof  MsgMGM2V2_toPhase5_amIBest){
             this.myStatus = Status.phase5_tryToChangeTogether;
         }
@@ -189,7 +189,7 @@ public class MGM2_SY_V2 extends AgentVariableSearch implements SelfCounterable {
             return;
         }
 
-        if (gotAllMsgs(this.toPhase4_booleanLR.values())){
+        if (msgAlgorithm instanceof MsgMGM2V2_toPhase4_LR && gotAllMsgs(this.toPhase4_booleanLR.values())){
             changeStatuesAfterReceiveLR();
             return;
         }
@@ -439,9 +439,16 @@ public class MGM2_SY_V2 extends AgentVariableSearch implements SelfCounterable {
             partner = null;
         }
 
-        if ( this.myStatus == Status.phase4_receiver_and_offerer_receiveLReductionsMoveToCoordinate ||  this.myStatus == Status.phase5_tryToChangeAlone){
+        if ( this.myStatus == Status.phase4_receiver_and_offerer_receiveLReductionsMoveToCoordinate ){
             clearBooleanMap(this.toPhase4_booleanLR);
         }
+        if (this.myStatus == Status.phase5_tryToChangeAlone ||  this.myStatus == Status.phase5_tryToChangeTogether ){
+            clearBooleanMap(this.toPhase4_booleanLR);
+            clearBeforeNewIteration();
+        }
+
+
+
 
 
         /*
@@ -472,16 +479,42 @@ public class MGM2_SY_V2 extends AgentVariableSearch implements SelfCounterable {
         }
 */
         this.myStatus = Status.idle;
-        checkTodoAnotherIteration();
+        //checkTodoAnotherIteration();
+    }
+
+    private void clearBeforeNewIteration() {
+
+
+        toPhase2_info.clear();
+        //private HashMap<NodeId,Boolean> toPhase4_booleanLR;
+        toPhase34_partnerReply = null;
+        aloneCandidateValueAssignment = null;
+        aloneLr= Integer.MIN_VALUE;
+        withPartnerCandidateValueAssignment= null;
+        withPartnerLr= null;
+        partner= null;
+        isCommitted =false;
+        partnerBestInNeighborhood =false;
+        iAmBestInNeighborhood=false;
+
+
+        for (NodeId nId:
+             this.toPhase4_LR.keySet()) {
+            this.toPhase4_LR.put(nId,null);
+            toPhase2_boolean_infoOrFalse.put(nId,false);
+        }
+
     }
 
     private void checkTodoAnotherIteration() {
-        changeReceiveFlagsToTrue(null);
-        if (getDidComputeInThisIteration()) {
-            compute();
-            sendMsgs();
-            changeReceiveFlagsToFalse();
-        }
+
+            changeReceiveFlagsToTrue(null);
+            if (getDidComputeInThisIteration()) {
+                compute();
+                sendMsgs();
+                changeReceiveFlagsToFalse();
+            }
+
     }
 
     private void clearBooleanMap(Map<NodeId, Boolean> map) {
@@ -626,8 +659,9 @@ public class MGM2_SY_V2 extends AgentVariableSearch implements SelfCounterable {
             if (partnerLr == this.withPartnerLr){
                 this.myStatus = Status.phase4_receiver_and_offerer_receiveLReductionsMoveToCoordinate;
                 if (MainSimulator.isMGM2v2Debug ){
-                    System.out.println(this+" can coordinate with partner ("+this.partner+")");
+                    System.out.println(this+" can coordinate with partner ("+this.partner+")"+ this.toPhase4_LR);
                 }
+
             }else {
                 this.myStatus = Status.phase5_tryToChangeAlone;
                 if (MainSimulator.isMGM2v2Debug ){
@@ -690,14 +724,14 @@ public class MGM2_SY_V2 extends AgentVariableSearch implements SelfCounterable {
     }
 
 
-    private boolean computeAlone() {
+    private void computeAlone() {
         int candidate = getCandidateToChange_C();
         if (candidate != this.valueAssignment) {
             this.aloneCandidateValueAssignment = candidate;
             int lrToCheck = findLr(candidate);
-            return changeLrAlone(lrToCheck);
+            changeLrAlone(lrToCheck);
         }else {
-            return changeLrToZero();
+            changeLrToZero();
         }
     }
 
@@ -705,7 +739,6 @@ public class MGM2_SY_V2 extends AgentVariableSearch implements SelfCounterable {
         if (this.partner!=null){
             int lrFromNeighbor = this.toPhase34_partnerReply.getLR();
             if (this.aloneLr <= lrFromNeighbor){
-                this.toPhase4_isAcceptPartner = true;
                 this.withPartnerCandidateValueAssignment = this.toPhase34_partnerReply.getValueAssignmnet2();
                 this.withPartnerLr = lrFromNeighbor;
                 this.aloneCandidateValueAssignment = null;
