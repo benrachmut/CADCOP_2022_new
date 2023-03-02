@@ -13,6 +13,7 @@ import java.util.Set;
 import AgentsAbstract.AgentVariable;
 import AgentsAbstract.AgentVariableSearch;
 import AgentsAbstract.NodeId;
+import AgentsAbstract.SelfCounterable;
 import Main.MainSimulator;
 import Messages.Msg;
 import Messages.MsgAlgorithm;
@@ -23,11 +24,12 @@ import Messages.MsgMgm2Phase5IsBestLR;
 import Messages.MsgReceive;
 import Messages.MsgValueAssignmnet;
 
-abstract public class MGM2 extends AgentVariableSearch {
+abstract public class MGM2 extends AgentVariableSearch implements SelfCounterable {
 	protected HashSet<MsgAlgorithm> future;
 
 	public static int repsOfMsgSentInPhase3Phase4 = 1;
 	public static double probToBeOfferPhase1 = 0.5;
+	private int selfCounter;
 
 	protected boolean didEarlyPhase1Flag;
 	protected boolean flagIDidPhase4Already;
@@ -106,6 +108,10 @@ abstract public class MGM2 extends AgentVariableSearch {
 		return -1;
 	}
 
+	@Override
+	public int getSelfCounterable() {
+		return this.selfCounter;
+	}
 	@Override
 	public void updateAlgorithmHeader() {
 		AgentVariable.algorithmHeader = "";
@@ -711,6 +717,8 @@ abstract public class MGM2 extends AgentVariableSearch {
 	protected boolean computeAllLRandWithNoPartnerAmIBestPhase4() {
 		if (amIBestLR_phase4()) {
 			this.valueAssignment = this.phase2PotentialComputedValueAssignmnet;
+			this.selfCounter = selfCounter +1;
+
 			this.computationCounter = this.computationCounter +1;
 			if (MainSimulator.isMGM2Debug) {
 				System.out.println(this + " changed value at time " + time);
@@ -770,6 +778,8 @@ abstract public class MGM2 extends AgentVariableSearch {
 			}
 			this.valueAssignment = this.phase2PotentialComputedValueAssignmnet;
 			this.computationCounter  = this.computationCounter +1;
+			this.selfCounter = selfCounter +1;
+
 		}
 		NodeId myPartner = whoIsMyPartnerPhase4();
 		int timestampOfPartner = getTimestampOfPartner();

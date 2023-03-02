@@ -31,7 +31,7 @@ public class ProtocolDelayWithK extends ProtocolDelay{
     }
 
     @Override
-    protected String getStringParamets() {
+    protected String getStringParameters() {
         return Integer.toString(this.k);
     }
 

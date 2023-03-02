@@ -167,8 +167,8 @@ public abstract class Dcop {
 			ans = new MGM_SY(dcopId, D, agentId);
 		}
 
-		if (algorithm == MainSimulator.Algorithm.AMDLS) {
-			ans = new AMDLS_V3(dcopId, D, agentId);
+		if (algorithm == MainSimulator.Algorithm.LAMDLS) {
+			ans = new LAMDLS(dcopId,D,agentId);//new AMDLS_V3(dcopId, D, agentId);
 		}
 
 		if (algorithm == MainSimulator.Algorithm.DSA_SDP_ASY) {
@@ -197,8 +197,8 @@ public abstract class Dcop {
 		}
 
 
-		if (algorithm == MainSimulator.Algorithm.MonoDeterministicColorChange) {
-			ans = new MonoDeterministicColorChange(dcopId, D, agentId);
+		if (algorithm == MainSimulator.Algorithm.MonoDeterministicNo2Opt) {
+			ans = new MonoDeterministicNo2Opt(dcopId, D, agentId);
 		}
 
 		if (algorithm == MainSimulator.Algorithm.MonoStochasticOrderSearch) {

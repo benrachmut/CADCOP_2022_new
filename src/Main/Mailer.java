@@ -371,7 +371,8 @@ public abstract class Mailer {
 	}
 
 	protected void createData(long i) {
-		dataMap.put(i, new Data(i, this.dcop, this));
+		Data data = new Data(i, this.dcop, this);
+		dataMap.put(i, data);
 	}
 
 	public Double getLastGlobalCost() {

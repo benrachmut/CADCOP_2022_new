@@ -9,7 +9,7 @@ import Messages.*;
 
 import java.util.*;
 
-public class MonoDeterministicColorChange extends AgentVariableSearch implements SelfCounterable {
+public class MonoDeterministicNo2Opt extends AgentVariableSearch implements SelfCounterable {
     private NodeId partnerNodeId;
     public static  char typeDecision = 'c' ;
 
@@ -33,7 +33,7 @@ public class MonoDeterministicColorChange extends AgentVariableSearch implements
     //private boolean isInconsistent;
     private status myStatues;
 
-    public MonoDeterministicColorChange(int dcopId, int D, int id1) {
+    public MonoDeterministicNo2Opt(int dcopId, int D, int id1) {
         super(dcopId, D, id1);
         AMDLS_V1.typeDecision = 'c';
         updateAlgorithmHeader();
@@ -398,6 +398,10 @@ public class MonoDeterministicColorChange extends AgentVariableSearch implements
         this.neighborPartnerCounters.put(whoToReply,this.neighborPartnerCounters.get(whoToReply)+1);
         Find2Opt optInfo = new Find2Opt(makeMyKOptInfo(), neighborsInfo.get(whoToReply));
         this.atomicActionCounter = optInfo.getAtomicActionCounter();
+
+        this.time = this.time + this.atomicActionCounter;
+        this.atomicActionCounter = 0;
+
         this.neighborsInfo.clear();
         Map<NodeId,Integer>infoToSend2Opt = new HashMap<NodeId,Integer>();
         infoToSend2Opt.put(this.nodeId, optInfo.getValueAssignmnet1());
@@ -751,6 +755,6 @@ public class MonoDeterministicColorChange extends AgentVariableSearch implements
 
     @Override
     public void updateAlgorithmName() {
-        AgentVariable.AlgorithmName = "MDC2C";
+        AgentVariable.AlgorithmName = "MDN2O";
     }
 }

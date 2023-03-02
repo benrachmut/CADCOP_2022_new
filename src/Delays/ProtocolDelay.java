@@ -77,11 +77,11 @@ public abstract class ProtocolDelay {
 			timeS = "w/o Timestamp";
 		}
 		
-		return pc+","+timeS+","+this.gamma+","+getStringParamets();
+		return pc+","+timeS+","+this.gamma+","+ getStringParameters();
 	}
 
 
-	protected abstract String getStringParamets();
+	protected abstract String getStringParameters();
 	
 	@Override
 	public boolean equals(Object obj) {

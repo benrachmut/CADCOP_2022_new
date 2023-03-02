@@ -58,7 +58,7 @@ public class ProtocolDelaysDistancePoisson extends ProtocolDelayMatrix {
 	}
 
 	@Override
-	protected String getStringParamets() {
+	protected String getStringParameters() {
 		return this.multiplier + "";
 	}
 

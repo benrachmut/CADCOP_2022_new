@@ -21,6 +21,8 @@ public class AMDLS_V3 extends AMDLS_V2 {
 		//this.rndStochasticInitial = r.nextDouble();
 		this.stochasticDecisionRandom = new Random(this.dcopId * 12 + this.id * 143);
 		//firstFlag = false;
+		this.valueAssignment = this.firstRandomVariable;
+
 	}
 
 	@Override
@@ -30,6 +32,8 @@ public class AMDLS_V3 extends AMDLS_V2 {
 		//this.rndStochasticInitial = r.nextDouble();
 		this.stochasticDecisionRandom = new Random(this.dcopId * 12 + this.id * 143);
 		//firstFlag = false;
+		this.valueAssignment = this.firstRandomVariable;
+
 	}
 
 	@Override
@@ -41,6 +45,7 @@ public class AMDLS_V3 extends AMDLS_V2 {
 	@Override
 	public void initialize() {
 		this.isWithTimeStamp = false;
+		this.valueAssignment = this.firstRandomVariable;
 		if (canSetColorInitilize()) {
 			chooseColor();
 

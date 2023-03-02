@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
-import java.util.TreeMap;
 
 import AgentsAbstract.AgentVariable;
 import AgentsAbstract.AgentVariableSearch;
@@ -356,7 +355,7 @@ public class Data {
 		MainSimulator.Algorithm algorithm = MainSimulator.algorithm  ;
 
 
-		if (algorithm==MainSimulator.Algorithm.AMDLS ||
+		if (algorithm==MainSimulator.Algorithm.LAMDLS ||
 			algorithm==MainSimulator.Algorithm.CAMDLS_NAIVE||
 			algorithm==MainSimulator.Algorithm.CAMDLS_V2) {
 			return  0.0 ;

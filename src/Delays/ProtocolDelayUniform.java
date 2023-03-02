@@ -26,7 +26,7 @@ public class ProtocolDelayUniform extends ProtocolDelay {
 
 	
 	
-	protected String getStringParamets() {
+	protected String getStringParameters() {
 		return this.ub+"";
 	}
 

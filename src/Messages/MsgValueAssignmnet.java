@@ -2,6 +2,8 @@ package Messages;
 
 import AgentsAbstract.NodeId;
 
+import java.util.Map;
+
 public class MsgValueAssignmnet extends MsgAlgorithm {
 
 	public MsgValueAssignmnet(NodeId sender, NodeId reciever, Object context, int timeStamp,long time) {
@@ -17,5 +19,6 @@ public class MsgValueAssignmnet extends MsgAlgorithm {
 		}
 		*/
 	}
+
 
 }

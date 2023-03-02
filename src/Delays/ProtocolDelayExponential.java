@@ -45,7 +45,7 @@ public class ProtocolDelayExponential extends ProtocolDelay {
 	
 
 	@Override
-	protected String getStringParamets() {
+	protected String getStringParameters() {
 		// TODO Auto-generated method stub
 		return this.lambda+"";
 	}

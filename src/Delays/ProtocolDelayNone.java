@@ -21,7 +21,7 @@ public class ProtocolDelayNone extends ProtocolDelay{
 
 
 	@Override
-	protected String getStringParamets() {
+	protected String getStringParameters() {
 		// TODO Auto-generated method stub
 		return "";
 	}

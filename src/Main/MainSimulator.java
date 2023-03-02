@@ -6,10 +6,7 @@ import java.util.*;
 import java.util.Map.Entry;
 
 import AgentsAbstract.Agent;
-import AgentsAbstract.AgentFunction;
 import AgentsAbstract.AgentVariable;
-import AgentsAbstract.AgentVariableInference;
-import AgentsAbstract.Location;
 import Data.Data;
 import Delays.*;
 import Down.CreatorDown;
@@ -35,7 +32,7 @@ public class MainSimulator {
 	// public static int dividAtomicTime = 1;
 
 	public static int multiplicationTime = 1;// 2;
-	public static int howManyIterationForCalculation =10; //10000
+	public static int howManyIterationForCalculation =1000; //10000
 			;// 10000;//100000; // sparse = 100,dense=100
 	private static Double[] convergeEximne = { };
 
@@ -51,10 +48,10 @@ public class MainSimulator {
 	// --------------------------------**Experiment Repetitions**
 	public static int div = 1;
 	public static int delta = 100;
-	public static int start =0;
+	public static int start =10;
 	public static int end = start+delta;
 	public static int end_temp = start; // DO NOT CHANGE
-	public static long termination = 100000;//8000000 30000007;
+	public static long termination = 1000000;//8000000 30000007;
 	private static int everyHowManyExcel = 100;
 
 	// ------------------------------**PROBLEM MAGNITUDE**
@@ -80,21 +77,32 @@ public class MainSimulator {
 
 
 	public enum Algorithm {
-		DSA_ASY, DSA_SY, MGM_ASY, MGM_SY, AMDLS, DSA_SDP_ASY, DSA_SDP_SY, MGM2_ASY, MGM2_SY,
+		DSA_ASY, DSA_SY, MGM_ASY, MGM_SY, LAMDLS, DSA_SDP_ASY, DSA_SDP_SY, MGM2_ASY, MGM2_SY,
 		CAMDLS_NAIVE, CAMDLS_V2,MGM2_SY_V2,
 		MonoStochasticOrderSearch,
-		MonoDeterministicColorChange,
+		MonoDeterministicNo2Opt,
 		MonoStochasticColor2OptSearch,
 		MaxSum_SY,MaxSum_split_SY, MaxSum_ASY, MaxSum_split_ASY;
 	}
-	public static Algorithm algorithm = Algorithm.MGM2_SY_V2;
+	public static Algorithm algorithm = Algorithm.LAMDLS;
 	//public static int agentType = 11;//16;
-
 	/*
 	 * delayTypes: 0 = non, 1 = normal, 2 = uniform, 3 = Exponential 4 = Possion, 5
 	 * = distancePois ,6 = distanceUniform ,7 = distanceMissingMsg , 8 = DelayWithK
 	 */
-	public static int delayType = 2;
+
+	public enum DelayType {
+
+		/*
+		* delayTypes: 0 = non, 1 = normal, 2 = uniform, 3 = Exponential 4 = Possion, 5
+				* = distancePois ,6 = distanceUniform ,7 = distanceMissingMsg , 8 = DelayWithK
+		*/
+
+		none, normal, uniform, Exponential ,Possion,
+		distancePois ,distanceUniform ,distanceMissingMsg , DelayWithK
+	}
+	public static DelayType myDelayType = DelayType.uniform;
+		//public static int delayType = 2;
 	/*
 	 * 1 = Random uniform; 2 = Graph Coloring; 3 = Scale Free Network; = 5 circle
 	 */
@@ -125,8 +133,9 @@ public class MainSimulator {
 	// public static int neighborsOfNonMayers = 3;
 	public static double exponentForNeighborCitizens = 3;
 
-	public static boolean isCAMDLS_V2 = false;
 
+
+	public static boolean isCAMDLS_V2 = false;
 	public static boolean isThreadDebug = false;
 	public static boolean isAMDLSDistributedDebug = false;
 	public static boolean isAnytimeThreadDebug = false;
@@ -144,6 +153,7 @@ public class MainSimulator {
 	public static boolean isMDC2CDebug =false;
 	public static boolean  isMonoStochComputationDebug=false;
 	public static boolean  isMGM2v2Debug=true;
+	public static boolean  isLAMDLSDebug=true;
 
 
 	public static CreatorDelays creatorDelay;
@@ -170,7 +180,7 @@ public class MainSimulator {
 
 
 
-		if (dcopBenchMark == 4 && !((delayType == 5)||(delayType == 6)||(delayType == 7))) {
+		if (dcopBenchMark == 4 && !((myDelayType == DelayType.distancePois)||(myDelayType == DelayType.distanceUniform)||(myDelayType == DelayType.distanceMissingMsg))) {
 			throw new RuntimeException("if dcopBenchMark is city then delay type must be distance base distance");
 		}
 
@@ -559,37 +569,40 @@ public class MainSimulator {
 
 	private static CreatorDelays getCreatorDelays() {
 		CreatorDelays ans = null;
-		if (delayType == 0) {
+
+
+
+		if (myDelayType == DelayType.none) {
 			ans = new CreatorDelaysNone();
 		}
 
-		if (delayType == 1) {
+		if (myDelayType == DelayType.normal) {
 			ans = new CreatorDelaysNormal();
 		}
 
-		if (delayType == 2) {
+		if (myDelayType == DelayType.uniform) {
 			ans = new CreatorDelaysUniform();
 		}
 
-		if (delayType == 3) {
+		if (myDelayType == DelayType.Exponential) {
 			ans = new CreatorDelaysExponential();
 		}
 
-		if (delayType == 4) {
+		if (myDelayType == DelayType.Possion) {
 			ans = new CreatorDelaysPossion();
 		}
 
-		if (delayType == 5) {
+		if (myDelayType == DelayType.distancePois) {
 			ans = new CreatorDelaysDistancePoisson();
 		}
-		if (delayType == 6) {
+		if (myDelayType == DelayType.distanceUniform) {
 			ans = new CreatorDelaysDistanceUniform();
 		}
-		if (delayType == 7) {
+		if (myDelayType == DelayType.distanceMissingMsg) {
 			ans = new CreatorMissingMsgDistance();
 		}
 
-		if (delayType == 8){
+		if (myDelayType == DelayType.DelayWithK) {
 			ans = new CreatorDelaysWithKLoss();
 
 		}

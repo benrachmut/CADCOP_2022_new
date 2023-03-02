@@ -58,7 +58,7 @@ public class ProtocolMissingMsgDistance extends ProtocolDelayMatrix {
 	}
 
 	@Override
-	protected String getStringParamets() {
+	protected String getStringParameters() {
 		return  "";
 	}
 

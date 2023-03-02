@@ -24,7 +24,7 @@ public class ProtocolDelaysDistanceUniform  extends ProtocolDelayMatrix {
 	
 
 	@Override
-	protected String getStringParamets() {
+	protected String getStringParameters() {
 		return this.multiplier + "";
 	}
 

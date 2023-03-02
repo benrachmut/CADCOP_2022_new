@@ -6,6 +6,7 @@ import java.util.Map;
 
 import AgentsAbstract.AgentVariable;
 import AgentsAbstract.NodeId;
+import AgentsAbstract.SelfCounterable;
 import Main.MainSimulator;
 import Messages.MsgAlgorithm;
 import Messages.MsgMgm2Phase2FriendshipInformation;
@@ -15,7 +16,7 @@ import Messages.MsgMgm2Phase5IsBestLR;
 import Messages.MsgReceive;
 import Messages.MsgValueAssignmnet;
 
-public class MGM2_SY extends MGM2 {
+public class MGM2_SY extends MGM2  {
 	protected boolean waitingForValueMsgs;
 	protected boolean waitingForFirstFriendshipInformation;
 	protected boolean waitingForOfferInformation;
@@ -612,5 +613,6 @@ public class MGM2_SY extends MGM2 {
 				|| flagComputeAllLRandWithPartnerPhase4 || flagComputeAllLRandWithNoPartnerPhase4
 				|| flagComputePartnerLRIsBestLRPhase5;
 	}
+
 
 }

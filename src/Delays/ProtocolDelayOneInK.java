@@ -92,7 +92,7 @@ public class ProtocolDelayOneInK extends ProtocolDelayMatrix {
 
 
     @Override
-    protected String getStringParamets() {
+    protected String getStringParameters() {
         return "k";
     }
 

@@ -219,14 +219,15 @@ public abstract class Agent implements Runnable, Comparable<Agent> {
 					this.time = this.time + this.atomicActionCounter;
 					this.atomicActionCounter = 0;
 
+					if (MainSimulator.isThreadDebug) {
+						System.out.println(this + " notify mailer");
+					}
+					this.sendMsgs();
+					this.changeReceiveFlagsToFalse();
 				} else {
 					this.time = this.time + 1;
 				}
-				if (MainSimulator.isThreadDebug) {
-					System.out.println(this + " notify mailer");
-				}
-				this.sendMsgs();
-				this.changeReceiveFlagsToFalse();
+
 			}
 			return isUpdate;
 

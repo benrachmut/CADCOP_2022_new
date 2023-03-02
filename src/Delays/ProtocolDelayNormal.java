@@ -39,7 +39,7 @@ public class ProtocolDelayNormal extends ProtocolDelay {
 	}
 
 	@Override
-	protected String getStringParamets() {
+	protected String getStringParameters() {
 		// TODO Auto-generated method stub
 		return this.sigma+","+this.mu;
 	}
