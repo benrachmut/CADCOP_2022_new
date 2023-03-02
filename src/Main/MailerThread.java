@@ -3,18 +3,14 @@ package Main;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.ConcurrentModificationException;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 
 import AgentsAbstract.Agent;
 import AgentsAbstract.AgentFunction;
-import AgentsAbstract.AgentVariable;
 import AgentsAbstract.NodeId;
-import AlgorithmSearch.AMDLS_V1;
 import Delays.ProtocolDelayMatrix;
-import Delays.ProtocolDelayUniform;
+import Delays.ProtocolDelayMessageAmount;
 import Delays.ProtocolDelayWithK;
 import Messages.Msg;
 import Messages.MsgAlgorithm;
@@ -145,7 +141,12 @@ public class MailerThread extends Mailer implements Runnable {
 				if (this.protocol.getDelay() instanceof ProtocolDelayMatrix) {
 					int[] indexes = getSenderAndRecieverId1(m);
 					d =	createDelay(isMsgAlgorithm,indexes[0],indexes[1],isLoss);
-				}else {
+				}
+				else if(this.protocol.getDelay() instanceof ProtocolDelayMessageAmount){
+					d = createDelay(isMsgAlgorithm,this.messageBox.size(),isLoss);
+					//System.out.println(d);
+				}
+				else {
 				 d = createDelay(isMsgAlgorithm,isLoss);
 				}
 				if (d == -1) {

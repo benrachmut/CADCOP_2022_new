@@ -2,23 +2,23 @@ package Delays;
 
 import java.util.Random;
 
-public class ProtocolDelaysMsgMailerHoldExp extends ProtocolDelayMessageInSystemBased {
-    private double base;
-    public ProtocolDelaysMsgMailerHoldExp( double gamma) {
+public class ProtocolDelaysMsgInSystemLinear extends ProtocolDelayMessageAmount {
+    private double slope;
+    public ProtocolDelaysMsgInSystemLinear(double gamma) {
         super(true, false, gamma);
-        this.base = 0;
+        this.slope = 0;
     }
 
-    public ProtocolDelaysMsgMailerHoldExp(boolean isTimeStamp, double gamma,double base) {
+    public ProtocolDelaysMsgInSystemLinear(boolean isTimeStamp, double gamma, double slope) {
         super(true, isTimeStamp, gamma);
-        this.base =base;
+        this.slope =slope;
     }
 
 
 
     @Override
     protected String getStringParameters() {
-        return this.base+"";
+        return this.slope+"";
     }
 
     @Override
@@ -29,14 +29,14 @@ public class ProtocolDelaysMsgMailerHoldExp extends ProtocolDelayMessageInSystem
     @Override
     protected Double createDelay(Random r, int msgAmount) {
         int rndPois = getRandomPoisson(r,msgAmount);
-
-        return Math.pow(this.base,rndPois);
+        rndPois = Math.max(5,rndPois);
+        return rndPois*slope;//Math.pow(this.base,rndPois);
     }
 
 
     private int getRandomPoisson(Random random, int lambda) {
         int rndCost = 0;
-        if (lambda <20) {
+        if (lambda <30) {
             rndCost = getPoisRandomNumber(random, lambda);
         }else{
             double Z = random.nextGaussian();

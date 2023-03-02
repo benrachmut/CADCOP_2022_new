@@ -22,6 +22,7 @@ import AgentsAbstract.NodeId;
 import Comparators.CompAgentVariableByNeighborSize;
 import Data.Data;
 import Delays.ProtocolDelayMatrix;
+import Delays.ProtocolDelayMessageAmount;
 import Messages.Msg;
 import Messages.MsgAlgorithm;
 import Messages.MsgAnyTime;
@@ -164,12 +165,24 @@ public abstract class Mailer {
 		int ans = (int) dd;
 		return ans;
 	}
-	
-	protected int createDelay(boolean isAlgorithmicMsg, int i, int j,boolean isLoss) {
-		Double d = ((ProtocolDelayMatrix)this.protocol.getDelay()).createDelay(isAlgorithmicMsg,i,j,isLoss);
-		if (MainSimulator.isDcopCityDebug&&((i == 0 && j == 31) ||(i == 31 && j == 0))) {
-			System.out.println(d);
+
+	protected int createDelay(boolean isAlgorithmicMsg, int msgAmount,boolean isLoss) {
+		Double d = ((ProtocolDelayMessageAmount)this.protocol.getDelay()).createDelay(isAlgorithmicMsg,msgAmount,isLoss);
+
+
+		if (d == null) {
+			return -1;
 		}
+		double dd = d;
+		int ans = (int) dd;
+		return ans;
+	}
+
+
+
+		protected int createDelay(boolean isAlgorithmicMsg, int i, int j,boolean isLoss) {
+		Double d = ((ProtocolDelayMatrix)this.protocol.getDelay()).createDelay(isAlgorithmicMsg,i,j,isLoss);
+
 		
 		if (d == null) {
 			return -1;

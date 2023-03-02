@@ -4,20 +4,20 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class CreatorDelaysMsgMailerHoldExp extends CreatorDelays {
-    private double[] base = {1.1};
+public class CreatorDelaysMsgInSystemLinear extends CreatorDelays {
+    private double[] slopes = {100};
 
     @Override
     protected ProtocolDelay createDefultProtocol(double gamma) {
-        return new  ProtocolDelaysMsgMailerHoldExp(gamma);
+        return new ProtocolDelaysMsgInSystemLinear(gamma);
     }
 
 
     @Override
     protected Collection<? extends ProtocolDelay> createCombinationsDelay(boolean timestampBoolean, double gamma) {
         List<ProtocolDelay> ans = new ArrayList<ProtocolDelay>();
-        for (double base : base) {
-            ans.add(new ProtocolDelaysMsgMailerHoldExp(timestampBoolean, gamma, base));
+        for (double slope : slopes) {
+            ans.add(new ProtocolDelaysMsgInSystemLinear(timestampBoolean, gamma, slope));
         } // sigma
         return ans;
     }
@@ -29,6 +29,6 @@ public class CreatorDelaysMsgMailerHoldExp extends CreatorDelays {
 
     @Override
     public String name() {
-        return "MsgDepandentExp";
+        return "MsgInSystemExp";
     }
 }

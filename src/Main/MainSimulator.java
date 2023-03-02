@@ -48,14 +48,14 @@ public class MainSimulator {
 	// --------------------------------**Experiment Repetitions**
 	public static int div = 1;
 	public static int delta = 100;
-	public static int start =10;
+	public static int start =0;
 	public static int end = start+delta;
 	public static int end_temp = start; // DO NOT CHANGE
-	public static long termination = 1000000;//8000000 30000007;
+	public static long termination = 10000000;//8000000 30000007;
 	private static int everyHowManyExcel = 100;
 
 	// ------------------------------**PROBLEM MAGNITUDE**
-	public static int A = 10; // amount of agents
+	public static int A = 50; // amount of agents
 	private static int D = 10;
 
 	// public static int D = -1; // if D or costParameter < 0 use default
@@ -84,7 +84,7 @@ public class MainSimulator {
 		MonoStochasticColor2OptSearch,
 		MaxSum_SY,MaxSum_split_SY, MaxSum_ASY, MaxSum_split_ASY;
 	}
-	public static Algorithm algorithm = Algorithm.LAMDLS;
+	public static Algorithm algorithm = Algorithm.DSA_ASY;
 	//public static int agentType = 11;//16;
 	/*
 	 * delayTypes: 0 = non, 1 = normal, 2 = uniform, 3 = Exponential 4 = Possion, 5
@@ -98,17 +98,17 @@ public class MainSimulator {
 				* = distancePois ,6 = distanceUniform ,7 = distanceMissingMsg , 8 = DelayWithK
 		*/
 
-		none, normal, uniform, Exponential ,Possion,
-		distancePois ,distanceUniform ,distanceMissingMsg , DelayWithK
+		none, normal, uniform, Exponential ,Poisson,
+		distancePois ,distanceUniform ,distanceMissingMsg , DelayWithK, amountMsgInSystemLinear
 	}
-	public static DelayType myDelayType = DelayType.uniform;
+	public static DelayType myDelayType = DelayType.amountMsgInSystemLinear;
 		//public static int delayType = 2;
 	/*
 	 * 1 = Random uniform; 2 = Graph Coloring; 3 = Scale Free Network; = 5 circle
 	 */
 	public static int dcopBenchMark = 1;
 	// 1 = Random uniform
-	public static double dcopUniformP1 = 0.5;//0.5
+	public static double dcopUniformP1 = 0.2;//0.5
 	public static double dcopUniformP2 = 1;// Probability for two values in domain between neighbors to have constraints
 	public static int costLbUniform = 1;
 	public static int costUbUniform = 100;
@@ -152,8 +152,8 @@ public class MainSimulator {
 	public static boolean isAnotherColorDebug= false;
 	public static boolean isMDC2CDebug =false;
 	public static boolean  isMonoStochComputationDebug=false;
-	public static boolean  isMGM2v2Debug=true;
-	public static boolean  isLAMDLSDebug=true;
+	public static boolean  isMGM2v2Debug=false;
+	public static boolean  isLAMDLSDebug=false;
 
 
 	public static CreatorDelays creatorDelay;
@@ -570,7 +570,9 @@ public class MainSimulator {
 	private static CreatorDelays getCreatorDelays() {
 		CreatorDelays ans = null;
 
-
+		if (myDelayType == DelayType.amountMsgInSystemLinear){
+			ans = new CreatorDelaysMsgInSystemLinear();
+		}
 
 		if (myDelayType == DelayType.none) {
 			ans = new CreatorDelaysNone();
@@ -588,7 +590,7 @@ public class MainSimulator {
 			ans = new CreatorDelaysExponential();
 		}
 
-		if (myDelayType == DelayType.Possion) {
+		if (myDelayType == DelayType.Poisson) {
 			ans = new CreatorDelaysPossion();
 		}
 

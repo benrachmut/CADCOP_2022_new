@@ -30,7 +30,7 @@ public abstract class CreatorDelays {
 	 */
 	public List<ProtocolDelay> createProtocolDelays() {
 		List<ProtocolDelay> ans = new ArrayList<ProtocolDelay>();
-		if (MainSimulator.delayType == 0) {
+		if (MainSimulator.myDelayType == MainSimulator.DelayType.none) {
 			for (double gamma : gammas) {
 				ans.add(createDefultProtocol(gamma));
 			}
