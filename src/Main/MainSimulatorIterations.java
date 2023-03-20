@@ -25,11 +25,11 @@ public class MainSimulatorIterations {
 
     public static Algorithm algorithm= Algorithm.maxsum;
     public static GraphType graphType= GraphType.circle;
-    public static CostType costType = CostType.poissonIndexBase;
+    public static CostType costType = CostType.poisson;
 
 
     public static int numberOfCircles = 1;
-    public static int constantColorCost = 100;
+    //public static int constantColorCost = 100;
     public static int uniformCostLB = 0;
     public static int uniformCostUB = 100;
     public static int lambda=50;
@@ -361,7 +361,7 @@ public class MainSimulatorIterations {
 
             if (costType == CostType.poisson) {
 
-                ans = new DcopCircle(dcopId, agentSize, domainSize, numberOfCircles,CostType.poisson);
+                ans = new DcopCircle(dcopId, agentSize, domainSize, numberOfCircles,lambda,CostType.poisson);
             }
 
             if (costType == CostType.poissonIndexBase) {

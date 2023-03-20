@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 public class CreatorDelaysMsgInSystemLinear extends CreatorDelays {
-    private double[] slopes = {100};
+    private double[] slopes = {10,50,100};
 
     @Override
     protected ProtocolDelay createDefultProtocol(double gamma) {

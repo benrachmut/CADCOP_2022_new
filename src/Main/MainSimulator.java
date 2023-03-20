@@ -17,65 +17,19 @@ import Problem.*;
 
 public class MainSimulator {
 
-	// ------------------------------**For Data
-	public static List<Mailer> mailerAll = new ArrayList<Mailer>();
-	public static Map<Protocol, List<Mailer>> mailersByProtocol = new HashMap<Protocol, List<Mailer>>();
-
-	// ------------------------------**Algorithmic relevance under imperfect
-	// communication**
-	// true = send only if change, false = send regardless if change took place
-	public static boolean sendOnlyIfChange = false;
-
-	// ------------------------------**Implementation**
-	public static boolean isThreadMailer = true; // determines the mailers type
-	public static boolean isAtomicTime = true;
-	// public static int dividAtomicTime = 1;
-
-	public static int multiplicationTime = 1;// 2;
-	public static int howManyIterationForCalculation =1000; //10000
-			;// 10000;//100000; // sparse = 100,dense=100
-	private static Double[] convergeEximne = { };
-
-	// ------------------------------**any time**
-	public static boolean isAnytime = false;
-	// 1 = DFS; 2 = BFS
-	public static int anytimeFormation = 1;
-	//	public static boolean deleteAfterCombine = false;
-	// 1 = no memoryLimit, 2=MSC, 3=Fifo, 4=Random
-	public static int anytimeMemoryHuerstic = 2;
-	public static int anytimeMemoryLimitedSize = 100;
-
 	// --------------------------------**Experiment Repetitions**
 	public static int div = 1;
 	public static int delta = 100;
 	public static int start =0;
 	public static int end = start+delta;
 	public static int end_temp = start; // DO NOT CHANGE
-	public static long termination = 10000000;//8000000 30000007;
+	public static long termination = 20000;//8000000 30000007;
+	public static int howManyIterationForCalculation =1; //10000
 	private static int everyHowManyExcel = 100;
-
 	// ------------------------------**PROBLEM MAGNITUDE**
 	public static int A = 50; // amount of agents
 	private static int D = 10;
-
-	// public static int D = -1; // if D or costParameter < 0 use default
-
-	// ------------------------------ **DCOP GENERATOR**
-
 	// ------------------------------**Algorithm Selection**
-	/*
-	 * 1 = DSA-ASY; 2 = DSA-SY; 3 = MGM-ASY ; 4 = MGM-SY ; 7 = AMDLS_V3; 8 = DSA_SDP-ASY ; 9 = DSA_SDP-SY ; 10 = MGM2-ASY ; 11
-	 * = MGM2-SY; 12 = CAMDLS_NAIVE; 13 = CAMDLS V2; 14 = MSOS; 15= MSC2C
-	 *
-	 * send all ------- 100 =
-	 *
-	 * 101 = MaxSum-SY; 102 =
-	 * MaxSum_split-SY; 103 = MaxSum-ASY; 104 = MaxSum_split-ASY;
-	 */
-
-	// 11,4,14,7
-
-
 	public enum Algorithm {
 		DSA_ASY, DSA_SY, MGM_ASY, MGM_SY, LAMDLS, DSA_SDP_ASY, DSA_SDP_SY, MGM2_ASY, MGM2_SY,
 		CAMDLS_NAIVE, CAMDLS_V2,MGM2_SY_V2,
@@ -84,29 +38,20 @@ public class MainSimulator {
 		MonoStochasticColor2OptSearch,
 		MaxSum_SY,MaxSum_split_SY, MaxSum_ASY, MaxSum_split_ASY;
 	}
-	public static Algorithm algorithm = Algorithm.DSA_ASY;
-	//public static int agentType = 11;//16;
-	/*
-	 * delayTypes: 0 = non, 1 = normal, 2 = uniform, 3 = Exponential 4 = Possion, 5
-	 * = distancePois ,6 = distanceUniform ,7 = distanceMissingMsg , 8 = DelayWithK
-	 */
-
+	public static Algorithm algorithm = Algorithm.MGM2_SY;
+	// ------------------------------*Communication Selection**
 	public enum DelayType {
-
-		/*
-		* delayTypes: 0 = non, 1 = normal, 2 = uniform, 3 = Exponential 4 = Possion, 5
-				* = distancePois ,6 = distanceUniform ,7 = distanceMissingMsg , 8 = DelayWithK
-		*/
-
 		none, normal, uniform, Exponential ,Poisson,
 		distancePois ,distanceUniform ,distanceMissingMsg , DelayWithK, amountMsgInSystemLinear
 	}
-	public static DelayType myDelayType = DelayType.amountMsgInSystemLinear;
-		//public static int delayType = 2;
-	/*
-	 * 1 = Random uniform; 2 = Graph Coloring; 3 = Scale Free Network; = 5 circle
-	 */
-	public static int dcopBenchMark = 1;
+	public static DelayType myDelayType = DelayType.none;
+
+	// ------------------------------*DCOP type**
+	public enum DcopType {
+		RandomUniform, GraphColoring, ScaleFreeNetwork, SolarSystem
+	}
+	public static DcopType myDcopType = DcopType.RandomUniform;
+
 	// 1 = Random uniform
 	public static double dcopUniformP1 = 0.2;//0.5
 	public static double dcopUniformP2 = 1;// Probability for two values in domain between neighbors to have constraints
@@ -122,16 +67,15 @@ public class MainSimulator {
 	public static double dcopScaleP2 = 1;// Probability for two values in domain between neighbors to have constraints
 	public static int costLbScale = 1;
 	public static int costUbScale = 100;
-
-	// = cities
+	// 4 = cities
 	public static int numberOfCities = 5;
 	public static double sdSquareFromCity = 0.05;
-
 	public static int minCostCity = 1;
 	public static int maxCostCity = 100;
 	public static double dcopCityP2 = 1;// Probability for two values in domain between neighbors to have constraints
-	// public static int neighborsOfNonMayers = 3;
 	public static double exponentForNeighborCitizens = 3;
+
+
 
 
 
@@ -156,8 +100,32 @@ public class MainSimulator {
 	public static boolean  isLAMDLSDebug=false;
 
 
-	public static CreatorDelays creatorDelay;
 
+
+	public static CreatorDelays creatorDelay;
+	// ------------------------------**For Data
+	public static List<Mailer> mailerAll = new ArrayList<Mailer>();
+	public static Map<Protocol, List<Mailer>> mailersByProtocol = new HashMap<Protocol, List<Mailer>>();
+	// ------------------------------**Algorithmic relevance under imperfect
+	// communication**
+	// true = send only if change, false = send regardless if change took place
+	public static boolean sendOnlyIfChange = false;
+	// ------------------------------**Implementation**
+	public static boolean isThreadMailer = true; // determines the mailers type
+	public static boolean isAtomicTime = true;
+	// public static int dividAtomicTime = 1;
+	public static int multiplicationTime = 1;// 2;
+	;// 10000;//100000; // sparse = 100,dense=100
+	private static Double[] convergeEximne = { };
+
+	// ------------------------------**any time**
+	public static boolean isAnytime = false;
+	// 1 = DFS; 2 = BFS
+	public static int anytimeFormation = 1;
+	//	public static boolean deleteAfterCombine = false;
+	// 1 = no memoryLimit, 2=MSC, 3=Fifo, 4=Random
+	public static int anytimeMemoryHuerstic = 2;
+	public static int anytimeMemoryLimitedSize = 100;
 	/*
 	 * delayTypes: 0 = non
 	 */
@@ -177,10 +145,7 @@ public class MainSimulator {
 
 	public static void main(String[] args) {
 
-
-
-
-		if (dcopBenchMark == 4 && !((myDelayType == DelayType.distancePois)||(myDelayType == DelayType.distanceUniform)||(myDelayType == DelayType.distanceMissingMsg))) {
+		if (myDcopType == DcopType.SolarSystem && !((myDelayType == DelayType.distancePois)||(myDelayType == DelayType.distanceUniform)||(myDelayType == DelayType.distanceMissingMsg))) {
 			throw new RuntimeException("if dcopBenchMark is city then delay type must be distance base distance");
 		}
 
@@ -505,26 +470,24 @@ public class MainSimulator {
 		Dcop ans = null;
 		// use default Domain contractors
 
-		if (dcopBenchMark == 1) {
+		if (myDcopType == DcopType.RandomUniform) {
 			ans = new DcopUniform(dcopId, A, D, costLbUniform, costUbUniform, dcopUniformP1, dcopUniformP2);
 		}
 
-		if (dcopBenchMark == 2) {
+		if (myDcopType == DcopType.GraphColoring) {
 			ans = new DcopGraphColoring(dcopId, A, 3, costLbColor, costUbColor, dcopGraphColoringP1);
 		}
 
-		if (dcopBenchMark == 3) {
+		if (myDcopType == DcopType.ScaleFreeNetwork) {
 			ans = new DcopScaleFreeNetwork(dcopId, A, D, costLbScale, costUbScale, dcopScaleHubs, dcopScaleNeighbors,
 					dcopScaleP2);
 		}
 
-		if (dcopBenchMark == 4) {
+		if (myDcopType == DcopType.SolarSystem) {
 			ans = new DcopCities(dcopId, A, D, numberOfCities, sdSquareFromCity, minCostCity, maxCostCity, dcopCityP2,
 					exponentForNeighborCitizens);
 		}
-		if (dcopBenchMark == 5){
-			//ans = new DcopCircle(dcopId, A, D, costLbUniform, costUbUniform);
-		}
+
 
 		return ans;
 	}
