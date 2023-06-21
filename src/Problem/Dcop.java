@@ -206,8 +206,8 @@ public abstract class Dcop {
 		}
 
 
-		if (algorithm == MainSimulator.Algorithm.MonoStochasticColor2OptSearch) {
-			ans = new MonoStochasticColor2OptSearch(dcopId, D, agentId);
+		if (algorithm == MainSimulator.Algorithm.LAMDLS_OPT2) {
+			ans = new LAMDLS_OPT2(dcopId, D, agentId);
 		}
 
 

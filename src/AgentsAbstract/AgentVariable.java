@@ -240,6 +240,6 @@ public abstract class AgentVariable extends Agent {
 		return ((AgentVariable)obj).getId()==this.id;
 	}
 
-	
+
 
 }

@@ -23,8 +23,8 @@ public class MainSimulator {
 	public static int start =0;
 	public static int end = start+delta;
 	public static int end_temp = start; // DO NOT CHANGE
-	public static long termination = 20000;//8000000 30000007;
-	public static int howManyIterationForCalculation =1; //10000
+	public static long termination = 500000;//8000000 30000007;
+	public static int howManyIterationForCalculation =1000; //10000
 	private static int everyHowManyExcel = 100;
 	// ------------------------------**PROBLEM MAGNITUDE**
 	public static int A = 50; // amount of agents
@@ -35,16 +35,17 @@ public class MainSimulator {
 		CAMDLS_NAIVE, CAMDLS_V2,MGM2_SY_V2,
 		MonoStochasticOrderSearch,
 		MonoDeterministicNo2Opt,
-		MonoStochasticColor2OptSearch,
+		LAMDLS_OPT2,
+		MonoToken2Opt,
 		MaxSum_SY,MaxSum_split_SY, MaxSum_ASY, MaxSum_split_ASY;
 	}
-	public static Algorithm algorithm = Algorithm.MGM2_SY;
+	public static Algorithm algorithm = Algorithm.MaxSum_split_ASY;
 	// ------------------------------*Communication Selection**
 	public enum DelayType {
 		none, normal, uniform, Exponential ,Poisson,
 		distancePois ,distanceUniform ,distanceMissingMsg , DelayWithK, amountMsgInSystemLinear
 	}
-	public static DelayType myDelayType = DelayType.none;
+	public static DelayType myDelayType = DelayType.uniform;
 
 	// ------------------------------*DCOP type**
 	public enum DcopType {

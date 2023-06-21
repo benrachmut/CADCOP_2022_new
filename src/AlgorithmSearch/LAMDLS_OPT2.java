@@ -9,7 +9,7 @@ import Messages.*;
 
 import java.util.*;
 
-public class MonoStochasticColor2OptSearch extends AgentVariableSearch implements SelfCounterable {
+public class LAMDLS_OPT2 extends AgentVariableSearch implements SelfCounterable {
 
     private boolean withNeighborSizeMultiplier = false;
     enum Status {
@@ -52,7 +52,7 @@ public class MonoStochasticColor2OptSearch extends AgentVariableSearch implement
 
 
 
-    public MonoStochasticColor2OptSearch(int dcopId, int D, int id1) {
+    public LAMDLS_OPT2(int dcopId, int D, int id1) {
         super(dcopId, D, id1);
         AMDLS_V1.typeDecision = 'c';
         updateAlgorithmHeader();
@@ -256,7 +256,7 @@ public class MonoStochasticColor2OptSearch extends AgentVariableSearch implement
         this.valueAssignment = optInfo.getValueAssignmnet2();
         //try {
         this.neighborCounters.put(partnerNodeId, this.neighborCounters.get(partnerNodeId) + 1);
-        this.neighborsValueAssignmnet.put(partnerNodeId, new MsgReceive<Integer>(optInfo.getValueAssignmnet1(), 0));
+        this.neighborsValueAssignment.put(partnerNodeId, new MsgReceive<Integer>(optInfo.getValueAssignmnet1(), 0));
         // }catch (Exception e){
         //    int x = 3;
         // }
@@ -389,7 +389,7 @@ public class MonoStochasticColor2OptSearch extends AgentVariableSearch implement
     private void updateValueAssignment(Map<String, Double> info, NodeId sender, int timestamp) {
         int valAssignment = info.get("value assignment").intValue();
         MsgReceive<Integer> msgReceive = new MsgReceive<Integer>(valAssignment, timestamp);
-        this.neighborsValueAssignmnet.put(sender, msgReceive);
+        this.neighborsValueAssignment.put(sender, msgReceive);
     }
 
     private void updateColor(Map<String, Double> info, NodeId sender) {
@@ -665,7 +665,7 @@ public class MonoStochasticColor2OptSearch extends AgentVariableSearch implement
         if (withNeighborSizeMultiplier){
             AgentVariable.AlgorithmName = "MS2C_NSM";
         }else{
-            AgentVariable.AlgorithmName = "MS2C";
+            AgentVariable.AlgorithmName = "LAMDLS_OPT2";
 
         }
     }
@@ -860,7 +860,7 @@ public class MonoStochasticColor2OptSearch extends AgentVariableSearch implement
 
     private KOptInfo makeMyKOptInfo() {
         return new KOptInfo(this.valueAssignment, nodeId, neighborsConstraint, domainArray,
-                this.neighborsValueAssignmnet);
+                this.neighborsValueAssignment);
     }
     private void createMsgsForChangeAlone(List<Msg> msgsToInsertMsgBox) {
         Map<String,Double> info = createInfoVAandCounter();
@@ -913,7 +913,39 @@ public class MonoStochasticColor2OptSearch extends AgentVariableSearch implement
     }
 
     private NodeId selectNeighborForPartnership() {
-        Set <NodeId> potentialNeighbors= getPotentialNeighbors();
+        Set <NodeId> potentialNeighborsColorWise = getPotentialNeighborsColorWise();
+        Set<NodeId> potentialNeighborsAndCounter = getPotentialNeighborsColorWiseAndCounter(potentialNeighborsColorWise);
+        if (potentialNeighborsAndCounter.isEmpty()){
+            return null;
+        }else if (potentialNeighborsAndCounter.size()==1){
+            return new ArrayList<NodeId>(potentialNeighborsAndCounter).get(0);
+
+        }
+        else{
+            Map<NodeId,Double> potentialNeighbors = new HashMap<NodeId,Double>();
+            for ( NodeId nId: potentialNeighborsAndCounter) {
+                potentialNeighbors.put(nId,neighborsDocIdsT.get(nId));
+            }
+            return getKeyWithMinValue(potentialNeighbors);
+        }
+    }
+
+
+    public static <K, V extends Comparable<V>> K getKeyWithMinValue(Map<K, V> map) {
+        if (map == null || map.isEmpty()) {
+            throw new IllegalArgumentException("Map is null or empty");
+        }
+
+        Map.Entry<K, V> minEntry = null;
+        for (Map.Entry<K, V> entry : map.entrySet()) {
+            if (minEntry == null || entry.getValue().compareTo(minEntry.getValue()) < 0) {
+                minEntry = entry;
+            }
+        }
+
+        return minEntry.getKey();
+    }
+/*
         ArrayList <NodeId> nodeIdsWithMinCounter = this.getNodeIdsWithMinCounter(potentialNeighbors);
         if (nodeIdsWithMinCounter == null || nodeIdsWithMinCounter.isEmpty()){
             return null;
@@ -926,9 +958,26 @@ public class MonoStochasticColor2OptSearch extends AgentVariableSearch implement
 
         int selectedIndex = this.rndForPartners.nextInt(nodeIdsWithMinCounter.size());
         return nodeIdsWithMinCounter.get(selectedIndex);
+*/
+
+
+    private Set<NodeId> getPotentialNeighborsColorWiseAndCounter(Set<NodeId> potentialNeighborsColorWise) {
+        Set<NodeId> ans = new HashSet<NodeId>();
+        for (NodeId nodeId : this.neighborCounters.keySet()) {
+            if (potentialNeighborsColorWise.contains(nodeId)) {
+                int nCounter = this.neighborCounters.get(nodeId);
+                if (nCounter == this.selfCounter) {
+                    ans.add(nodeId);
+                }
+            }
+        }
+        return ans;
     }
 
-    protected Set<NodeId> getPotentialNeighbors() {
+
+
+
+    protected Set<NodeId> getPotentialNeighborsColorWise() {
         Set<NodeId> ans = new HashSet<NodeId>();
         for (NodeId neighbor : this.neighborsColors.keySet()) {
             int nColor = this.neighborsColors.get(neighbor);
@@ -1073,7 +1122,7 @@ public class MonoStochasticColor2OptSearch extends AgentVariableSearch implement
     private void updateFieldsUsing2OptInfo(Find2Opt optInfo) {
         this.valueAssignment = optInfo.getValueAssignmnet1();
         //this.neighborCounters.put(partnerNodeId,this.neighborCounters.get(partnerNodeId)+1);
-        this.neighborsValueAssignmnet.put(partnerNodeId, new MsgReceive<Integer>(optInfo.getValueAssignmnet2(),0));
+        this.neighborsValueAssignment.put(partnerNodeId, new MsgReceive<Integer>(optInfo.getValueAssignmnet2(),0));
     }
 
     private void setPartnerNodeId() {

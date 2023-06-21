@@ -29,7 +29,7 @@ public  class  MaxSumStandardVarible extends AgentVariableInference {
 
 	///// ******* Control Variables ******* ////
 
-	boolean damping =false;
+	boolean damping =true;
 	boolean storedMessageOn = false;
 	protected boolean print = false;
 	protected boolean printValueAssignment = false;
@@ -519,11 +519,11 @@ public  class  MaxSumStandardVarible extends AgentVariableInference {
 			AgentVariable.AlgorithmName = "MaxSum_SY";
 		}
 
-		if (!damping && algorithm == MainSimulator.Algorithm.MaxSum_SY) {
+		if (damping && algorithm == MainSimulator.Algorithm.MaxSum_SY) {
 			AgentVariable.AlgorithmName = "MaxSum_DMS_SY";
 		}
 
-		if (!damping && algorithm == MainSimulator.Algorithm.MaxSum_split_SY) {
+		if (damping && algorithm == MainSimulator.Algorithm.MaxSum_split_SY) {
 			AgentVariable.AlgorithmName = "MaxSum_DMS_SCFG_SY";
 		}
 
@@ -536,7 +536,7 @@ public  class  MaxSumStandardVarible extends AgentVariableInference {
 			AgentVariable.AlgorithmName = "MaxSum_DMS_ASY";
 		}
 
-		if (!damping && algorithm == MainSimulator.Algorithm.MaxSum_split_ASY) {
+		if (damping && algorithm == MainSimulator.Algorithm.MaxSum_split_ASY) {
 			AgentVariable.AlgorithmName = "MaxSum_DMS_SCFG_ASY";
 		}
 		

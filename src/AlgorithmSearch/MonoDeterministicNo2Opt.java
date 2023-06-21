@@ -208,7 +208,7 @@ public class MonoDeterministicNo2Opt extends AgentVariableSearch implements Self
         int context = nInfo.getValueAssingment();
         int timestamp = msgAlgorithm.getTimeStamp();
         MsgReceive<Integer> msgReceive = new MsgReceive<Integer>(context, timestamp);
-        this.neighborsValueAssignmnet.put(msgAlgorithm.getSenderId(), msgReceive);
+        this.neighborsValueAssignment.put(msgAlgorithm.getSenderId(), msgReceive);
     }
 
 
@@ -388,7 +388,7 @@ public class MonoDeterministicNo2Opt extends AgentVariableSearch implements Self
 
     private KOptInfo makeMyKOptInfo() {
         return new KOptInfo(this.valueAssignment, nodeId, neighborsConstraint, domainArray,
-                this.neighborsValueAssignmnet);
+                this.neighborsValueAssignment);
     }
 
 
@@ -408,7 +408,7 @@ public class MonoDeterministicNo2Opt extends AgentVariableSearch implements Self
         infoToSend2Opt.put( whoToReply, optInfo.getValueAssignmnet2());
         this.valueAssignment = optInfo.getValueAssignmnet1();
         this.neighborCounters.put(whoToReply,this.neighborCounters.get(whoToReply)+1);
-        this.neighborsValueAssignmnet.put(whoToReply, new MsgReceive<Integer>(optInfo.getValueAssignmnet2(),0));
+        this.neighborsValueAssignment.put(whoToReply, new MsgReceive<Integer>(optInfo.getValueAssignmnet2(),0));
         //-------------------
         List<Msg> msgsToInsertMsgBox = new ArrayList<Msg>();
         NodeId receiver = whoToReply;
@@ -735,7 +735,7 @@ public class MonoDeterministicNo2Opt extends AgentVariableSearch implements Self
         int context = nV;
         int timestamp = msgAlgorithm.getTimeStamp();
         MsgReceive<Integer> msgReceive = new MsgReceive<Integer>(context, timestamp);
-        this.neighborsValueAssignmnet.put(msgAlgorithm.getSenderId(), msgReceive);
+        this.neighborsValueAssignment.put(msgAlgorithm.getSenderId(), msgReceive);
     }
 
 

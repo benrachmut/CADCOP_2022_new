@@ -3,16 +3,11 @@ package AlgorithmSearch;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 
 import AgentsAbstract.AgentVariable;
-import AgentsAbstract.NodeId;
 import Messages.MsgAlgorithm;
-import Messages.MsgLR;
 import Messages.MsgReceive;
-import Messages.MsgValueAssignmnet;
 
 public class MGM_SY extends MGM {
 	private Collection<MsgAlgorithm> future;
@@ -83,7 +78,7 @@ public class MGM_SY extends MGM {
 	@Override
 	protected void changeReceiveFlagsToTrue(MsgAlgorithm msgAlgorithm) {
 		if (currentPhaseWaitForVA) {
-			for (MsgReceive<Integer> m : this.neighborsValueAssignmnet.values()) {
+			for (MsgReceive<Integer> m : this.neighborsValueAssignment.values()) {
 				int msgTimestamp = 0;
 				if (m == null) {
 					return;

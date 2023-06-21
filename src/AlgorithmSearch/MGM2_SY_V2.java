@@ -924,7 +924,7 @@ public class MGM2_SY_V2 extends AgentVariableSearch implements SelfCounterable {
 
     private KOptInfo makeMyKOptInfo() {
         return new KOptInfo(this.valueAssignment, nodeId, neighborsConstraint, domainArray,
-                this.neighborsValueAssignmnet);
+                this.neighborsValueAssignment);
     }
 
 

@@ -86,7 +86,7 @@ abstract public class MGM2 extends AgentVariableSearch implements SelfCounterabl
 
 		try {
 			if (m instanceof MsgValueAssignmnet) {
-				return neighborsValueAssignmnet.get(sender).getTimestamp();
+				return neighborsValueAssignment.get(sender).getTimestamp();
 			}
 			if (m instanceof MsgMgm2Phase2FriendshipInformation) {
 				return this.phase2RecieveFriendshipOffers.get(sender).getTimestamp();
@@ -302,7 +302,7 @@ abstract public class MGM2 extends AgentVariableSearch implements SelfCounterabl
 	private KOptInfo makeMyKOptInfo() {
 		// TODO Auto-generated method stub
 		return new KOptInfo(this.valueAssignment, nodeId, neighborsConstraint, domainArray,
-				this.neighborsValueAssignmnet);
+				this.neighborsValueAssignment);
 	}
 
 	// ------------------** Msg Value Process **------------------

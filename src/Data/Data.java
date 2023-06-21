@@ -13,6 +13,7 @@ import java.util.SortedMap;
 
 import AgentsAbstract.AgentVariable;
 import AgentsAbstract.AgentVariableSearch;
+import AgentsAbstract.NodeId;
 import AgentsAbstract.SelfCounterable;
 import Main.Mailer;
 import Main.MainSimulator;
@@ -35,6 +36,8 @@ public class Data {
 	private Double globalPovABSDelta;
 	private Double agentZeroGlobalCost;
 	private Double agentZeroPOVCost;
+	private Double agentZeroRatioKnowledge;
+	private Double globalRatioKnowledge;
 
 	private Double avgIdleTime;
 	private Double maxIdleTime;
@@ -70,12 +73,14 @@ public class Data {
 		this.avgIdleTime = Statistics.mean(colletionPerFields.get(12));
 		this.maxIdleTime = Statistics.mean(colletionPerFields.get(13));
 		this.avgSelfCounter = Statistics.mean(colletionPerFields.get(14));
+		agentZeroRatioKnowledge = Statistics.mean(colletionPerFields.get(15));
+		globalRatioKnowledge = Statistics.mean(colletionPerFields.get(16));
 		if (MainSimulator.isAnytime) {
-			this.topAgentsAnytimeContextCost = Statistics.mean(colletionPerFields.get(15));
-			this.anytimeCost = Statistics.mean(colletionPerFields.get(16));
-			this.topContextCounters = Statistics.mean(colletionPerFields.get(17));
-			this.numberOfRepsMeanAtTop = Statistics.mean(colletionPerFields.get(18));
-			this.numberOfRepsMeanAtAll = Statistics.mean(colletionPerFields.get(19));
+			this.topAgentsAnytimeContextCost = Statistics.mean(colletionPerFields.get(17));
+			this.anytimeCost = Statistics.mean(colletionPerFields.get(18));
+			this.topContextCounters = Statistics.mean(colletionPerFields.get(19));
+			this.numberOfRepsMeanAtTop = Statistics.mean(colletionPerFields.get(20));
+			this.numberOfRepsMeanAtAll = Statistics.mean(colletionPerFields.get(21));
 
 		}
 	}
@@ -83,11 +88,11 @@ public class Data {
 	private List<List<Double>> createColletionsPerField(List<Data> datas) {
 		List<List<Double>> ans = new ArrayList<List<Double>>();
 		if (MainSimulator.isAnytime) {
-			for (int i = 0; i < 15 + 5; i++) {
+			for (int i = 0; i < 17 + 5; i++) {
 				ans.add(new ArrayList<Double>());
 			}
 		} else {
-			for (int i = 0; i < 15; i++) {
+			for (int i = 0; i < 17; i++) {
 				ans.add(new ArrayList<Double>());
 			}
 		}
@@ -108,22 +113,24 @@ public class Data {
 			ans.get(12).add(d.avgIdleTime);
 			ans.get(13).add(d.maxIdleTime);
 			ans.get(14).add(d.avgSelfCounter);
+			ans.get(15).add(d.agentZeroRatioKnowledge);
+			ans.get(16).add(d.globalRatioKnowledge);
 
 			if (MainSimulator.isAnytime) {
-				ans.get(15).add(d.topAgentsAnytimeContextCost);
-				ans.get(16).add(d.anytimeCost);
-				ans.get(17).add(d.topContextCounters);
+				ans.get(17).add(d.topAgentsAnytimeContextCost);
+				ans.get(18).add(d.anytimeCost);
+				ans.get(19).add(d.topContextCounters);
 
 				if (d.topAgentsAnytimeContextCost == null) {
-					ans.get(18).add(0.0);
+					ans.get(20).add(0.0);
 				} else {
-					ans.get(18).add(1.0);
+					ans.get(20).add(1.0);
 				}
 
 				if (d.anytimeCost == null) {
-					ans.get(19).add(0.0);
+					ans.get(21).add(0.0);
 				} else {
-					ans.get(19).add(1.0);
+					ans.get(21).add(1.0);
 				}
 			}
 
@@ -156,6 +163,9 @@ public class Data {
 		this.avgIdleTime = calcAvgIdleTime(dcop.getVariableAgents());
 		this.maxIdleTime = calcMaxIdleTime(dcop.getVariableAgents());
 		this.avgSelfCounter=calcAvgSelfCounter(dcop.getVariableAgents());
+
+		this.agentZeroRatioKnowledge = calcZeroRatioKnowledge(dcop);
+		globalRatioKnowledge = calcGlobalRatioKnowledge(dcop);
 		if (MainSimulator.isAnytime) {
 			if (mailer.getDcop().isSearchAlgorithm()) {
 
@@ -166,6 +176,37 @@ public class Data {
 				this.topContextCounters = calcTopContextCounters(mailer);
 			}
 		}
+	}
+
+	private Double calcGlobalRatioKnowledge(Dcop dcop) {
+		//todo
+		AgentVariable[] agents = dcop.getVariableAgents();
+		for (AgentVariable a: agents){
+			double ratioPerAgent = getRatioKnowledgePerAgent(a);
+
+			a.getValueAssignment();
+		}
+		return 0.0;
+	}
+
+	private double getRatioKnowledgePerAgent(AgentVariable a) {
+		for (NodeId nId: a.getNeigborSetId()) {
+			if (a instanceof AgentVariableSearch) {
+				int valueInTheAgentsView = ((AgentVariableSearch)a).getNeighborValueAssignment(nId);
+			}
+			else{
+				return 0;
+			}
+		}
+		return 0;
+	}
+
+	private Double calcZeroRatioKnowledge(Dcop dcop) {
+		//dcop.ge
+
+		//todo
+		return 0.0;
+
 	}
 
 	private Double calcAvgSelfCounter(AgentVariable[] variableAgents) {
@@ -393,7 +434,7 @@ public class Data {
 		ans = ans + "Iteration" + "," + "Global View Cost" + "," + "Monotonicy" + "," + "Agent View Cost" + ","
 				+ "Global Anytime Cost" + "," + "Value Assignmnet Counter" + "," + "Msgs Counter Arrive" + ","+ "Msgs Counter Deliver" + ","
 				+ "Global View Cost Agent Zero" + "," + "Agent View Cost Agent Zero" + "," + "Abs Delta Global and POV"
-				+ "," + "Percent Agents With Colors" + "," + "Number of Colors" + ","+ "Average Idle Time" + ","+"Max Idle Time"+ ","+"self_counter";
+				+ "," + "Percent Agents With Colors" + "," + "Number of Colors" + ","+ "Average Idle Time" + ","+"Max Idle Time"+ ","+"self_counter" + ",agent zero knowledge ratio" + ",global knowledge ratio";
 		if (MainSimulator.isAnytime) {
 			ans = ans + "," + "Anytime top agents best context cost" + "," + "Anytime Cost" + ","
 					+ "Contexts of all agents reported" + "," + "Number of Repetitions top" + ","
@@ -408,7 +449,8 @@ public class Data {
 		String ans = this.time + "," + this.globalCost + "," + this.monotonicy + "," + this.povCost + ","
 				+ this.globalAnytimeCost + "," + this.changeValueAssignmentCounter + "," + this.algorithmMsgsCounterArrive+ "," +this.algorithmMsgsCounterDeliver
 				+ "," + this.agentZeroGlobalCost + "," + this.agentZeroPOVCost + "," + this.globalPovABSDelta + ","
-				+ agentPercentCanStart + "," + numberOfColors+ "," +this.avgIdleTime + ","+this.maxIdleTime+ ","+this.avgSelfCounter;
+				+ agentPercentCanStart + "," + numberOfColors+ "," +this.avgIdleTime + ","+this.maxIdleTime+ ","+this.avgSelfCounter +","+agentZeroRatioKnowledge+","+ globalRatioKnowledge;
+
 
 		if (MainSimulator.isAnytime) {
 			ans = ans + "," + this.topAgentsAnytimeContextCost + "," + this.anytimeCost + "," + this.topContextCounters

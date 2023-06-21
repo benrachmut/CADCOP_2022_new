@@ -4,11 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map.Entry;
-import java.util.SortedSet;
-import java.util.TreeSet;
+
 import AgentsAbstract.AgentVariable;
 import AgentsAbstract.NodeId;
-import Main.MainSimulator;
 import Messages.MsgAlgorithm;
 import Messages.MsgReceive;
 
@@ -48,7 +46,7 @@ public class DSA_B_SY extends DSA_B {
 	@Override
 	protected void changeReceiveFlagsToTrue(MsgAlgorithm msgAlgorithm) {
 
-		for (MsgReceive<Integer> m : this.neighborsValueAssignmnet.values()) {
+		for (MsgReceive<Integer> m : this.neighborsValueAssignment.values()) {
 			int msgTimestamp = 0;
 			if (m == null) {
 				return;
@@ -93,7 +91,7 @@ public class DSA_B_SY extends DSA_B {
 		ans = ans + this.rndForDebug + ",";
 		ans = ans + this.valueAssignment + ",";
 
-		for (Entry<NodeId, MsgReceive<Integer>> e : this.neighborsValueAssignmnet.entrySet()) {
+		for (Entry<NodeId, MsgReceive<Integer>> e : this.neighborsValueAssignment.entrySet()) {
 			int context;
 			int timeStamp;
 			MsgReceive<Integer> mva = e.getValue();

@@ -4,11 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map.Entry;
 
 import AgentsAbstract.AgentVariable;
-import AgentsAbstract.NodeId;
-import Main.MainSimulator;
 import Messages.MsgAlgorithm;
 import Messages.MsgReceive;
 
@@ -50,7 +47,7 @@ public class DSA_SDP_SY extends DSA_SDP {
 
 	@Override
 	protected void changeReceiveFlagsToTrue(MsgAlgorithm msgAlgorithm) {
-		for (MsgReceive<Integer> m : this.neighborsValueAssignmnet.values()) {
+		for (MsgReceive<Integer> m : this.neighborsValueAssignment.values()) {
 			int msgTimestamp = 0;
 			if (m == null) {
 				return;

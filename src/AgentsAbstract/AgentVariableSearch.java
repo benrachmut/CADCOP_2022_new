@@ -31,7 +31,7 @@ import Messages.MsgValueAssignmnet;
 
 public abstract class AgentVariableSearch extends AgentVariable {
 
-	protected SortedMap<NodeId, MsgReceive<Integer>> neighborsValueAssignmnet; // id, variable
+	protected SortedMap<NodeId, MsgReceive<Integer>> neighborsValueAssignment; // id, variable
 
 	// ------Anytime----
 	protected NodeId anytimeFather;
@@ -65,7 +65,7 @@ public abstract class AgentVariableSearch extends AgentVariable {
 		this.time = 1;
 		this.nodeId = new NodeId(id1,false);
 
-		this.neighborsValueAssignmnet = new TreeMap<NodeId, MsgReceive<Integer>>();
+		this.neighborsValueAssignment = new TreeMap<NodeId, MsgReceive<Integer>>();
 		anytimeUpToSend = new ArrayList<Context>();
 		// anytimeUpToSendPast = new HashSet<Context>();
 		// fullContextFound = new HashSet<Context>();
@@ -80,8 +80,19 @@ public abstract class AgentVariableSearch extends AgentVariable {
 		if (MainSimulator.isAnytime) {
 			// this.isWithTimeStamp = true;
 		}
+		this.neighborsValueAssignment = new TreeMap<>();
+		for (NodeId nId:
+				this.neighborsConstraint.keySet()) {
+			this.neighborsValueAssignment.put(nId,null);
+		}
 	}
-
+	public int getNeighborValueAssignment(NodeId nodeId) {
+		if(this.neighborsValueAssignment.get(nodeId)!= null) {
+			return this.neighborsValueAssignment.get(nodeId).getContext();
+		}else {
+			return 0;
+		}
+	}
 	@Override
 	public long getIdleTime() {
 		// TODO Auto-generated method stub
@@ -91,8 +102,12 @@ public abstract class AgentVariableSearch extends AgentVariable {
 	public void initialize() {
 		this.sendValueAssignmnetMsgs();
 
+		for (NodeId nId:
+			 this.neighborsConstraint.keySet()) {
+			this.neighborsValueAssignment.put(nId,null);
+		}
 		if (MainSimulator.isAnytime) {
-			if (this.neighborsValueAssignmnet.isEmpty()) {
+			if (this.neighborsValueAssignment.isEmpty()) {
 				this.bestContexFound = createMyContext();
 				this.anytimeValueAssignmnet = this.bestContexFound.getValueAssignmentPerAgent(this.id);
 			}
@@ -102,13 +117,13 @@ public abstract class AgentVariableSearch extends AgentVariable {
 	@Override
 	public void meetNeighbor(int neighborId, Integer[][] constraint) {
 		super.meetNeighbor(neighborId, constraint);
-		this.neighborsValueAssignmnet.put(new NodeId(neighborId,false), null);
+		this.neighborsValueAssignment.put(new NodeId(neighborId,false), null);
 	}
 
 	@Override
 	public void resetAgentGivenParametersV2() {
-		this.neighborsValueAssignmnet = Agent
-				.<NodeId, MsgReceive<Integer>>resetMapToValueNull(this.neighborsValueAssignmnet);
+		this.neighborsValueAssignment = Agent
+				.<NodeId, MsgReceive<Integer>>resetMapToValueNull(this.neighborsValueAssignment);
 		anytimeValueAssignmnet = null;
 		if (combinedContextCollection != null) {
 			for (CombinedContextCollection ccc : combinedContextCollection) {
@@ -140,7 +155,7 @@ public abstract class AgentVariableSearch extends AgentVariable {
 
 	public int getCostPerInput(int input) {
 		int ans = 0;
-		for (Entry<NodeId, MsgReceive<Integer>> e : this.neighborsValueAssignmnet.entrySet()) {
+		for (Entry<NodeId, MsgReceive<Integer>> e : this.neighborsValueAssignment.entrySet()) {
 			if (e.getValue() != null) {
 				int nValueAssignmnet = e.getValue().getContext();
 				Integer[][] nConst = this.neighborsConstraint.get(e.getKey());
@@ -275,12 +290,12 @@ public abstract class AgentVariableSearch extends AgentVariable {
 		int context =  ((Integer) msgAlgorithm.getContext());
 		int timestamp = msgAlgorithm.getTimeStamp();
 		MsgReceive<Integer> msgReceive = new MsgReceive<Integer>(context, timestamp);
-		this.neighborsValueAssignmnet.put(msgAlgorithm.getSenderId(), msgReceive);
+		this.neighborsValueAssignment.put(msgAlgorithm.getSenderId(), msgReceive);
 	}
 
 	protected int getTimestampOfValueAssignmnets(MsgAlgorithm msgAlgorithm) {
 		NodeId senderNodeId = msgAlgorithm.getSenderId();
-		MsgReceive<Integer> msgReceive = this.neighborsValueAssignmnet.get(senderNodeId);
+		MsgReceive<Integer> msgReceive = this.neighborsValueAssignment.get(senderNodeId);
 		if (msgReceive == null) {
 			return -1;
 		}
@@ -368,7 +383,7 @@ public abstract class AgentVariableSearch extends AgentVariable {
 
 		TreeMap<Integer, Integer> m = new TreeMap<Integer, Integer>();
 		try {
-			for (Entry<NodeId, MsgReceive<Integer>> e : this.neighborsValueAssignmnet.entrySet()) {
+			for (Entry<NodeId, MsgReceive<Integer>> e : this.neighborsValueAssignment.entrySet()) {
 				m.put(e.getKey().getId1(), e.getValue().getContext());
 			}
 
@@ -716,7 +731,7 @@ public abstract class AgentVariableSearch extends AgentVariable {
 	// }
 
 	private boolean contextHasNulls() {
-		for (MsgReceive<Integer> m : neighborsValueAssignmnet.values()) {
+		for (MsgReceive<Integer> m : neighborsValueAssignment.values()) {
 			if (m == null) {
 				return true;
 			}
