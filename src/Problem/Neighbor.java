@@ -193,7 +193,11 @@ public class Neighbor {
 						boolean isHardScheduleProblem = this.myCostType == CostType.hardScheduleSd10Hill1||  this.myCostType == CostType.hardScheduleSd10Hill3;
 						if (isScheduleProblem ) {
 							double sd = 10;
+
 							rndCost = getRandomNormalScheduleCost(sd,preferences1,i,preferences2,j);
+							if (isHardScheduleProblem && i!=j){
+								rndCost = 500;
+							}
 
 						}
 
@@ -201,9 +205,10 @@ public class Neighbor {
 
 
 
-						if (costDebug){
-							System.out.println(rndCost);
-						}
+						//if (costDebug){
+						//	System.out.println(rndCost);
+						//}
+						//}
 						constraints[i][j] = rndCost;
 						constraintsTranspose[j][i] = rndCost;
 
