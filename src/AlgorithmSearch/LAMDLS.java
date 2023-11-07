@@ -22,6 +22,7 @@ public class LAMDLS extends AgentVariableSearch implements SelfCounterable {
 
     public static  char typeDecision = 'c' ;
     private int selfCounter;
+    private int countChanges;
     private Integer myColor;
     private Map<NodeId,Integer> neighborsColors;
     private Map<NodeId,Integer> neighborCounters;
@@ -42,7 +43,7 @@ public class LAMDLS extends AgentVariableSearch implements SelfCounterable {
 
         selfCounter = 1;
         myColor = null;
-
+        countChanges = 0;
        neighborsColors = new HashMap<NodeId,Integer>();
         neighborCounters = new HashMap<NodeId,Integer>();
         for (NodeId nodeId: this.neighborsConstraint.keySet()) {
@@ -112,7 +113,11 @@ public class LAMDLS extends AgentVariableSearch implements SelfCounterable {
     public boolean compute() {
         if (myStatus == Status.selectColor){
             chooseColor();
-            this.valueAssignment = getCandidateToChange_C();
+            int potential = getCandidateToChange_C();
+            if (potential!=this.valueAssignment){
+                countChanges = countChanges+1;
+            }
+            this.valueAssignment = potential;
             this.selfCounter = this.selfCounter+1;
             if (allNeighborsHaveColor()&& isConsistent()){
                 this.selfCounter = this.selfCounter+1;
@@ -123,7 +128,12 @@ public class LAMDLS extends AgentVariableSearch implements SelfCounterable {
             }
         }
         if (myStatus == Status.consistent) {
-            this.valueAssignment = getCandidateToChange_C();
+
+            int potential = getCandidateToChange_C();
+            if (potential!=this.valueAssignment){
+                countChanges = countChanges+1;
+            }
+            this.valueAssignment = potential;
             this.selfCounter = this.selfCounter+1;
             if (MainSimulator.isLAMDLSDebug) {
                 System.out.println(this + " counter is " + selfCounter);
@@ -333,7 +343,7 @@ public class LAMDLS extends AgentVariableSearch implements SelfCounterable {
 
     @Override
     public int getSelfCounterable() {
-        return this.selfCounter;
+        return this.countChanges;
     }
 
 /*

@@ -9,17 +9,14 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
-import AgentsAbstract.Agent;
-import AgentsAbstract.AgentVariable;
-import AgentsAbstract.AgentVariableSearch;
-import AgentsAbstract.NodeId;
+import AgentsAbstract.*;
 import Messages.Msg;
 import Messages.MsgAlgorithm;
 import Messages.MsgLR;
 import Messages.MsgReceive;
 import Messages.MsgValueAssignmnet;
 
-public abstract class MGM extends AgentVariableSearch {
+public abstract class MGM extends AgentVariableSearch implements SelfCounterable {
 
 	protected SortedMap<NodeId, MsgReceive<Integer>> neighborsLR; // id, variable
 	protected int lr;
@@ -27,6 +24,7 @@ public abstract class MGM extends AgentVariableSearch {
 
 	protected boolean computeLr;
 	protected boolean computeVA;
+	protected  int selfCounter;
 
 	public MGM(int dcopId, int D, int id1) {
 		super(dcopId, D, id1);
@@ -37,6 +35,12 @@ public abstract class MGM extends AgentVariableSearch {
 		computeVA = false;
 		updateAlgorithmHeader();
 		updateAlgorithmData();
+		selfCounter = 0;
+	}
+
+	@Override
+	public int getSelfCounterable() {
+		return selfCounter;
 	}
 
 	@Override
@@ -62,7 +66,7 @@ public abstract class MGM extends AgentVariableSearch {
 		candidateValueAssignment = -1;
 		computeLr = false;
 		computeVA = false;
-
+		selfCounter = 0;
 		resetAgentGivenParametersV4();
 	}
 
@@ -165,9 +169,12 @@ public abstract class MGM extends AgentVariableSearch {
 				.<Integer>turnMapWithMsgRecieveToContextValues(this.neighborsLR);
 		int maxLrOfNeighbors = Collections.max(lrInfoPerNeighbor.values());
 		if (this.lr > maxLrOfNeighbors) {
+			if (this.valueAssignment != this.candidateValueAssignment){
+				selfCounter = selfCounter+1;
+			}
+
 			this.valueAssignment = this.candidateValueAssignment;
 			this.computationCounter = this.computationCounter+1;
-
 			return true;
 		}
 
@@ -176,19 +183,25 @@ public abstract class MGM extends AgentVariableSearch {
 			NodeId bestCompetitor = Collections.max(competitors);
 			if (this.nodeId.getId1() < bestCompetitor.getId1()) {
 				if (this.candidateValueAssignment != -1) {
+					if (this.valueAssignment != this.candidateValueAssignment){
+						selfCounter = selfCounter+1;
+					}
 					this.valueAssignment = this.candidateValueAssignment;
 					this.computationCounter = this.computationCounter+1;
-					// (this.nodeId.getId1() == 0){
-					//	System.out.println(	this.computationCounter);
-					//}
+
 				}
 				return true;
 			} else {
+
 				return false;
 			}
 		}
 		return false;
 	}
+
+
+
+
 
 	private static Set<NodeId> getCompetitors(int maxLrOfNeighbors, SortedMap<NodeId, Integer> lrInfoPerNeighbor) {
 		Set<NodeId> ans = new HashSet<NodeId>();

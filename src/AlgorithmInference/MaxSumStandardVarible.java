@@ -532,7 +532,7 @@ public  class  MaxSumStandardVarible extends AgentVariableInference {
 			AgentVariable.AlgorithmName = "MaxSum_ASY";
 		}
 
-		if (!damping && algorithm == MainSimulator.Algorithm.MaxSum_ASY) {
+		if (damping && algorithm == MainSimulator.Algorithm.MaxSum_ASY) {
 			AgentVariable.AlgorithmName = "MaxSum_DMS_ASY";
 		}
 

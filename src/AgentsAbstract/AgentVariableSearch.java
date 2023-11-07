@@ -321,7 +321,10 @@ public abstract class AgentVariableSearch extends AgentVariable {
 
 	@Override
 	public boolean reactionToAlgorithmicMsgs() {
+		this.atomicActionCounter = 0;
 		Context context_j = createMyContext();
+		this.time = this.atomicActionCounter +this.time;
+
 		boolean isValueAssignmnetChange = super.reactionToAlgorithmicMsgs();
 		if (MainSimulator.isAnytime) {
 			if (isValueAssignmnetChange || context_j == null) {

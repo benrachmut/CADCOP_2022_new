@@ -21,22 +21,30 @@ public class MainSimulatorIterations {
 
     public enum Algorithm {maxsum}
     public enum GraphType{circle}
-    public enum CostType{uniform,poisson, color, poissonIndexBase}
+    public enum CostType{uniform_0_100,poisson_50, softScheduleSd10Hill1,softScheduleSd10Hill3,hardScheduleSd10Hill1,hardScheduleSd10Hill3}//uniform,poisson} //poissonIndexBase,gaussian,poissonMountains}
 
     public static Algorithm algorithm= Algorithm.maxsum;
     public static GraphType graphType= GraphType.circle;
-    public static CostType costType = CostType.poisson;
+    public static CostType costType = CostType.hardScheduleSd10Hill3;
 
 
     public static int numberOfCircles = 1;
     //public static int constantColorCost = 100;
-    public static int uniformCostLB = 0;
-    public static int uniformCostUB = 100;
-    public static int lambda=50;
+    //public static int uniformCostLB = 0;
+    //public static int uniformCostUB = 100;
+    //public static int lambda=50;
+
+
+    // For Gaus
+    //public static double initMean = 20;
+    //public static int moveMeanCounter=3;
+    //public static int moveMeanDistance = 40;
+    //public static double sd = 10;
+
 
     public static int parameterForConverges = 30;
     public static int[] agentSizeList = {2,3,4,5,6,7,8,9,10};
-    public static int[] domainsSizeList = {3};
+    public static int[] domainsSizeList = {10};
 
     public static boolean runKnownAmount = false;
     // if run known amount
@@ -354,22 +362,8 @@ public class MainSimulatorIterations {
         Dcop ans = null;
         // use default Domain contractors
         if (graphType == GraphType.circle){
-
-            if (costType == CostType.uniform) {
-                ans = new DcopCircle(dcopId, agentSize, domainSize, numberOfCircles,uniformCostLB,uniformCostUB,CostType.uniform);
-            }
-
-            if (costType == CostType.poisson) {
-
-                ans = new DcopCircle(dcopId, agentSize, domainSize, numberOfCircles,lambda,CostType.poisson);
-            }
-
-            if (costType == CostType.poissonIndexBase) {
-                ans = new DcopCircle(dcopId, agentSize, domainSize, numberOfCircles,CostType.poissonIndexBase);
-
-            }
+            ans = new DcopCircle(dcopId, agentSize, domainSize, numberOfCircles,costType);
         }
-
         return ans;
     }
 

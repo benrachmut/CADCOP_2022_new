@@ -1,51 +1,85 @@
 package Problem;
 
 import AgentsAbstract.AgentVariable;
-import Main.MainSimulatorIterations;
+import Main.MainSimulatorIterations.CostType ;
 
 import java.util.*;
 
 public class DcopCircle extends Dcop{
 
 
-    private int lambda;
-    private int uniformCostLB;
-    private int uniformCostUB;
+    //private  double initMean;
+    //private  int moveMeanCounter;
+    //private  double moveMeanDistance;
+    //private  double sd;
+
+
+    //private int lambda;
+    //private int uniformCostLB;
+    //private int uniformCostUB;
     private int numberOfCircles;
-    private MainSimulatorIterations.CostType costType;
+    private CostType costType;
 
-    public DcopCircle(int dcopId, int A, int D,int numberOfCircles, int uniformCostLB,int uniformCostUB,MainSimulatorIterations.CostType costType) {
-        super(dcopId, A, D);
-        this.uniformCostLB = uniformCostLB;
-        this.uniformCostUB =uniformCostUB;
-        this.numberOfCircles = numberOfCircles;
-        this.costType = costType;
-    }
 
-    public DcopCircle(int dcopId, int A, int D,int numberOfCircles, int lambda,MainSimulatorIterations.CostType costType) {
-        super(dcopId, A, D);
-        this.numberOfCircles = numberOfCircles;
-        this.lambda = lambda;
-        this.costType = costType;
-    }
-
-    public DcopCircle(int dcopId, int A, int D,int numberOfCircles, MainSimulatorIterations.CostType costType) {
+    public DcopCircle(int dcopId, int A, int D,int numberOfCircles, CostType costType) {
         super(dcopId, A, D);
         this.numberOfCircles = numberOfCircles;
         this.costType = costType;
+        addPreferencesToAgents();
+
     }
 
+    public void addPreferencesToAgents(){
+        int numberOfHills = getNumberOfHills();
+        if (numberOfHills == 0){
+            return;
+        }
+
+        for (AgentVariable a: this.agentsVariables) {
+            List<Integer> selectedNumbers = getSelectedRandomNumbersFromDomain(a,numberOfHills);
+            a.addPreferenceDomain(selectedNumbers);
+        }
+    }
+
+    private int getNumberOfHills() {
+    int ans = 0;
+
+        if (this.costType == CostType.softScheduleSd10Hill1 || this.costType == CostType.hardScheduleSd10Hill1){
+            ans = 1;
+        }
+
+        if (this.costType == CostType.softScheduleSd10Hill3 || this.costType == CostType.hardScheduleSd10Hill3){
+            ans = 3;
+        }
+        return ans;
+    }
+
+    private List<Integer> getSelectedRandomNumbersFromDomain(AgentVariable a, int hillNumber  ) {
+        Random rand = new Random((a.getId()+1)*17894);
+        ArrayList<Integer>domainArrayList = getDomainArrayList(a);
+        Collections.shuffle(domainArrayList,rand);
+       return domainArrayList.subList(0, hillNumber);
+
+    }
+
+    private ArrayList<Integer> getDomainArrayList(AgentVariable a) {
+        int [] domainArray = a.getDomainArray();
+        ArrayList<Integer> ans = new ArrayList<Integer>();
+        for (int num: domainArray) {
+            ans.add(num);
+        }
+        return ans;
+    }
 
 
     @Override
     protected void setDcopName() {
-        Dcop.dcopName = "Circle_"+String.valueOf(numberOfCircles)+"_" +MainSimulatorIterations.costType;
+        Dcop.dcopName = "Circle_"+String.valueOf(numberOfCircles)+"_" +costType;
 
     }
 
     @Override
     protected void setDcopHeader() {
-        if (MainSimulatorIterations.CostType.uniform == MainSimulatorIterations.costType)
         Dcop.dcopHeader = "D"+","+"circles";
 
     }
@@ -70,30 +104,8 @@ public class DcopCircle extends Dcop{
             }else {
                  a2 = agentsVariables[i + 1];
             }
-            boolean flag = false;
-            if (this.costType == MainSimulatorIterations.CostType.uniform) {
-                this.neighbors.add(new Neighbor(a1, a2, D, uniformCostLB, uniformCostUB, dcopId, 1));
-                flag = true;
-            }
+            this.neighbors.add(new Neighbor(a1,  a2,  D,  dcopId,  1,  costType));
 
-            if (this.costType == MainSimulatorIterations.CostType.poisson) {
-                Neighbor n = new Neighbor(a1, a2, D, lambda, dcopId, 1.0);
-                this.neighbors.add(n);
-                flag = true;
-            }
-
-            if (this.costType == MainSimulatorIterations.CostType.poissonIndexBase) {
-                Neighbor n = new Neighbor(a1, a2, D, dcopId, 1.0);
-                this.neighbors.add(n);
-                flag = true;
-            }
-
-
-
-
-            if (!flag){
-                throw new RuntimeException("must enter ifs");
-            }
         }
 
     }

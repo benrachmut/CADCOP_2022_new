@@ -716,8 +716,10 @@ abstract public class MGM2 extends AgentVariableSearch implements SelfCounterabl
 
 	protected boolean computeAllLRandWithNoPartnerAmIBestPhase4() {
 		if (amIBestLR_phase4()) {
+			if (this.valueAssignment!=phase2PotentialComputedValueAssignmnet){
+				this.selfCounter = this.selfCounter+1;
+			}
 			this.valueAssignment = this.phase2PotentialComputedValueAssignmnet;
-			this.selfCounter = selfCounter +1;
 
 			this.computationCounter = this.computationCounter +1;
 			if (MainSimulator.isMGM2Debug) {
@@ -725,6 +727,7 @@ abstract public class MGM2 extends AgentVariableSearch implements SelfCounterabl
 
 			}
 		}
+
 		return true;
 	}
 
@@ -776,9 +779,12 @@ abstract public class MGM2 extends AgentVariableSearch implements SelfCounterabl
 			if (MainSimulator.isMGM2Debug) {
 				System.out.println(this + " changed value at time " + time);
 			}
+			if (this.valueAssignment != this.phase2PotentialComputedValueAssignmnet){
+				this.selfCounter = selfCounter +1;
+			}
+
 			this.valueAssignment = this.phase2PotentialComputedValueAssignmnet;
 			this.computationCounter  = this.computationCounter +1;
-			this.selfCounter = selfCounter +1;
 
 		}
 		NodeId myPartner = whoIsMyPartnerPhase4();

@@ -42,7 +42,7 @@ public abstract class AgentVariable extends Agent {
 	// -----*DFS*-----
 	protected NodeId dfsFather;
 	protected Set<NodeId> dfsSons;
-
+	public List<Integer> preferenceDomain;
 
 
 	public AgentVariable(int dcopId, int D, int id1) {
@@ -61,7 +61,9 @@ public abstract class AgentVariable extends Agent {
 	}
 	
 	
-
+	public int[] getDomainArray(){
+		return this.domainArray;
+	}
 	@Override
 	public String toString() {
 		return "A_" + this.id;
@@ -241,5 +243,7 @@ public abstract class AgentVariable extends Agent {
 	}
 
 
-
+	public void addPreferenceDomain(List<Integer> selectedNumbers) {
+		this.preferenceDomain = selectedNumbers;
+	}
 }

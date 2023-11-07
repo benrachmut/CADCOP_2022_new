@@ -23,8 +23,8 @@ public class MainSimulator {
 	public static int start =0;
 	public static int end = start+delta;
 	public static int end_temp = start; // DO NOT CHANGE
-	public static long termination = 500000;//8000000 30000007;
-	public static int howManyIterationForCalculation =1000; //10000
+	public static long termination = 10000;//8000000 30000007;
+	public static int howManyIterationForCalculation =10; //10000
 	private static int everyHowManyExcel = 100;
 	// ------------------------------**PROBLEM MAGNITUDE**
 	public static int A = 50; // amount of agents
@@ -39,7 +39,7 @@ public class MainSimulator {
 		MonoToken2Opt,
 		MaxSum_SY,MaxSum_split_SY, MaxSum_ASY, MaxSum_split_ASY;
 	}
-	public static Algorithm algorithm = Algorithm.MaxSum_split_ASY;
+	public static Algorithm algorithm = Algorithm.LAMDLS_OPT2;
 	// ------------------------------*Communication Selection**
 	public enum DelayType {
 		none, normal, uniform, Exponential ,Poisson,
@@ -51,7 +51,7 @@ public class MainSimulator {
 	public enum DcopType {
 		RandomUniform, GraphColoring, ScaleFreeNetwork, SolarSystem
 	}
-	public static DcopType myDcopType = DcopType.RandomUniform;
+	public static DcopType myDcopType = DcopType.GraphColoring;
 
 	// 1 = Random uniform
 	public static double dcopUniformP1 = 0.2;//0.5

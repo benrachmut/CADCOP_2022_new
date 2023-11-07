@@ -9,9 +9,9 @@ import Messages.*;
 
 import java.util.*;
 
-public class LAMDLS_OPT2 extends AgentVariableSearch implements SelfCounterable {
+public class LAMDLS2 extends AgentVariableSearch implements SelfCounterable {
+    public static boolean isWithVCWhenColorChange = true;
 
-    private boolean withNeighborSizeMultiplier = false;
     enum Status {
         waitToSelectColor,
         canSelectColor,
@@ -25,8 +25,9 @@ public class LAMDLS_OPT2 extends AgentVariableSearch implements SelfCounterable 
         replyToOffer,
         waitToFinishIteration
     }
+    private boolean withNeighborSizeMultiplier = false;
 
-
+    private int countChanges;
     protected int selfCounter;
     protected Integer myColor;
     private HashMap<NodeId, Integer> neighborsColors;
@@ -52,7 +53,7 @@ public class LAMDLS_OPT2 extends AgentVariableSearch implements SelfCounterable 
 
 
 
-    public LAMDLS_OPT2(int dcopId, int D, int id1) {
+    public LAMDLS2(int dcopId, int D, int id1) {
         super(dcopId, D, id1);
         AMDLS_V1.typeDecision = 'c';
         updateAlgorithmHeader();
@@ -67,6 +68,7 @@ public class LAMDLS_OPT2 extends AgentVariableSearch implements SelfCounterable 
         myStatues = Status.idle;
         this.myColor = null;
         selfCounter = 0;
+        countChanges = 0;
         this.neighborsDocIdsT = new HashMap<NodeId, Double>();
         this.neighborsDocIdsT1 = new HashMap<NodeId, Double>();
         this.neighborsColors = new HashMap<NodeId, Integer>();
@@ -157,9 +159,12 @@ public class LAMDLS_OPT2 extends AgentVariableSearch implements SelfCounterable 
             this.myDocIdT1 = docIdRandom.nextDouble();
         }
         selfCounter = selfCounter + 1;
-        //basicBeforeValueChange();
-        if (selfCounter > 1) {
+
+        if (isWithVCWhenColorChange) {
+            //basicBeforeValueChange();
+            //if (selfCounter > 1) {
             changeValueAssignmentAlone();
+            //}
         }
         chooseColor();
     }
@@ -173,15 +178,23 @@ public class LAMDLS_OPT2 extends AgentVariableSearch implements SelfCounterable 
 
 
     private void changeValueAssignmentAlone() {
+
+        Integer potential = null;
+        potential = this.valueAssignment;
         if (typeDecision == 'a' || typeDecision == 'A') {
-            this.valueAssignment = getCandidateToChange_A();
+            potential = getCandidateToChange_A();
         }
         if (typeDecision == 'b' || typeDecision == 'B') {
-            this.valueAssignment = getCandidateToChange_B();
+            potential = getCandidateToChange_B();
         }
         if (typeDecision == 'c' || typeDecision == 'C') {
-            this.valueAssignment = getCandidateToChange_C();
+            potential = getCandidateToChange_C();
         }
+
+        if (this.valueAssignment != potential){
+            this.countChanges = this.countChanges +1;
+        }
+        this.valueAssignment = potential;
     }
 
     @Override
@@ -253,7 +266,11 @@ public class LAMDLS_OPT2 extends AgentVariableSearch implements SelfCounterable 
     }
 
     private void updateFieldsUsing2OptInfoFromMsg(Find2Opt optInfo) {
-        this.valueAssignment = optInfo.getValueAssignmnet2();
+        int potential = optInfo.getValueAssignmnet2();
+        if (potential != this.valueAssignment) {
+            this.countChanges = this.countChanges +1;
+        }
+        this.valueAssignment = potential;
         //try {
         this.neighborCounters.put(partnerNodeId, this.neighborCounters.get(partnerNodeId) + 1);
         this.neighborsValueAssignment.put(partnerNodeId, new MsgReceive<Integer>(optInfo.getValueAssignmnet1(), 0));
@@ -662,17 +679,17 @@ public class LAMDLS_OPT2 extends AgentVariableSearch implements SelfCounterable 
 
     @Override
     public void updateAlgorithmName() {
-        if (withNeighborSizeMultiplier){
-            AgentVariable.AlgorithmName = "MS2C_NSM";
-        }else{
-            AgentVariable.AlgorithmName = "LAMDLS_OPT2";
+    if (isWithVCWhenColorChange) {
+        AgentVariable.AlgorithmName = "LAMDLS2";
+    }else {
+        AgentVariable.AlgorithmName = "LAMDLS2_CVC";
+    }
 
-        }
     }
 
     @Override
     public int getSelfCounterable() {
-        return this.selfCounter;
+        return this.countChanges;
     }
 // -------------------******************************************-------------------
 // -------------------******************************************-------------------
@@ -1036,9 +1053,11 @@ public class LAMDLS_OPT2 extends AgentVariableSearch implements SelfCounterable 
 
         Collection<NodeId> toRemove = new HashSet<NodeId>();
 
-        NodeId infoMaxIndex = getInfoMaxIndex();
-
-
+        NodeId infoMaxIndex = getInfoMinIndex();
+        for (NodeId ni: this.neighborsInfo.keySet()){
+            toRemove.add(ni);
+        }
+        /*
         if (infoMaxIndex!=null) {
             for (NodeId ni : colorMinusOne) {
                 if (this.neighborsDocIdsT.get(infoMaxIndex) < this.neighborsDocIdsT.get(ni)) {
@@ -1046,11 +1065,13 @@ public class LAMDLS_OPT2 extends AgentVariableSearch implements SelfCounterable 
                 }
             }
         }
+
+         */
         smallerColor.removeAll(toRemove);
     }
 
 
-    private NodeId getInfoMaxIndex() {
+    private NodeId getInfoMinIndex() {
         double x = Double.MAX_VALUE;
         NodeId ans = null;
         for (NodeId ni: this.neighborsInfo.keySet()){
@@ -1120,7 +1141,12 @@ public class LAMDLS_OPT2 extends AgentVariableSearch implements SelfCounterable 
     }
 
     private void updateFieldsUsing2OptInfo(Find2Opt optInfo) {
-        this.valueAssignment = optInfo.getValueAssignmnet1();
+
+        int potential = optInfo.getValueAssignmnet1();
+        if (potential != this.valueAssignment) {
+            this.countChanges = this.countChanges +1;
+        }
+        this.valueAssignment = potential;
         //this.neighborCounters.put(partnerNodeId,this.neighborCounters.get(partnerNodeId)+1);
         this.neighborsValueAssignment.put(partnerNodeId, new MsgReceive<Integer>(optInfo.getValueAssignmnet2(),0));
     }

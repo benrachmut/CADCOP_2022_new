@@ -9,20 +9,15 @@ import java.util.Set;
 
 public class TokenTree {
 
-    HashMap<NodeId,Integer> agentsInTheTree;
+    HashSet<NodeId> agentsInTheTree;
 
     public TokenTree(NodeId rootId){
-        this.agentsInTheTree = new HashMap<NodeId,Integer>();
-        this.agentsInTheTree.put(rootId,0);
+        this.agentsInTheTree = new HashSet<NodeId>();
+        this.agentsInTheTree.add(rootId);
     }
 
-    public Map<NodeId,Integer> getMyNeighborsInTheToken(Set<NodeId>yourNeighbors){
-        Map<NodeId,Integer> ans = new HashMap<NodeId,Integer>();
-        for (NodeId nId: yourNeighbors) {
-            if (this.agentsInTheTree.containsKey(nId)){
-                ans.put(nId,this.agentsInTheTree.get(nId));
-            }
-        }
-        return ans;
+    public boolean addNodeIdToTree(NodeId nodeId){
+        return agentsInTheTree.add(nodeId);
     }
+
 }
