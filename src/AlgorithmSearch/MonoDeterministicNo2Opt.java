@@ -386,10 +386,7 @@ public class MonoDeterministicNo2Opt extends AgentVariableSearch implements Self
 
     }
 
-    private KOptInfo makeMyKOptInfo() {
-        return new KOptInfo(this.valueAssignment, nodeId, neighborsConstraint, domainArray,
-                this.neighborsValueAssignment);
-    }
+
 
 
     private NodeId sendPartnerReply() {

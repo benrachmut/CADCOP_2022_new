@@ -196,7 +196,7 @@ public class Neighbor {
 
 							rndCost = getRandomNormalScheduleCost(sd,preferences1,i,preferences2,j);
 							if (isHardScheduleProblem && i!=j){
-								rndCost = 500;
+								rndCost = 200;
 							}
 
 						}

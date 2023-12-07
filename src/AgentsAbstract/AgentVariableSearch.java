@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import AlgorithmSearch.KOptInfo;
 import Comparators.ContextSimilarityComparator;
 
 import java.util.Random;
@@ -85,7 +86,23 @@ public abstract class AgentVariableSearch extends AgentVariable {
 				this.neighborsConstraint.keySet()) {
 			this.neighborsValueAssignment.put(nId,null);
 		}
+
+
 	}
+	public void updateAlgorithmData() {
+		AgentVariable.algorithmData = "";
+	}
+
+
+	protected KOptInfo makeMyKOptInfo() {
+		return new KOptInfo(this.valueAssignment, nodeId, neighborsConstraint, domainArray,
+				this.neighborsValueAssignment);
+	}
+	@Override
+	public void updateAlgorithmHeader() {
+		AgentVariable.algorithmHeader = "";
+	}
+
 	public int getNeighborValueAssignment(NodeId nodeId) {
 		if(this.neighborsValueAssignment.get(nodeId)!= null) {
 			return this.neighborsValueAssignment.get(nodeId).getContext();

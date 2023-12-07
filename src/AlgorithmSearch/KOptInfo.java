@@ -36,8 +36,12 @@ public class KOptInfo {
 			SortedMap<NodeId, MsgReceive<Integer>> input) {
 		SortedMap<NodeId, MsgReceive<Integer>> ans = new TreeMap<NodeId, MsgReceive<Integer>>();
 		for (Entry<NodeId, MsgReceive<Integer>> e : input.entrySet()) {
-			MsgReceive<Integer> msgR = new MsgReceive<Integer>(e.getValue().getContext(), e.getValue().getTimestamp());
-			ans.put(e.getKey(), msgR);
+			try {
+				MsgReceive<Integer> msgR = new MsgReceive<Integer>(e.getValue().getContext(), e.getValue().getTimestamp());
+				ans.put(e.getKey(), msgR);
+			}catch (NullPointerException ee){
+				ans.put(e.getKey(), null);
+			}
 		}
 		return ans;
 	}

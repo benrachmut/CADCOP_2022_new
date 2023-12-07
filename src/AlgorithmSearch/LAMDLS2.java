@@ -208,7 +208,6 @@ public class LAMDLS2 extends AgentVariableSearch implements SelfCounterable {
             MsgAlgorithm msgFromFuture = this.futureMsgs.get(sender);
             this.futureMsgs.put(sender, null);
             updateToAvoidRecursion(msgFromFuture, sender);
-
         }
 
         return true;
@@ -875,10 +874,7 @@ public class LAMDLS2 extends AgentVariableSearch implements SelfCounterable {
         outbox.insert(msgsToInsertMsgBox);
     }
 
-    private KOptInfo makeMyKOptInfo() {
-        return new KOptInfo(this.valueAssignment, nodeId, neighborsConstraint, domainArray,
-                this.neighborsValueAssignment);
-    }
+
     private void createMsgsForChangeAlone(List<Msg> msgsToInsertMsgBox) {
         Map<String,Double> info = createInfoVAandCounter();
         //info.remove("color");

@@ -206,8 +206,12 @@ public abstract class Dcop {
 		}
 
 
-		if (algorithm == MainSimulator.Algorithm.LAMDLS_OPT2) {
+		if (algorithm == MainSimulator.Algorithm.LAMDLS2) {
 			ans = new LAMDLS2(dcopId, D, agentId);
+		}
+
+		if (algorithm == MainSimulator.Algorithm.DALO2) {
+			ans = new DALO2(dcopId, D, agentId);
 		}
 
 

@@ -299,11 +299,6 @@ abstract public class MGM2 extends AgentVariableSearch implements SelfCounterabl
 
 	protected abstract void resetAgentGivenParametersV4();
 
-	private KOptInfo makeMyKOptInfo() {
-		// TODO Auto-generated method stub
-		return new KOptInfo(this.valueAssignment, nodeId, neighborsConstraint, domainArray,
-				this.neighborsValueAssignment);
-	}
 
 	// ------------------** Msg Value Process **------------------
 

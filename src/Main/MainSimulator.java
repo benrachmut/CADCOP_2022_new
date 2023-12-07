@@ -35,11 +35,12 @@ public class MainSimulator {
 		CAMDLS_NAIVE, CAMDLS_V2,MGM2_SY_V2,
 		MonoStochasticOrderSearch,
 		MonoDeterministicNo2Opt,
-		LAMDLS_OPT2,
+		LAMDLS2,
 		MonoToken2Opt,
-		MaxSum_SY,MaxSum_split_SY, MaxSum_ASY, MaxSum_split_ASY;
+		DALO2,
+		MaxSum_SY,MaxSum_split_SY, MaxSum_ASY, MaxSum_split_ASY, LAMDLS3;
 	}
-	public static Algorithm algorithm = Algorithm.LAMDLS_OPT2;
+	public static Algorithm algorithm = Algorithm.DALO2;
 	// ------------------------------*Communication Selection**
 	public enum DelayType {
 		none, normal, uniform, Exponential ,Poisson,
@@ -51,7 +52,7 @@ public class MainSimulator {
 	public enum DcopType {
 		RandomUniform, GraphColoring, ScaleFreeNetwork, SolarSystem
 	}
-	public static DcopType myDcopType = DcopType.GraphColoring;
+	public static DcopType myDcopType = DcopType.RandomUniform;
 
 	// 1 = Random uniform
 	public static double dcopUniformP1 = 0.2;//0.5
@@ -99,7 +100,7 @@ public class MainSimulator {
 	public static boolean  isMonoStochComputationDebug=false;
 	public static boolean  isMGM2v2Debug=false;
 	public static boolean  isLAMDLSDebug=false;
-
+	public static boolean isLAMDLS3Debug=false;;
 
 
 

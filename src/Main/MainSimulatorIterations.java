@@ -25,7 +25,7 @@ public class MainSimulatorIterations {
 
     public static Algorithm algorithm= Algorithm.maxsum;
     public static GraphType graphType= GraphType.circle;
-    public static CostType costType = CostType.hardScheduleSd10Hill3;
+    public static CostType costType = CostType.softScheduleSd10Hill1;
 
 
     public static int numberOfCircles = 1;
@@ -43,13 +43,13 @@ public class MainSimulatorIterations {
 
 
     public static int parameterForConverges = 30;
-    public static int[] agentSizeList = {2,3,4,5,6,7,8,9,10};
+    public static int[] agentSizeList = {5};
     public static int[] domainsSizeList = {10};
 
     public static boolean runKnownAmount = false;
     // if run known amount
     public static int  start= 0;
-    public static int end = 100000;
+    public static int end = 1000;
     // if NOT run known amount
     public static int amountNotConverged=100;
 
@@ -75,10 +75,10 @@ public class MainSimulatorIterations {
         for (int domainSize:domainsSizeList) {
             for(int agentSize: agentSizeList){
                 System.out.println("A_"+agentSize+", D_"+domainSize);
-                int dcopId = 0;
+                int dcopId = start;
                 int amountNotConvergedCounter = 0;
                 initializeDataStructures();
-                while(amountNotConvergedCounter!=amountNotConverged){
+                while(amountNotConvergedCounter!=amountNotConverged &&  dcopId <end){
                     globalCostsData.put(dcopId,new HashMap<Integer,Double>());
                     Dcop dcop = createDcop(dcopId,agentSize,domainSize);
                     dcop.initiate();
@@ -86,14 +86,14 @@ public class MainSimulatorIterations {
                         System.out.println(dcop.getId());
                     }
                     boolean isConverged = runDcop(dcop);
-                    updateData(isConverged,dcop);
                     if (!isConverged) {
+                        updateData(isConverged, dcop);
                         amountNotConvergedCounter = amountNotConvergedCounter + 1;
+                        exportData(domainSize,agentSize);
                     }
                     dcopId = dcopId+1;
                 }
 
-                exportData(domainSize,agentSize);
             }
 
         }
@@ -110,6 +110,8 @@ public class MainSimulatorIterations {
 
     private static void createExcel(String fileName, String header, Collection<String> lines) {
         BufferedWriter out = null;
+
+
         try {
             FileWriter s = new FileWriter(fileName + ".csv");
             out = new BufferedWriter(s);
@@ -151,9 +153,12 @@ public class MainSimulatorIterations {
         String name = "equality_test,";
         String agents = "A_"+agentSize+",";
         String domains ="D_"+domainSize+",";
-        String numberRuns = "amount_N_Converge_"+amountNotConverged+",";
+        //String numberRuns = "amount_N_Converge_"+amountNotConverged+",";
+        String start_str = "st_"+start+",";
+        String end_str = "en_"+end+",";
+
         String costDist = costType.toString();
-        return name + agents+domains+numberRuns+costDist;
+        return name + agents+domains+start_str+end_str+costDist;
     }
 
 
