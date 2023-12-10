@@ -297,6 +297,7 @@ public class DALO2 extends AgentVariableSearch implements SelfCounterable {
                 this.myStatues = Status.agreeToLock;
             }
             this.commitedTo = msgAlgorithm.getSenderId();
+
             if (MainSimulator.isDalo2Debug){
                 System.out.println(this.nodeId+" receive lock before lock expired");
             }
@@ -396,7 +397,7 @@ public class DALO2 extends AgentVariableSearch implements SelfCounterable {
         List<Msg> msgsToInsertMsgBox = new ArrayList<>();
         for (NodeId nId: this.neighborsConstraint.keySet()) {
             boolean isPartner = false;
-            if (this.twoOpt.getNodeId2()==nodeId){
+            if (this.twoOpt.getNodeId2().equals(nId)){
                 isPartner = true;
             }
             MsgDALOkLockRequest msg = new MsgDALOkLockRequest(this.nodeId, nId, isPartner, this.timeStampCounter, this.time);
