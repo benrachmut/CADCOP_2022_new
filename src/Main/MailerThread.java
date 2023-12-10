@@ -20,6 +20,7 @@ import Problem.Dcop;
 public class MailerThread extends Mailer implements Runnable {
 	private long time;
 	private Collection<Thread> agentsThreads;
+
 	// private boolean clockUpdatedFromMsgPlacedInBoxFlag;
 
 	public MailerThread(Protocol protocol, long terminationTime, Dcop dcop, int dcopId) {
@@ -143,11 +144,20 @@ public class MailerThread extends Mailer implements Runnable {
 					d =	createDelay(isMsgAlgorithm,indexes[0],indexes[1],isLoss);
 				}
 				else if(this.protocol.getDelay() instanceof ProtocolDelayMessageAmount){
-					d = createDelay(isMsgAlgorithm,this.messageBox.size(),isLoss);
+
+					if (m.getManualDelay()==0) {
+						d = createDelay(isMsgAlgorithm, this.messageBox.size(), isLoss);
+					}else{
+						d  = m.getManualDelay();
+					}
 					//System.out.println(d);
 				}
 				else {
-				 d = createDelay(isMsgAlgorithm,isLoss);
+					if (m.getManualDelay()==0) {
+						d = createDelay(isMsgAlgorithm, isLoss);
+					}else{
+					d  = m.getManualDelay();
+				}
 				}
 				if (d == -1) {
 					flag = true;

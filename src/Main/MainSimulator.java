@@ -25,9 +25,9 @@ public class MainSimulator {
 	public static int end_temp = start; // DO NOT CHANGE
 	public static long termination = 10000;//8000000 30000007;
 	public static int howManyIterationForCalculation =10; //10000
-	private static int everyHowManyExcel = 100;
+    private static int everyHowManyExcel = 100;
 	// ------------------------------**PROBLEM MAGNITUDE**
-	public static int A = 50; // amount of agents
+	public static int A = 10; // amount of agents
 	private static int D = 10;
 	// ------------------------------**Algorithm Selection**
 	public enum Algorithm {
@@ -55,7 +55,7 @@ public class MainSimulator {
 	public static DcopType myDcopType = DcopType.RandomUniform;
 
 	// 1 = Random uniform
-	public static double dcopUniformP1 = 0.2;//0.5
+	public static double dcopUniformP1 = 0.5;//0.5
 	public static double dcopUniformP2 = 1;// Probability for two values in domain between neighbors to have constraints
 	public static int costLbUniform = 1;
 	public static int costUbUniform = 100;
@@ -101,6 +101,7 @@ public class MainSimulator {
 	public static boolean  isMGM2v2Debug=false;
 	public static boolean  isLAMDLSDebug=false;
 	public static boolean isLAMDLS3Debug=false;;
+	public static boolean isDalo2Debug= true;
 
 
 
@@ -591,7 +592,9 @@ public class MainSimulator {
 				Mailer mailer = getMailer(protocol, dcop);
 				dcop.dcopMeetsMailer(mailer);
 				mailer.mailerMeetsDcop(dcop.getId());
-
+				if (isDalo2Debug) {
+					printNeighbors(dcop);
+				}
 				dcop.initilizeAndStartRunAgents();
 				infromAllAgentsUponTimeStamp(protocol, dcop.getAllAgents());
 				if (isThreadMailer) {
@@ -616,6 +619,14 @@ public class MainSimulator {
 
 		}
 
+	}
+
+	private static void printNeighbors(Dcop dcop) {
+		for (Neighbor n:
+			 dcop.getNeighbors()) {
+			System.out.println(n);
+
+		}
 	}
 
 	private static void infromAllAgentsUponTimeStamp(Protocol protocol, List<Agent> agents) {

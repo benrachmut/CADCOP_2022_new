@@ -56,6 +56,10 @@ public class Find2Opt {
 		this.lr = this.currentLocalCost - this.bestCostFound;
 	}
 
+	public NodeId getNodeId2() {
+		return nodeId2;
+	}
+
 	private void findOpt2ValueAssignments() {
 		TreeMap<Integer, Integer> costPerDomainNoLinkOne = getCostPerDomainNoLinkOne(); // domain, cost without link
 		TreeMap<Integer, Integer> costPerDomainNoLinkTwo = getCostPerDomainNoLinkTwo(); // domain, cost without link

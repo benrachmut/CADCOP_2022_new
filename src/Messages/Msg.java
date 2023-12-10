@@ -13,7 +13,8 @@ public class Msg<InfoType> {
 	boolean withDelay;
 	private int delayOfMsg;
 	private boolean isLoss;
-	
+	private  int manualDelay;
+
 	//private Integer delay;
 	
 	//private int mailerTime;
@@ -25,6 +26,7 @@ public class Msg<InfoType> {
 		this.timestamp = timeStamp;
 		this.timeOfMsg = agentTime;
 		this.withDelay = true;
+		this.manualDelay = 0;
 		this.delayOfMsg=0;
 		this.isLoss = true;
 	}
@@ -38,6 +40,15 @@ public class Msg<InfoType> {
 	public void setWithDelayToFalse() {
 		this.withDelay = false;
 	}
+	protected void setManualDelay(int delayOfMsg){
+		this.manualDelay = delayOfMsg;
+
+	}
+
+	public int getManualDelay(){
+		return this.manualDelay;
+	}
+
 	/*
 	public void setMailerTime(int mailerTime) {
 		this.mailerTime = mailerTime;

@@ -9,11 +9,9 @@ public class MsgAlgorithm extends Msg{
 		super(sender, reciever, context, timeStamp,time);
 		// TODO Auto-generated constructor stub
 	}
-	
 
-	public void setContext(Object input) {
-		this.context = input;
-	}
+
+
 
 
 

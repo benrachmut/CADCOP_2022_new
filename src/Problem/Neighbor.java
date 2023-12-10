@@ -52,6 +52,10 @@ public class Neighbor {
 		neighborsMeetings();
 	}
 
+	@Override
+	public String toString() {
+		return "Neighbors: {"+this.a1.getNodeId()+","+this.a2.getNodeId()+"}";
+	}
 
 	public Neighbor(AgentVariable a1, AgentVariable a2, int D, int costLb, int costUb, int dcopId, double p2) {
 		super();
@@ -209,10 +213,11 @@ public class Neighbor {
 						//	System.out.println(rndCost);
 						//}
 						//}
-						constraints[i][j] = rndCost;
-						constraintsTranspose[j][i] = rndCost;
+
 
 					}
+					constraints[i][j] = rndCost;
+					constraintsTranspose[j][i] = rndCost;
 				}
 			}
 		}
