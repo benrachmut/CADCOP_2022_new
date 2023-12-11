@@ -54,7 +54,7 @@ public class Neighbor {
 
 	@Override
 	public String toString() {
-		return "Neighbors: {"+this.a1.getNodeId()+","+this.a2.getNodeId()+"}";
+		return this.a1.getNodeId().getId1()+"\t"+this.a2.getNodeId().getId1();
 	}
 
 	public Neighbor(AgentVariable a1, AgentVariable a2, int D, int costLb, int costUb, int dcopId, double p2) {

@@ -23,7 +23,7 @@ public class MainSimulator {
 	public static int start =0;
 	public static int end = start+delta;
 	public static int end_temp = start; // DO NOT CHANGE
-	public static long termination = 10000;//8000000 30000007;
+	public static long termination = 10000000;//8000000 30000007;
 	public static int howManyIterationForCalculation =10; //10000
     private static int everyHowManyExcel = 100;
 	// ------------------------------**PROBLEM MAGNITUDE**

@@ -1,9 +1,6 @@
 package AlgorithmSearch;
 
-import AgentsAbstract.AgentVariable;
-import AgentsAbstract.AgentVariableSearch;
-import AgentsAbstract.NodeId;
-import AgentsAbstract.SelfCounterable;
+import AgentsAbstract.*;
 import Main.MainSimulator;
 import Messages.*;
 
@@ -14,9 +11,12 @@ public class DALO2 extends AgentVariableSearch implements SelfCounterable {
     private static int boundForTimer =10000;
     private NodeId commitedTo;
     private HashMap<NodeId, Boolean> acceptMap;
+    private Status tempStatus;
+    private NodeId tempSender;
+    private boolean partOfCoalition;
 
     enum Status {
-       waitForAllInitValues, createInitKInfo, createKopt, createInitKInfoAndKopt, waitForClockOrLock, sendLocksInitateCoalition, agreeToLock, sendLockToAgree, waitForCommitMsg, waitForAcceptExecptCommitedTo, waitForAccept, waitForAllKInfo
+       waitForAllInitValues, createInitKInfo, createKopt, createInitKInfoAndKopt, waitForClockOrLock, sendLocksInitateCoalition, agreeToLock, sendLockOnBehalfOfCommit, waitForCommitMsg, waitForAcceptExecptCommitedTo, waitForAccept, sendReject, waitForValue, sendCommit, waitForAllKInfo
     }
     private Random randomForCoalition;
     private Random randomForTimer;
@@ -69,6 +69,7 @@ public class DALO2 extends AgentVariableSearch implements SelfCounterable {
         twoOpt = null;
 
         commitedTo=null;
+        partOfCoalition =false;
     }
 
     @Override
@@ -86,7 +87,9 @@ public class DALO2 extends AgentVariableSearch implements SelfCounterable {
             this.acceptMap.put(msgAlgorithm.getSenderId(),true);
         }
 
-
+        if (msgAlgorithm instanceof MsgDALOcommit){
+            //todo
+        }
 
 
         //if (msgAlgorithm instanceof MsgDALOkLock){
@@ -118,39 +121,42 @@ public class DALO2 extends AgentVariableSearch implements SelfCounterable {
 
 
 
-        if (msgAlgorithm instanceof MsgDALOkLockRequest && (this.myStatues == Status.waitForCommitMsg || this.myStatues == Status.waitForCommitMsg
+        if (msgAlgorithm instanceof MsgDALOkLockRequest && (this.myStatues == Status.waitForCommitMsg
+                || this.myStatues == Status.waitForAccept
                 || this.myStatues == Status.waitForAcceptExecptCommitedTo)){
-            //todo
-            System.out.println(this.nodeId+" will send reject");
-        }
 
-        if (msgAlgorithm instanceof MsgDALOAccept && this.myStatues == Status.waitForAccept && isAllAccept()){
-            //todo
-            System.out.println(this.nodeId+" can send commit");
+            this.tempSender = msgAlgorithm.getSenderId();
+            this.tempStatus = this.myStatues;
+            this.myStatues = Status.sendReject;
 
         }
 
         if (msgAlgorithm instanceof MsgDALOAccept && this.myStatues == Status.waitForAcceptExecptCommitedTo && isAllAccept() ){
-            System.out.println(this.nodeId+" can send accept for commited");
+            this.myStatues = Status.agreeToLock;
         }
+
+        if (msgAlgorithm instanceof MsgDALOAccept && this.myStatues == Status.waitForAccept && isAllAccept()){
+            this.myStatues = Status.sendCommit;
+
+            System.out.println(this.nodeId+" can send commit");
+
+        }
+        if (msgAlgorithm instanceof MsgDALOReject){
+            //TODO
+        }
+
+
 
 
 
     }
 
-    private boolean isAllAccept() {
-        for (NodeId nId:this.acceptMap.keySet()) {
-            if (!this.acceptMap.get(nId)){
-                return false;
-            }
-        }
-        return true;
-    }
 
     @Override
     public boolean getDidComputeInThisIteration() {
         return this.myStatues == Status.createInitKInfo || this.myStatues == Status.createKopt || this.myStatues == Status.createInitKInfoAndKopt        ||
-                this.myStatues == Status.agreeToLock||this.myStatues == Status.sendLockToAgree||this.myStatues == Status.sendLocksInitateCoalition ||         this.myStatues == Status.sendLockToAgree ||  this.myStatues == Status.agreeToLock || this.myStatues  ==Status.sendLocksInitateCoalition;
+                this.myStatues == Status.agreeToLock||this.myStatues == Status.sendLockOnBehalfOfCommit ||this.myStatues == Status.sendLocksInitateCoalition ||         this.myStatues == Status.sendLockOnBehalfOfCommit ||  this.myStatues == Status.agreeToLock
+                || this.myStatues  ==Status.sendLocksInitateCoalition ||this.myStatues  ==Status.sendReject || this.myStatues  ==Status.sendCommit;
 
     }
 
@@ -159,12 +165,29 @@ public class DALO2 extends AgentVariableSearch implements SelfCounterable {
         if (this.myStatues == Status.createKopt || this.myStatues == Status.createInitKInfoAndKopt){
             update2Opt();
             return true;
+        }
 
+        if (this.myStatues == Status.sendCommit) {
+            this.valueAssignment = this.twoOpt.getValueAssignmnet1();
 
+            NodeId partnerNId = twoOpt.getNodeId2();
+            int partnerVal = twoOpt.getValueAssignmnet2();
+            MsgReceive<Integer> input_ = new MsgReceive<>(partnerVal,0);
+            this.neighborsValueAssignment.put(partnerNId,input_);
+            updateInfos();
+            return true;
         }
         return false;
     }
 
+    private void updateInfos() {
+        for (NodeId nId:
+             this.infoOfAgents.keySet()) {
+            KOptInfo info = this.infoOfAgents.get(nId);
+            info.
+
+        }
+    }
 
 
     @Override
@@ -174,15 +197,15 @@ public class DALO2 extends AgentVariableSearch implements SelfCounterable {
         }
         if ((this.myStatues == Status.createKopt ||this.myStatues == Status.createInitKInfoAndKopt) && this.twoOpt!=null){
             sendSelfTimerMsg();
-
         }
 
         if (this.myStatues == Status.agreeToLock){
             sendAccept();
             //this.myStatues = Status.waitForCommitMsg;
         }
-        if (this.myStatues == Status.sendLockToAgree){
+        if (this.myStatues == Status.sendLockOnBehalfOfCommit){
             sendLockRequestExceptCommited();
+            partOfCoalition = true;
             // this.myStatues = Status.waitForAcceptExecptCommitedTo;
             //resetAcceptMap(this.commitedTo);
         }
@@ -191,8 +214,19 @@ public class DALO2 extends AgentVariableSearch implements SelfCounterable {
             sendLockRequest();
         }
 
+        if ( this.myStatues ==Status.agreeToLock ||this.myStatues == Status.sendLockOnBehalfOfCommit){
+            sendSpamToRemoveRelockTimerFromMailer();
 
+        }
 
+        if (this.myStatues  == Status.sendReject) {
+            sendRejectMsg();
+        }
+
+        if (this.myStatues == Status.sendCommit){
+            sendCommitMsg();
+            sendValueAndLocalView();
+        }
     }
 
 
@@ -213,12 +247,15 @@ public class DALO2 extends AgentVariableSearch implements SelfCounterable {
         }
 
 
-
         if (this.myStatues == Status.agreeToLock){
-            this.myStatues = Status.waitForCommitMsg;
+            if (partOfCoalition){
+                this.myStatues = Status.waitForCommitMsg;
+            }else {
+                this.myStatues = Status.waitForValue;
+            }
         }
 
-        if (this.myStatues == Status.sendLockToAgree){
+        if (this.myStatues == Status.sendLockOnBehalfOfCommit){
             this.myStatues = Status.waitForAcceptExecptCommitedTo;
             resetAcceptMap(this.commitedTo);
         }
@@ -228,8 +265,12 @@ public class DALO2 extends AgentVariableSearch implements SelfCounterable {
             resetAcceptMap();
         }
 
+        if (this.myStatues == Status.sendReject){
+            this.myStatues= this.tempStatus;
+        }
+
         if(MainSimulator.isDalo2Debug) {
-            System.out.println(this.nodeId+" statues: "+this.myStatues);
+            System.out.println(this.nodeId+" statues: "+this.myStatues+", agent time:"+this.time);
         }
         //if (this.myStatues == Status.createKopt ||this.myStatues == Status.createInitKInfoAndKopt && !this.isLockRequetSetEmpty()){
         //    this.myStatues = Status.locked;
@@ -259,11 +300,28 @@ public class DALO2 extends AgentVariableSearch implements SelfCounterable {
 
     private void resetAcceptMap(NodeId senderId) {
         this.acceptMap= new HashMap<NodeId,Boolean>();
+        Set<NodeId>commonNeighbors = getCommonNeighbors(senderId);
+
         for (NodeId nId:this.neighborsConstraint.keySet()) {
-            if (nId.equals(senderId)){
+            if (!commonNeighbors.contains(nId) && !senderId.equals(nId)){
                 this.acceptMap.put(nId,false);
             }
         }
+
+    }
+
+    private Set<NodeId> getCommonNeighbors(NodeId other) {
+
+        Set<NodeId> ans = new HashSet<NodeId>();
+        Set<NodeId> neighborsOfOther = this.infoOfAgents.get(other).getNeighborsConstraint().keySet();
+        Set<NodeId> neighborsMe = this.neighborsConstraint.keySet();
+        for (NodeId nId:neighborsMe) {
+            if (neighborsOfOther.contains(nId)){
+                ans.add(nId);
+            }
+        }
+
+        return ans;
     }
 
     private void resetAcceptMap() {
@@ -285,22 +343,26 @@ public class DALO2 extends AgentVariableSearch implements SelfCounterable {
         if (msgAlgorithm instanceof MsgDALOSelfTimerMsg ){
             this.myStatues = Status.sendLocksInitateCoalition;
             if (MainSimulator.isDalo2Debug){
-                System.out.println(this.nodeId+" clock is over");
+                System.out.println(this.nodeId+" clock is over, msg time:"+ msgAlgorithm.getTimeOfMsg());
             }
         }
+
         else if (msgAlgorithm instanceof  MsgDALOkLockRequest ) {
-            boolean isSendLockToAgree = (boolean) msgAlgorithm.getContext();
+            MsgDALOkLockRequest msg = (MsgDALOkLockRequest)msgAlgorithm;
+            boolean isSendLockToAgree = (boolean) msg.getContext();
             this.twoOpt= null;
             if (isSendLockToAgree) {
-                this.myStatues = Status.sendLockToAgree;
+                this.myStatues = Status.sendLockOnBehalfOfCommit;
+
             } else {
                 this.myStatues = Status.agreeToLock;
+                if (MainSimulator.isDalo2Debug){
+                    System.out.println(this.nodeId+" receive lock before lock expired from "+msgAlgorithm.getSenderId()+" msg time:"+ msgAlgorithm.getTimeOfMsg());
+                }
             }
+
             this.commitedTo = msgAlgorithm.getSenderId();
 
-            if (MainSimulator.isDalo2Debug){
-                System.out.println(this.nodeId+" receive lock before lock expired");
-            }
         }
         else{
             throw new RuntimeException("msg type recieve doesnt make sense");
@@ -321,6 +383,14 @@ public class DALO2 extends AgentVariableSearch implements SelfCounterable {
         return true;
     }
 
+    private boolean isAllAccept() {
+        for (NodeId nId:this.acceptMap.keySet()) {
+            if (!this.acceptMap.get(nId)){
+                return false;
+            }
+        }
+        return true;
+    }
 
     //******* compute *******
     private void update2Opt() {
@@ -375,17 +445,26 @@ public class DALO2 extends AgentVariableSearch implements SelfCounterable {
         //commitedTo = null;
         outbox.insert(msgsToInsertMsgBox);
 
+        if (MainSimulator.isDalo2Debug){
+            System.out.println(this.nodeId+" send an accept to: "+ commitedTo);
+        }
     }
 
     private void sendLockRequestExceptCommited() {
         List<Msg> msgsToInsertMsgBox = new ArrayList<>();
-        for (NodeId nId: this.neighborsConstraint.keySet()) {
-            if (!nId.equals(commitedTo)){
+        Set<NodeId>commonNeighbors = getCommonNeighbors(commitedTo);
 
-                MsgDALOkLockRequest msg = new MsgDALOkLockRequest(this.nodeId, nId, false, this.timeStampCounter, this.time);
+        Set<NodeId> toDebug = new HashSet<NodeId>();
+        for (NodeId nId: this.neighborsConstraint.keySet()) {
+            if (!commonNeighbors.contains(nId) && !this.commitedTo.equals(nId)){
+                toDebug.add(nId);
+                MsgDALOkLockRequest msg = new MsgDALOkLockRequest(this.nodeId, nId, false, this.timeStampCounter, this.time,null);
                 msgsToInsertMsgBox.add(msg);
             }
 
+        }
+        if (MainSimulator.isDalo2Debug){
+            System.out.println(this.nodeId+ " send lock request as a sub leader to: "+toDebug);
         }
         //commitedTo = null;
         outbox.insert(msgsToInsertMsgBox);
@@ -395,17 +474,89 @@ public class DALO2 extends AgentVariableSearch implements SelfCounterable {
 
     private void sendLockRequest() {
         List<Msg> msgsToInsertMsgBox = new ArrayList<>();
+        Set<NodeId> toDebug = new HashSet<NodeId>();
         for (NodeId nId: this.neighborsConstraint.keySet()) {
-            boolean isPartner = false;
+            MsgDALOkLockRequest msg = null;
             if (this.twoOpt.getNodeId2().equals(nId)){
-                isPartner = true;
+                msg = new MsgDALOkLockRequest(this.nodeId, nId, true, this.timeStampCounter, this.time, twoOpt.getValueAssignmnet2());
+                if (MainSimulator.isDalo2Debug){
+                    System.out.println(this.nodeId+ " send lock request as a LEADER to: "+nId);
+                }
+            }else{
+                msg = new MsgDALOkLockRequest(this.nodeId, nId, false, this.timeStampCounter, this.time, null);
+                toDebug.add(nId);
             }
-            MsgDALOkLockRequest msg = new MsgDALOkLockRequest(this.nodeId, nId, isPartner, this.timeStampCounter, this.time);
             msgsToInsertMsgBox.add(msg);
         }
+        if (MainSimulator.isDalo2Debug){
+
+        }
+        System.out.println(this.nodeId+ " send lock request as a LEADER to: "+toDebug);
         outbox.insert(msgsToInsertMsgBox);
     }
 
+
+
+    private void sendCommitMsg() {
+        List<Msg> msgsToInsertMsgBox = new ArrayList<>();
+
+        NodeId receiver = twoOpt.getNodeId2();
+        MsgDALOcommit msg = new MsgDALOcommit(this.nodeId, receiver, twoOpt, timeStampCounter, this.time);
+        msgsToInsertMsgBox.add(msg);
+        outbox.insert(msgsToInsertMsgBox);
+    }
+
+    private void sendValueAndLocalView() {
+        List<Msg> msgsToInsertMsgBox = new ArrayList<>();
+        NodeId partner = twoOpt.getNodeId2();
+        Map<NodeId,Integer> context = new HashMap<NodeId,Integer>();
+        context.put(this.nodeId, this.valueAssignment);
+        for (NodeId nId:this.neighborsConstraint.keySet()) {
+            if (!nId.equals(partner)){
+                MsgValueAssignmnet msg = new MsgValueAssignmnet(this.nodeId,nId,  context, this.timeStampCounter,this.time);
+                msgsToInsertMsgBox.add(msg);
+            }
+        }
+        outbox.insert(msgsToInsertMsgBox);
+
+    }
+    private void sendUnlock() {
+        List<Msg> msgsToInsertMsgBox = new ArrayList<>();
+        Set<NodeId>commonNeighbors = getCommonNeighbors(commitedTo);
+        Set<NodeId> toDebug = new HashSet<NodeId>();
+
+        for (NodeId nId:this.neighborsConstraint.keySet()) {
+            if (!commonNeighbors.contains(nId)){
+                MsgDALOUnlock msg = new MsgDALOUnlock(this.nodeId, nId, null, this.timeStampCounter, this.time);
+                msgsToInsertMsgBox.add(msg);
+            }
+        }
+        outbox.insert(msgsToInsertMsgBox);
+
+
+    }
+
+
+    private void sendRejectMsg() {
+        List<Msg> msgsToInsertMsgBox = new ArrayList<>();
+        MsgDALOReject msg = new MsgDALOReject(this.nodeId, this.tempSender, null, this.timeStampCounter, this.time);
+        msgsToInsertMsgBox.add(msg);
+        outbox.insert(msgsToInsertMsgBox);
+        if (MainSimulator.isDalo2Debug){
+            System.out.println(this.nodeId+" send reject to "+this.tempSender);
+        }
+        this.tempSender = null;
+
+
+    }
+
+    private void sendSpamToRemoveRelockTimerFromMailer() {
+        List<Msg> msgsToInsertMsgBox = new ArrayList<>();
+        MsgDALOkSpamToCloseTimer msg = new MsgDALOkSpamToCloseTimer(this.nodeId, this.nodeId, null, this.timeStampCounter, this.time);
+        msg.setWithDelayToFalse();
+        msgsToInsertMsgBox.add(msg);
+        outbox.insert(msgsToInsertMsgBox);
+    }
     //******* changeReceiveFlagsToFalse *******
 
     private boolean isAllInfoInMemory() {

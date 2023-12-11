@@ -32,6 +32,7 @@ public class KOptInfo {
 			
 	}
 
+	public void updateLocalView TODO
 	private SortedMap<NodeId, MsgReceive<Integer>> createCopy(
 			SortedMap<NodeId, MsgReceive<Integer>> input) {
 		SortedMap<NodeId, MsgReceive<Integer>> ans = new TreeMap<NodeId, MsgReceive<Integer>>();

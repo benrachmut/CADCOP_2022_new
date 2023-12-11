@@ -1,10 +1,6 @@
 package Main;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 import AgentsAbstract.Agent;
 import AgentsAbstract.AgentFunction;
@@ -12,9 +8,7 @@ import AgentsAbstract.NodeId;
 import Delays.ProtocolDelayMatrix;
 import Delays.ProtocolDelayMessageAmount;
 import Delays.ProtocolDelayWithK;
-import Messages.Msg;
-import Messages.MsgAlgorithm;
-import Messages.MsgsAgentTimeComparator;
+import Messages.*;
 import Problem.Dcop;
 
 public class MailerThread extends Mailer implements Runnable {
@@ -66,18 +60,25 @@ public class MailerThread extends Mailer implements Runnable {
 			
 			createData(this.time);
 
-			while (inbox.isEmpty()) {
+			while (inbox.isEmpty() ) {
+				//System.out.println("2");
+
 				if (areAllIdle() && inbox.isEmpty() && !this.messageBox.isEmpty()) {
 					shouldUpdateClockBecuaseNoMsgsRecieved();
 					msgToSend = this.handleDelay();
+					if (MainSimulator.isDalo2Debug) {
+						System.out.println("from mailer:"+msgToSend);
+					}
 					agentsRecieveMsgs(msgToSend);
+					sleepForLittle();
 
+					//System.out.println("1");
 				}
 			}
-		
-			
 
-		if (MainSimulator.isThreadDebug) {
+
+
+			if (MainSimulator.isThreadDebug) {
 			System.out.println("mailer goes to sleep");
 		}
 
@@ -91,16 +92,12 @@ public class MailerThread extends Mailer implements Runnable {
 		}
 
 		msgToSend = this.handleDelay();
-		boolean flag = false;
-
-		
-		
 		if (MainSimulator.isThreadDebug) {
 			System.out.println("mailer handleDelay");
-			System.out.println("msgToSend:"+msgToSend);
+			System.out.println("msgToSend:" + msgToSend);
 		}
-		
-		
+
+
 		if (this.protocol.getDelay().getGamma()>0 && !(this.protocol.getDelay() instanceof ProtocolDelayWithK)) {
 			if (msgToSend.isEmpty() && areAllIdle()) {
 				this.time = this.terminationTime-1;
@@ -109,10 +106,8 @@ public class MailerThread extends Mailer implements Runnable {
 
 			}
 		}
-		
-		
-		
-		
+
+
 		agentsRecieveMsgs(msgToSend);
 		if (MainSimulator.isThreadDebug) {
 			System.out.println("mailer agentsRecieveMsgs");
@@ -123,6 +118,14 @@ public class MailerThread extends Mailer implements Runnable {
 
 	killAgents();
 
+	}
+
+	private void sleepForLittle() {
+		try {
+			Thread.sleep(1);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -137,7 +140,11 @@ public class MailerThread extends Mailer implements Runnable {
 			updateMailerClockUponMsgRecieved(m);
 			boolean isMsgAlgorithm = m instanceof MsgAlgorithm;
 			boolean isLoss = m.getIsLoss();
-			if (m.isWithDelay()) {
+
+			if (m instanceof MsgDALOkSpamToCloseTimer){
+				lookForTheTimerMsg(m.getSenderId());
+			}
+			else if (m.isWithDelay()) {
 				int d=-1;
 				if (this.protocol.getDelay() instanceof ProtocolDelayMatrix) {
 					int[] indexes = getSenderAndRecieverId1(m);
@@ -170,10 +177,21 @@ public class MailerThread extends Mailer implements Runnable {
 				this.messageBox.add(m);
 			}
 		}
+
+
 	}
 
-	
-	
+	private void lookForTheTimerMsg(NodeId senderId) {
+		Set<Msg> toRemove = new HashSet<Msg>();
+		for (Msg m :this.messageBox) {
+			if (m instanceof MsgDALOSelfTimerMsg && m.getSenderId().equals(senderId)){
+				toRemove.add(m);
+			}
+		}
+		this.messageBox.removeAll(toRemove);
+
+	}
+
 
 	private int[] getSenderAndRecieverId1(Msg m) {
 		NodeId senderNodeId = m.getSenderId();
