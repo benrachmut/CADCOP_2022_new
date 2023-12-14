@@ -32,7 +32,12 @@ public class KOptInfo {
 			
 	}
 
-	public void updateLocalView TODO
+	public void updateLocalView(NodeId partnerNId, MsgReceive<Integer> toUpdate){
+		if (neighborsValueAssignmnet.containsKey(partnerNId)) {
+			neighborsValueAssignmnet.put(partnerNId,toUpdate);
+		}
+
+	}
 	private SortedMap<NodeId, MsgReceive<Integer>> createCopy(
 			SortedMap<NodeId, MsgReceive<Integer>> input) {
 		SortedMap<NodeId, MsgReceive<Integer>> ans = new TreeMap<NodeId, MsgReceive<Integer>>();
