@@ -192,4 +192,7 @@ public class Find2Opt {
 		return this.foundValueAssignmnet2;
 	}
 
+    public NodeId getNodeId1() {
+		return this.nodeId1;
+    }
 }
