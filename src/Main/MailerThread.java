@@ -82,6 +82,8 @@ public class MailerThread extends Mailer implements Runnable {
 			System.out.println("mailer goes to sleep");
 		}
 
+			sleepForLittle();
+
 		msgsFromInbox = inbox.extract();
 		placeMsgsFromInboxInMessageBox(msgsFromInbox);
 		
@@ -90,6 +92,7 @@ public class MailerThread extends Mailer implements Runnable {
 			System.out.println("mailer wakes up");
 
 		}
+			sleepForLittle();
 
 		msgToSend = this.handleDelay();
 		if (MainSimulator.isThreadDebug) {

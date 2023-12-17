@@ -20,5 +20,10 @@ public class MsgValueAssignmnet extends MsgAlgorithm {
 		*/
 	}
 
+	@Override
+	public String toString() {
+		return this.getRecieverId()+" received Value from "+this.getSenderId();
+	}
+
 
 }

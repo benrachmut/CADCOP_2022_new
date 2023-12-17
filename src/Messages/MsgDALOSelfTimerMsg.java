@@ -7,4 +7,9 @@ public class MsgDALOSelfTimerMsg extends MsgAlgorithm{
         super(sender, reciever, context, timeStamp, time);
         this.setManualDelay(randomTimeDeliver);
     }
+
+    @Override
+    public String toString() {
+        return this.getRecieverId()+" received SelfTimerMsg";
+    }
 }
