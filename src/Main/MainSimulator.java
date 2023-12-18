@@ -27,7 +27,7 @@ public class MainSimulator {
 	public static int howManyIterationForCalculation =10; //10000
     private static int everyHowManyExcel = 100;
 	// ------------------------------**PROBLEM MAGNITUDE**
-	public static int A = 10; // amount of agents
+	public static int A = 50; // amount of agents
 	private static int D = 10;
 	// ------------------------------**Algorithm Selection**
 	public enum Algorithm {

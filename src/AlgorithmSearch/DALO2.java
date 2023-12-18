@@ -15,6 +15,8 @@ public class DALO2 extends AgentVariableSearch implements SelfCounterable {
     private NodeId tempSender;
     private Map<NodeId,MsgReceive<Integer>> tempNeighborValueA;
 
+
+
     private boolean partOfCoalition;
     private boolean flag;
 
@@ -37,7 +39,7 @@ public class DALO2 extends AgentVariableSearch implements SelfCounterable {
         sendCommitAndValue,
         sendLocalViewUpdate,
         sendValueAndChangeValue,
-        createKoptAfterLocalViewUpdate, sendUnlockAndStartRelockTimer, idle
+        createKoptAfterLocalViewUpdate, sendUnlockAndStartRelockTimer, sendUnlock, idle
     }
     private Random randomForCoalition;
     private Random randomForTimer;
@@ -136,6 +138,7 @@ public class DALO2 extends AgentVariableSearch implements SelfCounterable {
 
         }
 
+
         if (MainSimulator.isDalo2Debug) {
 
             if (msgAlgorithm instanceof MsgDALOkInfo == false && msgAlgorithm instanceof MsgValueAssignmnet == false) {
@@ -185,24 +188,20 @@ public class DALO2 extends AgentVariableSearch implements SelfCounterable {
 
         }
 
+        if (msgAlgorithm instanceof MsgDALOUnlock && msgAlgorithm.getSenderId().equals(commitedTo)){
+            this.myStatues= Status.sendUnlock;
+        }
+
         if (msgAlgorithm instanceof MsgDALOAccept && this.myStatues == Status.waitForAcceptExceptCommitedTo && isAllAccept() ){
             this.myStatues = Status.agreeToLock;
         }
 
         if (msgAlgorithm instanceof MsgDALOAccept && this.myStatues == Status.waitForAccept && isAllAccept()){
             this.myStatues = Status.sendCommitAndValue;
-
-            System.out.println(this.nodeId+" can send commit");
-
         }
 
         if (msgAlgorithm instanceof MsgDALOReject){
-            if (MainSimulator.isDalo2Debug){
-                //this.myStatues = Status.sendUnlockAndStartRelockTimer; //TODO
-
-                System.out.println(this+" receive reject from "+msgAlgorithm.getSenderId()+" TODO!!!!!!!!");
-            }
-            //TODO
+            this.myStatues = Status.sendUnlockAndStartRelockTimer;
         }
 
         if (msgAlgorithm instanceof MsgValueAssignmnet && this.myStatues!=Status.waitForAllInitValues
@@ -219,6 +218,8 @@ public class DALO2 extends AgentVariableSearch implements SelfCounterable {
         if (msgAlgorithm instanceof MsgDALOLocalViewUpdate){
             this.myStatues = Status.createKoptAfterLocalViewUpdate;
         }
+
+
         if (MainSimulator.isDalo2Debug && this.myStatues != oldStatus){
             if (this.myStatues!= Status.waitForAllInitValues && this.myStatues!= Status.waitForAllKInfo && this.myStatues!= Status.waitForAllInitValues) {
                 System.out.println(this.nodeId + " start from " + oldStatus + " to " + this.myStatues);
@@ -235,7 +236,8 @@ public class DALO2 extends AgentVariableSearch implements SelfCounterable {
     public boolean getDidComputeInThisIteration() {
         return this.myStatues == Status.createInitKInfo || this.myStatues == Status.createKopt || this.myStatues == Status.createInitKInfoAndKopt        ||
                 this.myStatues == Status.agreeToLock||this.myStatues == Status.sendLockOnBehalfOfAnotherLeader ||this.myStatues == Status.sendLocksInitiateCoalition ||         this.myStatues == Status.sendLockOnBehalfOfAnotherLeader ||  this.myStatues == Status.agreeToLock
-                || this.myStatues  ==Status.sendLocksInitiateCoalition ||this.myStatues  ==Status.sendReject || this.myStatues  ==Status.sendCommitAndValue || this.myStatues == Status.sendLocalViewUpdate || this.myStatues == Status.sendValueAndChangeValue || this.myStatues == Status.createKoptAfterLocalViewUpdate;
+                || this.myStatues  ==Status.sendLocksInitiateCoalition ||this.myStatues  ==Status.sendReject || this.myStatues  ==Status.sendCommitAndValue || this.myStatues == Status.sendLocalViewUpdate || this.myStatues == Status.sendValueAndChangeValue
+                || this.myStatues == Status.createKoptAfterLocalViewUpdate ||this.myStatues == Status.sendUnlockAndStartRelockTimer ||this.myStatues == Status.sendUnlock;
 
     }
 
@@ -328,6 +330,21 @@ public class DALO2 extends AgentVariableSearch implements SelfCounterable {
             sendLocalViewUpdate(whoChange, whatIsTheChange);// TODO: need to send local view update; node id = who changed
             tempNeighborValueA = new HashMap<NodeId,MsgReceive<Integer>>();
         }
+        if (this.myStatues == Status.sendUnlockAndStartRelockTimer || this.myStatues == Status.sendUnlock){
+
+            if (this.myStatues == Status.sendUnlockAndStartRelockTimer){
+                sendSelfTimerMsg();
+            }
+            sendUnlock();
+            this.acceptMap = new HashMap<>();
+            commitedTo = null;
+        }
+
+        if (this.myStatues == Status.sendUnlock){
+            sendUnlock();
+            this.acceptMap = new HashMap<>();
+            commitedTo = null;
+        }
     }
 
     private void sendLocalViewUpdate(NodeId whoChange, MsgReceive<Integer> whatIsTheChange) {
@@ -393,9 +410,14 @@ public class DALO2 extends AgentVariableSearch implements SelfCounterable {
 
 
         }
+
+        if (this.myStatues == Status.sendUnlockAndStartRelockTimer){
+            this.myStatues = Status.waitForClockOrLock;
+        }
         if(MainSimulator.isDalo2Debug && this.myStatues!=oldStatus) {
             System.out.println(this.nodeId+" end changed from "+oldStatus+" to "+ this.myStatues);
         }
+
 
 
 
@@ -685,19 +707,16 @@ public class DALO2 extends AgentVariableSearch implements SelfCounterable {
     }
     private void sendUnlock() {
         List<Msg> msgsToInsertMsgBox = new ArrayList<>();
-        Set<NodeId>commonNeighbors = getCommonNeighbors(commitedTo);
-        Set<NodeId> toDebug = new HashSet<NodeId>();
 
-        for (NodeId nId:this.neighborsConstraint.keySet()) {
-            if (!commonNeighbors.contains(nId)){
-                MsgDALOUnlock msg = new MsgDALOUnlock(this.nodeId, nId, null, this.timeStampCounter, this.time);
-                msgsToInsertMsgBox.add(msg);
+        for (NodeId nId:this.acceptMap.keySet()) {
+            MsgDALOUnlock msg = new MsgDALOUnlock(this.nodeId, nId, null, this.timeStampCounter, this.time);
+            msgsToInsertMsgBox.add(msg);
             }
-        }
         outbox.insert(msgsToInsertMsgBox);
 
-
     }
+
+
 
 
     private void sendRejectMsg() {

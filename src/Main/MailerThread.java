@@ -62,6 +62,7 @@ public class MailerThread extends Mailer implements Runnable {
 
 			while (inbox.isEmpty() ) {
 				//System.out.println("2");
+				sleepForLittle();
 
 				if (areAllIdle() && inbox.isEmpty() && !this.messageBox.isEmpty()) {
 					shouldUpdateClockBecuaseNoMsgsRecieved();
