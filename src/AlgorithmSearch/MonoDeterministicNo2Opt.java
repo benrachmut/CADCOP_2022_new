@@ -377,7 +377,7 @@ public class MonoDeterministicNo2Opt extends AgentVariableSearch implements Self
     private void sendInfoToPartner() {
         List<Msg> msgsToInsertMsgBox = new ArrayList<Msg>();
 
-            MsgMDC2CFriendRequest msg = new MsgMDC2CFriendRequest(this.nodeId, partnerNodeId, makeMyKOptInfo(), this.timeStampCounter, this.time, this.selfCounter, this.myColor);
+            MsgMDC2CFriendRequest msg = new MsgMDC2CFriendRequest(this.nodeId, partnerNodeId, makeLocalOptInfo(), this.timeStampCounter, this.time, this.selfCounter, this.myColor);
             msgsToInsertMsgBox.add(msg);
             outbox.insert(msgsToInsertMsgBox);
             //if (MainSimulator.isMDC2CDebug){
@@ -393,7 +393,7 @@ public class MonoDeterministicNo2Opt extends AgentVariableSearch implements Self
         //-------------------
         NodeId whoToReply = getWhoToReply();
         this.neighborPartnerCounters.put(whoToReply,this.neighborPartnerCounters.get(whoToReply)+1);
-        Find2Opt optInfo = new Find2Opt(makeMyKOptInfo(), neighborsInfo.get(whoToReply));
+        Find2Opt optInfo = new Find2Opt(makeLocalOptInfo(), neighborsInfo.get(whoToReply));
         this.atomicActionCounter = optInfo.getAtomicActionCounter();
 
         this.time = this.time + this.atomicActionCounter;

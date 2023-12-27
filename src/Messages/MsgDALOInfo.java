@@ -2,11 +2,11 @@ package Messages;
 
 import AgentsAbstract.NodeId;
 
-public class MsgDALOkInfo extends MsgAlgorithm {
+public class MsgDALOInfo extends MsgAlgorithm {
 
     private int selfCounter;
 
-    public MsgDALOkInfo(NodeId sender, NodeId reciever, Object context, int timeStamp, long time) {
+    public MsgDALOInfo(NodeId sender, NodeId reciever, Object context, int timeStamp, long time) {
         super(sender, reciever, context, timeStamp, time);
     }
 

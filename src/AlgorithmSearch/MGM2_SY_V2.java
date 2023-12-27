@@ -768,7 +768,7 @@ public class MGM2_SY_V2 extends AgentVariableSearch implements SelfCounterable {
     private void computePhase2SelectNeighborRandomly() {
         NodeId potentialPartner = getRandomPartnerFromInfo();
         KOptInfo koi = this.toPhase2_info.get(potentialPartner);
-        Find2Opt f2o =  new Find2Opt(makeMyKOptInfo(),koi);
+        Find2Opt f2o =  new Find2Opt(makeLocalOptInfo(),koi);
         this.atomicActionCounter = this.atomicActionCounter + f2o.getAtomicActionCounter();
 
         if (this.withPartnerLr<= f2o.getLR()) {
@@ -837,7 +837,7 @@ public class MGM2_SY_V2 extends AgentVariableSearch implements SelfCounterable {
         Map<NodeId, Find2Opt> ans = new HashMap<NodeId, Find2Opt>();
         for (NodeId nodeId:this.toPhase2_info.keySet()) {
             KOptInfo kOptInfo = this.toPhase2_info.get(nodeId);
-            Find2Opt f2o = new Find2Opt(makeMyKOptInfo(),kOptInfo);
+            Find2Opt f2o = new Find2Opt(makeLocalOptInfo(),kOptInfo);
             ans.put(nodeId,f2o);
         }
         return ans;
@@ -897,7 +897,7 @@ public class MGM2_SY_V2 extends AgentVariableSearch implements SelfCounterable {
     private void sendMsgs_toPhase3_send2Opt(List<Msg> msgsToInsertMsgBox) {
         for (NodeId receiverNodeId:this.neighborsConstraint.keySet()) {
             if (this.partner != null && this.partner.equals(receiverNodeId)) {
-                Find2Opt f2o = new Find2Opt(makeMyKOptInfo(),toPhase2_info.get(partner));
+                Find2Opt f2o = new Find2Opt(makeLocalOptInfo(),toPhase2_info.get(partner));
                 MsgMGM2V2_toPhase3_Opt2 msg = new MsgMGM2V2_toPhase3_Opt2(this.nodeId, receiverNodeId, f2o, this.timeStampCounter, this.time);
                 msgsToInsertMsgBox.add(msg);
             }
@@ -909,7 +909,7 @@ public class MGM2_SY_V2 extends AgentVariableSearch implements SelfCounterable {
             MsgMGM2V2_toPhase2_infoAndFalse msg = null;
             if (this.partner != null && this.partner.equals(receiverNodeId)){
                 msg = new MsgMGM2V2_toPhase2_infoAndFalse
-                        (this.nodeId, receiverNodeId, makeMyKOptInfo(), this.timeStampCounter, this.time);
+                        (this.nodeId, receiverNodeId, makeLocalOptInfo(), this.timeStampCounter, this.time);
             }else{
                 msg = new MsgMGM2V2_toPhase2_infoAndFalse
                         (this.nodeId, receiverNodeId, false, this.timeStampCounter, this.time);

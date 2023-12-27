@@ -337,7 +337,7 @@ abstract public class MGM2 extends AgentVariableSearch implements SelfCounterabl
 		double rnd = phase1RndIsOfferGiver.nextDouble();
 		if (rnd < probToBeOfferPhase1) {
 			this.phase1BooleanIsOfferGiver = true;
-			phase1MyOpt2Created = makeMyKOptInfo();
+			phase1MyOpt2Created = makeLocalOptInfo();
 			int i = this.phase1RndNeighborSelection.nextInt(this.neighborSize());
 			this.phase1NodeIdSelectedFriend = (NodeId) this.getNeigborSetId().toArray()[i];
 		} else {
@@ -483,7 +483,7 @@ abstract public class MGM2 extends AgentVariableSearch implements SelfCounterabl
 	private void createInfromationObjectTogetherWithFriend() {
 		MsgReceive<KOptInfo> msgRec = this.phase2RecieveFriendshipOffers.get(this.phase2NodeIdAcceptedFriend);
 		KOptInfo infoOfMyFriendPhase2 = msgRec.getContext();
-		this.phase2Opt2Recieve = new Find2Opt(makeMyKOptInfo(), infoOfMyFriendPhase2);
+		this.phase2Opt2Recieve = new Find2Opt(makeLocalOptInfo(), infoOfMyFriendPhase2);
 	}
 
 	private void useInfromationObjectToUpdateFields() {

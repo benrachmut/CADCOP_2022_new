@@ -1,6 +1,5 @@
 package AlgorithmSearch;
 
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -9,7 +8,8 @@ import AgentsAbstract.NodeId;
 import Messages.MsgReceive;
 
 public class Find2Opt {
-//---------------
+	private BFSTree bfs;
+	//---------------
 	private Integer currentLocalCost; // id, variable
 	private Integer currentValueAssingment1;
 	private Integer currentValueAssingment2;
@@ -54,6 +54,8 @@ public class Find2Opt {
 		this.currentLocalCost = this.bestCostFound; 
 		this.findOpt2ValueAssignments();	
 		this.lr = this.currentLocalCost - this.bestCostFound;
+
+		this.bfs = new BFSTree(t)
 	}
 
 	public NodeId getNodeId2() {
@@ -195,4 +197,6 @@ public class Find2Opt {
     public NodeId getNodeId1() {
 		return this.nodeId1;
     }
+
+
 }

@@ -94,7 +94,7 @@ public abstract class AgentVariableSearch extends AgentVariable {
 	}
 
 
-	protected KOptInfo makeMyKOptInfo() {
+	protected KOptInfo makeLocalOptInfo() {
 		return new KOptInfo(this.valueAssignment, nodeId, neighborsConstraint, domainArray,
 				this.neighborsValueAssignment);
 	}
@@ -304,13 +304,10 @@ public abstract class AgentVariableSearch extends AgentVariable {
 	}
 
 	protected void updateMsgInContextValueAssignment(MsgAlgorithm msgAlgorithm) {
-
-			int context = ((Integer) msgAlgorithm.getContext());
-
+		int context = ((Integer) msgAlgorithm.getContext());
 		int timestamp = msgAlgorithm.getTimeStamp();
 		MsgReceive<Integer> msgReceive = new MsgReceive<Integer>(context, timestamp);
 		this.neighborsValueAssignment.put(msgAlgorithm.getSenderId(), msgReceive);
-
 	}
 
 	protected int getTimestampOfValueAssignmnets(MsgAlgorithm msgAlgorithm) {

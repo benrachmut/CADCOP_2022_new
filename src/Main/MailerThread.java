@@ -67,9 +67,9 @@ public class MailerThread extends Mailer implements Runnable {
 				if (areAllIdle() && inbox.isEmpty() && !this.messageBox.isEmpty()) {
 					shouldUpdateClockBecuaseNoMsgsRecieved();
 					msgToSend = this.handleDelay();
-					if (MainSimulator.isDalo2Debug) {
-						System.out.println("from mailer:"+msgToSend);
-					}
+					//if (MainSimulator.isDalo2Debug) {
+					//	System.out.println("from mailer:"+msgToSend);
+					//}
 					agentsRecieveMsgs(msgToSend);
 					sleepForLittle();
 

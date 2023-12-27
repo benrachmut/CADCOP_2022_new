@@ -866,7 +866,7 @@ public class LAMDLS2 extends AgentVariableSearch implements SelfCounterable {
 
     private void sendInfoToPartner() {
         List<Msg> msgsToInsertMsgBox = new ArrayList<>();
-        MsgFriendRequestMonoStoch2 msg = new MsgFriendRequestMonoStoch2(this.nodeId, partnerNodeId, makeMyKOptInfo(), this.timeStampCounter, this.time,this.selfCounter);
+        MsgFriendRequestMonoStoch2 msg = new MsgFriendRequestMonoStoch2(this.nodeId, partnerNodeId, makeLocalOptInfo(), this.timeStampCounter, this.time,this.selfCounter);
         if (partnerNodeId == null){
             throw new RuntimeException("try to send info to partner but there is no PARTNER SELECTED");
         }
@@ -1117,7 +1117,7 @@ public class LAMDLS2 extends AgentVariableSearch implements SelfCounterable {
         if (MainSimulator.isMonoStochComputationDebug){
             System.out.println(this.nodeId+" selected to reply to "+partnerNodeId);
         }
-        Find2Opt optInfo = new Find2Opt(makeMyKOptInfo(), neighborsInfo.get(this.partnerNodeId));
+        Find2Opt optInfo = new Find2Opt(makeLocalOptInfo(), neighborsInfo.get(this.partnerNodeId));
 
         this.atomicActionCounter = optInfo.getAtomicActionCounter();
         selfCounter = selfCounter + 1;
