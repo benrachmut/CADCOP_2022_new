@@ -270,12 +270,9 @@ public class LAMDLS2 extends AgentVariableSearch implements SelfCounterable {
             this.countChanges = this.countChanges +1;
         }
         this.valueAssignment = potential;
-        //try {
         this.neighborCounters.put(partnerNodeId, this.neighborCounters.get(partnerNodeId) + 1);
         this.neighborsValueAssignment.put(partnerNodeId, new MsgReceive<Integer>(optInfo.getValueAssignmnet1(), 0));
-        // }catch (Exception e){
-        //    int x = 3;
-        // }
+
     }
 
 

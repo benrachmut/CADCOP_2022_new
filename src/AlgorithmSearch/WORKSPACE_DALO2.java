@@ -181,7 +181,7 @@ public class WORKSPACE_DALO2 extends AgentVariableSearch implements SelfCountera
 
 
 
-        if (msgAlgorithm instanceof MsgDALOkLockRequest && (this.myStatues == Status.waitForCommitMsg
+        if (msgAlgorithm instanceof MsgDALOLockRequest_WORKSPCAE && (this.myStatues == Status.waitForCommitMsg
                 || this.myStatues == Status.waitForAccept
                 || this.myStatues == Status.waitForAcceptExceptCommitedTo)){
 
@@ -498,15 +498,15 @@ public class WORKSPACE_DALO2 extends AgentVariableSearch implements SelfCountera
     }
 
     private void updateStatusGivenMsgType(MsgAlgorithm msgAlgorithm) {
-        if (msgAlgorithm instanceof MsgDALOSelfTimerMsg ){
+        if (msgAlgorithm instanceof MsgDALOSelfTimer){
             this.myStatues = Status.sendLocksInitiateCoalition;
             if (MainSimulator.isDalo2Debug){
                 System.out.println(this.nodeId+" clock is over, msg time:"+ msgAlgorithm.getTimeOfMsg());
             }
         }
 
-        else if (msgAlgorithm instanceof  MsgDALOkLockRequest ) {
-            MsgDALOkLockRequest msg = (MsgDALOkLockRequest)msgAlgorithm;
+        else if (msgAlgorithm instanceof MsgDALOLockRequest_WORKSPCAE) {
+            MsgDALOLockRequest_WORKSPCAE msg = (MsgDALOLockRequest_WORKSPCAE)msgAlgorithm;
             boolean isSendLockToAgree = (boolean) msg.getContext();
             this.twoOpt= null;
             if (isSendLockToAgree) {
@@ -633,7 +633,7 @@ public class WORKSPACE_DALO2 extends AgentVariableSearch implements SelfCountera
         List<Msg> msgsToInsertMsgBox = new ArrayList<>();
 
         int rndTimer = randomForTimer.nextInt(this.boundForTimer);
-        MsgDALOSelfTimerMsg msg = new MsgDALOSelfTimerMsg(this.nodeId, this.nodeId, null, this.timeStampCounter, this.time, rndTimer);
+        MsgDALOSelfTimer msg = new MsgDALOSelfTimer(this.nodeId, this.nodeId, null, this.timeStampCounter, this.time, rndTimer);
         msgsToInsertMsgBox.add(msg);
         if (MainSimulator.isDalo2Debug){
             System.out.println(this.nodeId+ " sent timer message at self_time:"+this.time+" with delay of: "+rndTimer );
@@ -661,7 +661,7 @@ public class WORKSPACE_DALO2 extends AgentVariableSearch implements SelfCountera
         for (NodeId nId: this.neighborsConstraint.keySet()) {
             if (!commonNeighbors.contains(nId) && !this.commitedTo.equals(nId)){
                 toDebug.add(nId);
-                MsgDALOkLockRequest msg = new MsgDALOkLockRequest(this.nodeId, nId, false, this.timeStampCounter, this.time,null);
+                MsgDALOLockRequest_WORKSPCAE msg = new MsgDALOLockRequest_WORKSPCAE(this.nodeId, nId, false, this.timeStampCounter, this.time,null);
                 msgsToInsertMsgBox.add(msg);
             }
 
@@ -679,14 +679,14 @@ public class WORKSPACE_DALO2 extends AgentVariableSearch implements SelfCountera
         List<Msg> msgsToInsertMsgBox = new ArrayList<>();
         Set<NodeId> toDebug = new HashSet<NodeId>();
         for (NodeId nId: this.neighborsConstraint.keySet()) {
-            MsgDALOkLockRequest msg = null;
+            MsgDALOLockRequest_WORKSPCAE msg = null;
             if (this.twoOpt.getNodeId2().equals(nId)){
-                msg = new MsgDALOkLockRequest(this.nodeId, nId, true, this.timeStampCounter, this.time, twoOpt.getValueAssignmnet2());
+                msg = new MsgDALOLockRequest_WORKSPCAE(this.nodeId, nId, true, this.timeStampCounter, this.time, twoOpt.getValueAssignmnet2());
                 if (MainSimulator.isDalo2Debug){
                     System.out.println(this.nodeId+ " send lock request as a LEADER to: "+nId);
                 }
             }else{
-                msg = new MsgDALOkLockRequest(this.nodeId, nId, false, this.timeStampCounter, this.time, null);
+                msg = new MsgDALOLockRequest_WORKSPCAE(this.nodeId, nId, false, this.timeStampCounter, this.time, null);
                 toDebug.add(nId);
             }
             msgsToInsertMsgBox.add(msg);
@@ -753,7 +753,7 @@ public class WORKSPACE_DALO2 extends AgentVariableSearch implements SelfCountera
 
     private void sendSpamToRemoveRelockTimerFromMailer() {
         List<Msg> msgsToInsertMsgBox = new ArrayList<>();
-        MsgDALOkSpamToCloseTimer msg = new MsgDALOkSpamToCloseTimer(this.nodeId, this.nodeId, null, this.timeStampCounter, this.time);
+        MsgDALOSpamToCloseTimer msg = new MsgDALOSpamToCloseTimer(this.nodeId, this.nodeId, null, this.timeStampCounter, this.time);
         msg.setWithDelayToFalse();
         msgsToInsertMsgBox.add(msg);
         outbox.insert(msgsToInsertMsgBox);

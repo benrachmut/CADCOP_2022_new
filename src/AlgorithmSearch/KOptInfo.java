@@ -27,7 +27,7 @@ public class KOptInfo {
 		this.nodeId = nodeId;
 		this.neighborsConstraint = neighborsConstraint;
 		this.domainArray = domainArray;
-		this.neighborsValueAssignmnet = createCopy(neighborsValueAssignmnet);
+		this.neighborsValueAssignmnet = updateLocalViewInInfo(neighborsValueAssignmnet);
 				
 			
 	}
@@ -38,7 +38,9 @@ public class KOptInfo {
 		}
 
 	}
-	private SortedMap<NodeId, MsgReceive<Integer>> createCopy(
+
+
+	public SortedMap<NodeId, MsgReceive<Integer>> updateLocalViewInInfo(
 			SortedMap<NodeId, MsgReceive<Integer>> input) {
 		SortedMap<NodeId, MsgReceive<Integer>> ans = new TreeMap<NodeId, MsgReceive<Integer>>();
 		for (Entry<NodeId, MsgReceive<Integer>> e : input.entrySet()) {

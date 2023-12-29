@@ -62,19 +62,19 @@ public class MailerThread extends Mailer implements Runnable {
 
 			while (inbox.isEmpty() ) {
 				//System.out.println("2");
-				sleepForLittle();
+				//sleepForLittle();
 
-				if (areAllIdle() && inbox.isEmpty() && !this.messageBox.isEmpty()) {
-					shouldUpdateClockBecuaseNoMsgsRecieved();
-					msgToSend = this.handleDelay();
-					//if (MainSimulator.isDalo2Debug) {
-					//	System.out.println("from mailer:"+msgToSend);
-					//}
-					agentsRecieveMsgs(msgToSend);
-					sleepForLittle();
+				if ( areAllIdle() && inbox.isEmpty() && !this.messageBox.isEmpty() ) {
+						sleepForLittle();
+					if (  areAllIdle() &&  inbox.isEmpty() && !this.messageBox.isEmpty()) {
+						shouldUpdateClockBecuaseNoMsgsRecieved();
+						msgToSend = this.handleDelay();
+						agentsRecieveMsgs(msgToSend);
+						//sleepForLittle();
+						//System.out.println("1");
+					}
+					}
 
-					//System.out.println("1");
-				}
 			}
 
 
@@ -83,17 +83,17 @@ public class MailerThread extends Mailer implements Runnable {
 			System.out.println("mailer goes to sleep");
 		}
 
-			sleepForLittle();
+			//sleepForLittle();
 
 		msgsFromInbox = inbox.extract();
 		placeMsgsFromInboxInMessageBox(msgsFromInbox);
-		
-		
+
+
 		if (MainSimulator.isThreadDebug) {
 			System.out.println("mailer wakes up");
 
 		}
-			sleepForLittle();
+			//sleepForLittle();
 
 		msgToSend = this.handleDelay();
 		if (MainSimulator.isThreadDebug) {
@@ -124,9 +124,18 @@ public class MailerThread extends Mailer implements Runnable {
 
 	}
 
+	private Msg hasTimerIsOverMsgIn(List<Msg> msgToSend) {
+		for (Msg m:msgToSend) {
+			if (m instanceof MsgDALOSelfTimer){
+				return m;
+			}
+		}
+	return null;
+	}
+
 	private void sleepForLittle() {
 		try {
-			Thread.sleep(1);
+			Thread.sleep(100);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -145,7 +154,7 @@ public class MailerThread extends Mailer implements Runnable {
 			boolean isMsgAlgorithm = m instanceof MsgAlgorithm;
 			boolean isLoss = m.getIsLoss();
 
-			if (m instanceof MsgDALOkSpamToCloseTimer){
+			if (m instanceof MsgDALOSpamToCloseTimer){
 				lookForTheTimerMsg(m.getSenderId());
 			}
 			else if (m.isWithDelay()) {
@@ -188,7 +197,7 @@ public class MailerThread extends Mailer implements Runnable {
 	private void lookForTheTimerMsg(NodeId senderId) {
 		Set<Msg> toRemove = new HashSet<Msg>();
 		for (Msg m :this.messageBox) {
-			if (m instanceof MsgDALOSelfTimerMsg && m.getSenderId().equals(senderId)){
+			if (m instanceof MsgDALOSelfTimer && m.getSenderId().equals(senderId)){
 				toRemove.add(m);
 			}
 		}

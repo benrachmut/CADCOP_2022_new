@@ -1,8 +1,7 @@
 package AlgorithmSearch;
 
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 import AgentsAbstract.NodeId;
 import Messages.MsgReceive;
@@ -54,8 +53,24 @@ public class Find2Opt {
 		this.currentLocalCost = this.bestCostFound; 
 		this.findOpt2ValueAssignments();	
 		this.lr = this.currentLocalCost - this.bestCostFound;
+		this.bfs = createBFSTree();
+	}
 
-		this.bfs = new BFSTree(t)
+	public SolutionPackage createSolutionPackageFor1(){
+		return new SolutionPackage(this.getValueAssignmnet1(), this.bfs.getSonsInTree(this.nodeId1), this.getValueAssignmnet2(), this.nodeId2, bfs.getAllNodesInTree());
+	}
+
+	public SolutionPackage createSolutionPackageFor2(){
+		return new SolutionPackage(this.getValueAssignmnet2(), this.bfs.getSonsInTree(this.nodeId2), this.getValueAssignmnet1(), this.nodeId1,bfs.getAllNodesInTree());
+	}
+	private BFSTree createBFSTree() {
+		Map<NodeId, Set<NodeId>> neighborsMap = new HashMap<>();
+		neighborsMap.put(this.nodeId1,this.neighborsConstraint1.keySet());
+		neighborsMap.put(this.nodeId2,this.neighborsConstraint2.keySet());
+
+		NodeId root = this.nodeId1;
+
+		return new BFSTree(neighborsMap,root);
 	}
 
 	public NodeId getNodeId2() {
