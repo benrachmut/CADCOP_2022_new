@@ -295,6 +295,7 @@ public abstract class Agent implements Runnable, Comparable<Agent> {
             }
             //setIsIdleToFalse();
 
+            setIsIdleToFalse();
 
             if (messages == null) {
                 break;
@@ -303,7 +304,6 @@ public abstract class Agent implements Runnable, Comparable<Agent> {
                 handleMsgs(messages);
             }
 
-            setIsIdleToFalse();
             //if (MainSimulator.isDalo2Debug) {
               //  System.out.println(this.nodeId + " is idle");
             //}

@@ -15,4 +15,9 @@ public class MsgDALOValueAssignmnet extends MsgValueAssignmnet{
     public Set<NodeId> getNodesInTree() {
         return nodesInTree;
     }
+
+    @Override
+    public String toString() {
+        return this.getRecieverId()+" received DALO VALUE from "+this.getSenderId();
+    }
 }

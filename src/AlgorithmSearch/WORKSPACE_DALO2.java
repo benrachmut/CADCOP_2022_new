@@ -612,7 +612,7 @@ public class WORKSPACE_DALO2 extends AgentVariableSearch implements SelfCountera
     private void updateInfos(NodeId partnerNId, MsgReceive<Integer> input_) {
         for (NodeId nId: this.infoOfAgents.keySet()) {
             KOptInfo info = this.infoOfAgents.get(nId);
-            info.updateLocalView(partnerNId,input_);
+            info.updateLocalViewSingle(partnerNId,input_);
         }
     }
 

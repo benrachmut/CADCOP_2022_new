@@ -63,10 +63,13 @@ public class MailerThread extends Mailer implements Runnable {
 			while (inbox.isEmpty() ) {
 				//System.out.println("2");
 				//sleepForLittle();
+				sleepForLittle();
 
 				if ( areAllIdle() && inbox.isEmpty() && !this.messageBox.isEmpty() ) {
 						sleepForLittle();
 					if (  areAllIdle() &&  inbox.isEmpty() && !this.messageBox.isEmpty()) {
+						sleepForLittle();
+
 						shouldUpdateClockBecuaseNoMsgsRecieved();
 						msgToSend = this.handleDelay();
 						agentsRecieveMsgs(msgToSend);
@@ -154,10 +157,17 @@ public class MailerThread extends Mailer implements Runnable {
 			boolean isMsgAlgorithm = m instanceof MsgAlgorithm;
 			boolean isLoss = m.getIsLoss();
 
+
 			if (m instanceof MsgDALOSpamToCloseTimer){
-				lookForTheTimerMsg(m.getSenderId());
+				lookForTheTimerMsg(m);
 			}
+
+
 			else if (m.isWithDelay()) {
+
+				if(m instanceof MsgDALOSelfTimer) {
+				lookForTheTimerMsg(m);
+				}
 				int d=-1;
 				if (this.protocol.getDelay() instanceof ProtocolDelayMatrix) {
 					int[] indexes = getSenderAndRecieverId1(m);
@@ -194,10 +204,10 @@ public class MailerThread extends Mailer implements Runnable {
 
 	}
 
-	private void lookForTheTimerMsg(NodeId senderId) {
+	private void lookForTheTimerMsg(Msg msgInput) {
 		Set<Msg> toRemove = new HashSet<Msg>();
 		for (Msg m :this.messageBox) {
-			if (m instanceof MsgDALOSelfTimer && m.getSenderId().equals(senderId)){
+			if (m instanceof MsgDALOSelfTimer && m.getSenderId().equals(msgInput.getSenderId())){
 				toRemove.add(m);
 			}
 		}

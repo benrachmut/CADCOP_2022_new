@@ -19,6 +19,7 @@ public class KOptInfo {
 	// ---------------
 	private SortedMap<NodeId, MsgReceive<Integer>> neighborsValueAssignmnet; // id, variable
 
+	boolean isValChange;
 	// ------------ Constructor ------------
 	public KOptInfo(Integer valueAssingment, NodeId nodeId, TreeMap<NodeId, Integer[][]> neighborsConstraint,
 			int[] domainArray, SortedMap<NodeId, MsgReceive<Integer>> neighborsValueAssignmnet) {
@@ -28,15 +29,32 @@ public class KOptInfo {
 		this.neighborsConstraint = neighborsConstraint;
 		this.domainArray = domainArray;
 		this.neighborsValueAssignmnet = updateLocalViewInInfo(neighborsValueAssignmnet);
-				
+		isValChange = false;
 			
 	}
 
-	public void updateLocalView(NodeId partnerNId, MsgReceive<Integer> toUpdate){
+	public void updateLocalViewSingle(NodeId partnerNId, MsgReceive<Integer> toUpdate){
 		if (neighborsValueAssignmnet.containsKey(partnerNId)) {
+			int prevValue = neighborsValueAssignmnet.get(partnerNId).getContext();
 			neighborsValueAssignmnet.put(partnerNId,toUpdate);
+			if (prevValue == toUpdate.getContext()){
+				isValChange = false;
+			}else{
+				isValChange = true;
+			}
+			return;
 		}
+		isValChange = false;
 
+	}
+	public boolean getIsValueChange(){
+		if (isValChange){
+			isValChange = false;
+			return true;
+		}
+		else{
+			return false;
+		}
 	}
 
 
@@ -74,4 +92,13 @@ public class KOptInfo {
 		return neighborsValueAssignmnet;
 	}
 
+	public void updateValueAssignmnet(int senderVal) {
+		int prevValue = this.valueAssingment;
+		this.valueAssingment = senderVal;
+		if (prevValue == this.valueAssingment){
+			isValChange = false;
+		}else{
+			isValChange = true;
+		}
+	}
 }
